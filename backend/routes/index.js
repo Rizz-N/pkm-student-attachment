@@ -15,6 +15,7 @@ const {
   getAbsensiMurid,
   getAllMurid,
   getAllMuridPage,
+  getAllStatusMuridPage,
   getMuridAllPresence,
   getKelasWithDetails,
   getAbsensiMuridByDate,
@@ -65,7 +66,7 @@ router.get("/kelas", verifyToken, getKelasWithDetails);
 router.get("/kelas/:kelas_id/murid", verifyToken, getMuridByKelas); // buat absensi murid oleh guru
 router.get("/kelas/:kelas_id/absensi/hari-ini", verifyToken, getAbsensiMurid);
 router.get("/murid", verifyToken, getAllMurid);
-router.get("/murid/page", verifyToken, getAllMuridPage);
+router.get("/murid/page", verifyToken, getAllStatusMuridPage);
 router.get("/absensi/murid", verifyToken, getAbsensiMuridByDate);
 router.get("/absensi/murid/range", verifyToken, getAbsensiMuridRange);
 router.get("/absensi/murid/hadir", verifyToken, getMuridAllPresence);

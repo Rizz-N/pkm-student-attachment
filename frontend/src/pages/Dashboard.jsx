@@ -1,18 +1,7 @@
-import {
-  Routes,
-  Route,
-  Link,
-  useLocation,
-  useNavigate,
-  Navigate,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { GoSignOut } from "react-icons/go";
 import { FaUserCog } from "react-icons/fa";
-import Overview from "./Overview";
-import StudentAttendance from "./StudentAttendance";
-import TeacherAttendance from "./TeacherAttendance";
 import ProfileBar from "../components/ProfileBar";
 import { useUser } from "../context/UserContext";
 
