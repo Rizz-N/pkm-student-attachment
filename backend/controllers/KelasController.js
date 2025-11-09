@@ -7,6 +7,7 @@ const { fn , col, where } = require ('sequelize')
 const response = require ('../config/response')
 const Users = require('../models/UserModel')
 
+// buat ambil data user yang login
 const getUser = async (req, res) => {
     try {
         const user_id = req.user.userId;
@@ -55,6 +56,7 @@ const getUser = async (req, res) => {
     }    
 }
 
+// buat ambil data kelas
 const getKelasWithDetails = async (req, res) => {
     try {
         const kelas = await Kelas.findAll({
@@ -85,6 +87,7 @@ const getKelasWithDetails = async (req, res) => {
     }
 }
 
+// buat ambil data absensi semua guru
 const getAbsensiGuru = async (req, res) => {
     try {
         const guru = await AbsensiGuru.findAll({
@@ -103,6 +106,7 @@ const getAbsensiGuru = async (req, res) => {
     }
 }
 
+// buat ambil data absensi murid
 const getAbsensiMurid = async (req, res) => {
     try {
         const absensi = await AbsensiMurid.findAll({
@@ -129,6 +133,7 @@ const getAbsensiMurid = async (req, res) => {
     }
 } 
 
+// untuk membuat atau input data guru
 const createGuru = async (req, res) => {
     const {nip, nama_lengkap, jenis_kelamin, tanggal_lahir, alamat, no_telepon, email, jabatan, mata_pelajaran, foto_profile } = req.body;
 
@@ -157,6 +162,7 @@ const createGuru = async (req, res) => {
 
 }
 
+// buat ambil semua data guru
 const getGuru = async (req, res) => {
     try {
         const guru = await Guru.findAll()
@@ -167,6 +173,7 @@ const getGuru = async (req, res) => {
     }
 }
 
+// buat ambil data absensi guru yang login
 const getMyAbsensiGuru = async (req,res) => {
     try {
         const user_id = req.user.userId
@@ -194,5 +201,6 @@ const getMyAbsensiGuru = async (req,res) => {
         return response(500, null,"terjadi kesalahan saat mengambil absen", res);
     }
 }
+
 
 module.exports = {getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, createGuru, getGuru, getUser, getMyAbsensiGuru};
