@@ -21,7 +21,7 @@ const Dashboard = () => {
             </div>
             <div>
                 <h1 className="text-2xl" >Attendance Management</h1>
-                <p>welcome : </p>
+                <p>welcome : user </p>
             </div>
         </div>
         <Button name={'Logout'} className="border-gray-400 bg-yellow-300 hover:bg-yellow-400" />
