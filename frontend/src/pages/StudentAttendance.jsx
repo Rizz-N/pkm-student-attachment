@@ -18,8 +18,8 @@ const StudentAttendance = () => {
                         <SearchBar placeholder="Cari Siswa"/>
                     </div>
                     <div className="relative">
-                        <GoDownload className="absolute text-2xl left-3 top-1/2 transform -translate-y-1/2" />
-                        <Button name="Unduh" className="border-gray-300 pl-10 pr-3 bg-yellow-300 hover:bg-yellow-400" />
+                        <GoDownload className="absolute text-white text-2xl left-3 top-1/2 transform -translate-y-1/2" />
+                        <Button name="Unduh" className="border-gray-300 text-white pl-10 pr-3 bg-blue-800 hover:bg-blue-900" />
                     </div>
                 </div>
             </div>
@@ -49,8 +49,8 @@ const StudentAttendance = () => {
                     </div>
                 </div>
                 <div className="flex gap-2 mb-4">
-                    <Button name="Mark All Present" className="bg-yellow-300 border-gray-400 hover:bg-yellow-400" />
-                    <Button name="Mark All Absent" className="bg-yellow-300 border-gray-400 hover:bg-yellow-400" />
+                    <Button name="Mark All Present" className="bg-blue-800 border-gray-300 text-white hover:bg-blue-900" />
+                    <Button name="Mark All Absent" className="bg-blue-800 border-gray-300 text-white hover:bg-blue-900" />
                 </div>
 
                 <table className="table-auto w-full border-collapse text-center">
@@ -90,7 +90,7 @@ const StudentAttendance = () => {
                     </tbody>
                 </table>            
                 <div className="flex justify-end p-2">
-                    <Button name="Submit" className="bg-yellow-300 border-gray-400 hover:bg-yellow-400" />
+                    <Button name="Submit" className="bg-blue-800 border-gray-400 text-white hover:bg-blue-900" />
                 </div>
             </div>
         </div>
