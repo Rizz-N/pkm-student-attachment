@@ -9,7 +9,7 @@ const Register = async (req, res) => {
         const {username, password, confPassword , role} = req.body;
         
         if(password !== confPassword){
-        return response(400, null, "Password dan confirm password tidak cocok")
+        return response(400, null, "Password dan confirm password tidak cocok", res)
             }    
         
         const salt = await bcrypt.genSalt();
@@ -52,7 +52,7 @@ const login = async (req, res) => {
             const accessToken = jwt.sign(
                 {UserId, Username, UserType}, 
                 process.env.ACCESS_TOKEN_SECRET,
-                {expiresIn: '15s'}
+                {expiresIn: '15m'}
             );
             const refreshToken = jwt.sign(
                 {UserId, Username, UserType}, 

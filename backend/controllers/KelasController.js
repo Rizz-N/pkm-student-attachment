@@ -212,7 +212,7 @@ const createAbsensiGuru =  async (req, res) => {
             attributes:['guru_id','nama_lengkap']
         });
         if (!guru){
-            return response(400, null, "dataguru tidak ditemukan", res)
+            return response(400, null, "Data guru tidak ditemukan", res)
         }
 
         const today = new Date().toISOString().split('T')[0];
@@ -229,7 +229,7 @@ const createAbsensiGuru =  async (req, res) => {
         const absensi = await AbsensiGuru.create({
             guru_id: guru.guru_id,
             tanggal: today,
-            jan_masuk: new Date().toTimeString().split(' ')[0],
+            jam_masuk: new Date().toTimeString().split(' ')[0],
             status: status || 'Hadir',
             keterangan: keterangan || null
         });
@@ -246,7 +246,7 @@ const getMuridForAbsensi = async (req, res) => {
 
         const guru = await Guru.findOne({
             where:{user_id},
-            attributes:['guru', 'nama_lengkap', 'mata_pelajaran']
+            attributes:['guru_id', 'nama_lengkap', 'mata_pelajaran']
         });
 
         if(!guru){

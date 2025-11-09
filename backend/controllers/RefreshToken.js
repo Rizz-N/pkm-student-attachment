@@ -20,7 +20,7 @@ const refreshToken = async (req, res) => {
                 
                 const accessToken = jwt.sign(
                     {userId, username, userType},process.env.ACCESS_TOKEN_SECRET,
-                    {expiresIn: '15s'}
+                    {expiresIn: '15m'}
                 );
                 return response(200, {accessToken}, "Token Berhasil di perbaharui", res)
             }
