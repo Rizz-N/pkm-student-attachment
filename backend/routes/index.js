@@ -1,23 +1,32 @@
 const express = require ('express')
 const { Register, login, Logout } = require ('../controllers/User')
-const {getUser, getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, getGuru, createGuru} = require('../controllers/KelasController')
+const { getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, createGuru, getGuru, getUser, 
+        getMyAbsensiGuru, getAbsensiMuridByGuru, createAbsensiGuru , createAbsensiMurid, getMuridForAbsensi} = require('../controllers/KelasController')
 const {verifyToken} = require ('../middleware/VerifyToken')
 const { refreshToken } = require ('../controllers/RefreshToken')
 const router = express.Router();
 
-
-router.get('/users',verifyToken, getUser );
-router.get('/token', refreshToken );
-
+// public routes
 router.post('/users', Register );
 router.post('/login', login );
-router.delete('/logout', Logout );
+router.get('/token', refreshToken );
 
-router.get("/kelas", getKelasWithDetails);
-router.get("/guru", getGuru);
-router.post("/guru", createGuru);
+// protected routes
+router.get('/users',verifyToken, getUser );
+router.delete('/logout',verifyToken, Logout );
 
-router.get("/absensi/guru", getAbsensiGuru);
-router.get("/absensi/murid", getAbsensiMurid);
+// routes absensi guru
+router.get('/absensi/guru/my', verifyToken, getMyAbsensiGuru);
+router.post('/absensi/guru', verifyToken, createAbsensiGuru);
+router.get('/absensi/murid/by-guru', verifyToken, getAbsensiMuridByGuru)
+router.post('/absensi/murid', verifyToken, createAbsensiMurid);
+router.get('/murid/absensi', verifyToken, getMuridForAbsensi);
+
+// Admin routes
+router.get("/kelas", verifyToken, getKelasWithDetails);
+router.get("/guru", verifyToken, getGuru);
+router.post("/guru", verifyToken, createGuru);
+router.get("/absensi/guru", verifyToken, getAbsensiGuru);                // Semua absensi guru (admin)
+router.get("/absensi/murid", verifyToken, getAbsensiMurid);              // Semua absensi murid (admin)
 
 module.exports = router
