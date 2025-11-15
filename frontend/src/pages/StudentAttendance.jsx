@@ -56,7 +56,8 @@ const StudentAttendance = () => {
                 <table className="table-auto w-full border-collapse text-center">
                     <thead className="bg-gray-200">
                         <tr>
-                            <th className="px-3 py-2" >NO</th>
+                            <th className="px-3 py-2" ></th>
+                            <th className="px-3 py-2" >No</th>
                             <th className="px-3 py-2" >NIS</th>
                             <th className="px-3 py-2" >Nama Lengkap</th>
                             <th className="px-3 py-2" >Jenis Kelamin</th>
@@ -68,6 +69,9 @@ const StudentAttendance = () => {
 
                     <tbody>
                         <tr className="border-b border-gray-300">
+                            <td className="px-3 py-2" >
+                                <input type="checkbox" />
+                            </td>
                             <td className="px-3 py-2" >1</td>
                             <td className="px-3 py-2" >nis</td>
                             <td className="px-3 py-2" >nama</td>
