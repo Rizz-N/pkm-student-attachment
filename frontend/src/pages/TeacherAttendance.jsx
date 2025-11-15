@@ -38,7 +38,9 @@ const TeacherAttendance = () => {
                             <th className="px-3 py-2">Nama</th>
                             <th className="px-3 py-2">Jenis Kelamin</th>
                             <th className="px-3 py-2">Wali Kelas</th>
+                            <th className="px-3 py-2">Jam Masuk</th>
                             <th className="px-3 py-2">Status</th>
+                            <th className="px-3 py-2">Keterangan</th>
                             <th className="px-3 py-2">Actions</th>
                         </tr>
                     </thead>
@@ -50,7 +52,9 @@ const TeacherAttendance = () => {
                             <td className="px-3 py-2">Dina</td>
                             <td className="px-3 py-2">Perempuan</td>
                             <td className="px-3 py-2">12 MIPA 12</td>
+                            <td className="px-3 py-2">07:00</td>
                             <td className="px-3 py-2">Hadir</td>
+                            <td className="px-3 py-2"><input type="file" name="file" id="" className="border-1 p-2 rounded-2xl" /></td>
                             <td className="px-3 py-2">
                                 <div className="flex justify-end gap-x-2">
                                 <Button

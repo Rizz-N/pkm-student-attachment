@@ -56,37 +56,32 @@ const StudentAttendance = () => {
                 <table className="table-auto w-full border-collapse text-center">
                     <thead className="bg-gray-200">
                         <tr>
-                            <th className="px-3 py-2">No</th>
-                            <th className="px-3 py-2">NISN</th>
-                            <th className="px-3 py-2">Nama</th>
-                            <th className="px-3 py-2">Jenis Kelamin</th>
-                            <th className="px-3 py-2">Kelas</th>
-                            <th className="px-3 py-2">Status</th>
-                            <th className="px-3 py-2">Actions</th>
+                            <th className="px-3 py-2" >NO</th>
+                            <th className="px-3 py-2" >NIS</th>
+                            <th className="px-3 py-2" >Nama Lengkap</th>
+                            <th className="px-3 py-2" >Jenis Kelamin</th>
+                            <th className="px-3 py-2" >Status</th>
+                            <th className="px-3 py-2" >Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr className="border-b border-gray-300">
-                            <td className="px-3 py-2">1</td>
-                            <td className="px-3 py-2">2016</td>
-                            <td className="px-3 py-2">Andy</td>
-                            <td className="px-3 py-2">Laki-laki</td>
-                            <td className="px-3 py-2">12 MIPA 12</td>
-                            <td className="px-3 py-2">Hadir</td>
+                            <td className="px-3 py-2" >1</td>
+                            <td className="px-3 py-2" >nis</td>
+                            <td className="px-3 py-2" >nama</td>
+                            <td className="px-3 py-2" >kel</td>
+                            <td className="px-3 py-2" >ambil status</td>
                             <td className="px-3 py-2">
-                                <div className="flex justify-end gap-x-2">
-                                <Button
-                                    name="Present"
-                                    className="bg-green-300 border border-gray-400 hover:bg-green-400 px-3 py-1 rounded-md"
-                                />
-                                <Button
-                                    name="Absent"
-                                    className="bg-red-300 border border-gray-400 hover:bg-red-400 px-3 py-1 rounded-md"
-                                />
-                                </div>
+                                <select name="" id="">
+                                    <option value="Hadir">Hadir</option>
+                                    <option value="Sakit">Sakit</option>
+                                    <option value="Izin">Izin</option>
+                                    <option value="Tidak Hadir">Tidak Hadir</option>
+                                </select>
                             </td>
                         </tr>
+    
                     </tbody>
                 </table>            
                 <div className="flex justify-end p-2">
