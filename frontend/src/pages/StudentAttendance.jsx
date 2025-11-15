@@ -61,6 +61,7 @@ const StudentAttendance = () => {
                             <th className="px-3 py-2" >Nama Lengkap</th>
                             <th className="px-3 py-2" >Jenis Kelamin</th>
                             <th className="px-3 py-2" >Status</th>
+                            <th className="px-3 py-2" >Surat Keterangan</th>
                             <th className="px-3 py-2" >Aksi</th>
                         </tr>
                     </thead>
@@ -72,6 +73,9 @@ const StudentAttendance = () => {
                             <td className="px-3 py-2" >nama</td>
                             <td className="px-3 py-2" >kel</td>
                             <td className="px-3 py-2" >ambil status</td>
+                            <td className="px-3 py-2" >
+                                <input type="file" name="" id=""/>
+                            </td>
                             <td className="px-3 py-2">
                                 <select name="" id="">
                                     <option value="Hadir">Hadir</option>
