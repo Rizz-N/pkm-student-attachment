@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GoDownload } from "react-icons/go";
 import Button from "../components/Button"
 import SearchBar from "../components/SearchBar"
+import Dropdown from "../components/Dropdown";
 
 const StudentAttendance = () => {
     const [kelas, setKelas] = useState("");
@@ -81,12 +82,13 @@ const StudentAttendance = () => {
                                 <input type="file" name="" id=""/>
                             </td>
                             <td className="px-3 py-2">
-                                <select name="" id="">
+                                <Dropdown />
+                                {/* <select name="" id="" className="border rounded-xl py-1 px-2">
                                     <option value="Hadir">Hadir</option>
                                     <option value="Sakit">Sakit</option>
                                     <option value="Izin">Izin</option>
                                     <option value="Tidak Hadir">Tidak Hadir</option>
-                                </select>
+                                </select> */}
                             </td>
                         </tr>
     
