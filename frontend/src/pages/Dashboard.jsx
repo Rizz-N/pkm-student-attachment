@@ -1,4 +1,8 @@
-import {Routes, Route, Link, useLocation } from "react-router-dom"
+import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import {jwtDecode} from "jwt-decode";
+
 import Button from "../components/Button"
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
@@ -6,6 +10,44 @@ import TeacherAttendance from "./TeacherAttendance"
 
 const Dashboard = () => {
     const location = useLocation();
+    const [name, setName] =  useState('');
+    const [token, setToken] =  useState('');
+    const [expire, setExpire] =  useState('');
+    const navigate = useNavigate();
+
+    useEffect(()=>{
+        refreshToken();
+    },[]);
+
+    const refreshToken = async () => {
+        try {
+            const response = await axios.get('http://localhost:5000/token',{
+                withCredentials: true
+            });
+            setToken(response.data[0].payload.accessToken);
+            const decoded = jwtDecode(response.data[0].payload.accessToken);
+            console.log(decoded);
+            setName(decoded.Username);
+            setExpire(decoded.exp);
+
+        } catch (error) {
+            if(error.response){
+                navigate("/login");
+            }
+        }
+    }
+
+    const logout = async () => {
+        try {
+            await axios.delete('http://localhost:5000/logout',{
+                withCredentials: true
+            });
+            navigate("/login");
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     const active = (path) =>
         location.pathname === path
@@ -21,10 +63,10 @@ const Dashboard = () => {
             </div>
             <div>
                 <h1 className="text-2xl" >Attendance Management</h1>
-                <p>welcome : user </p>
+                <p>welcome : {name} </p>
             </div>
         </div>
-        <Button name={'Logout'} className="border-gray-400 bg-yellow-300 hover:bg-yellow-400" />
+        <button onClick={logout} className="border-gray-400 bg-yellow-300 hover:bg-yellow-400 px-4 py-2 rounded-xl">Logout</button>
     </div>
     <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-800 mt-30">
         <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>

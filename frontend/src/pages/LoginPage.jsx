@@ -19,7 +19,10 @@ const LoginPage = () => {
       await axios.post('http://localhost:5000/login',{
         username : username,
         password: password
-      })
+      },{
+        withCredentials: true
+      }
+    )
       navigate("/");
     } catch (error) {
       if(error.response){
