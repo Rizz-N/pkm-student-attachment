@@ -13,7 +13,7 @@ router.get('/token', refreshToken );
 
 // protected routes
 router.get('/users',verifyToken, getUser );
-router.delete('/logout',verifyToken, Logout );
+router.delete('/logout', Logout );
 
 // routes absensi guru
 router.get('/absensi/guru/my', verifyToken, getMyAbsensiGuru);

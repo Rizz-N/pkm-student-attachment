@@ -10,7 +10,7 @@ const Users = require('../models/UserModel')
 // buat ambil data user yang login
 const getUser = async (req, res) => {
     try {
-        const user_id = req.user.userId;
+        const user_id = req.userId;
 
         const user = await Users.findOne({
             where:{ user_id },

@@ -14,12 +14,12 @@ const refreshToken = async (req, res) => {
             jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,
             (err, decoded) => {
                 if(err) return response(403, null, "Refresh token tidak valid atau kadaluarsa", res);
-                const userId = user.user_Id;
-                const username = user.username;
-                const userType = user.user_Type;
+                const UserId = user.user_id;
+                const Username = user.username;
+                const UserType = user.user_Type;
                 
                 const accessToken = jwt.sign(
-                    {userId, username, userType},process.env.ACCESS_TOKEN_SECRET,
+                    {UserId, Username, UserType},process.env.ACCESS_TOKEN_SECRET,
                     {expiresIn: '15m'}
                 );
                 return response(200, {accessToken}, "Token Berhasil di perbaharui", res)

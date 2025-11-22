@@ -77,13 +77,7 @@ const login = async (req, res) => {
                     nip: user.guru.nip,
                     nama_lengkap: user.guru.nama_lengkap,
                     jenis_kelamin: user.guru.jenis_kelamin,
-                    tanggal_lahir: user.guru.tanggal_lahir,
-                    alamat: user.guru.alamat,
-                    no_telepon: user.guru.no_telepon,
-                    email: user.guru.email,
-                    jabatan: user.guru.jabatan,
                     mata_pelajaran: user.guru.mata_pelajaran,
-                    foto_profile: user.guru.foto_profile,
                     status: user.guru.status
                 }: null
             }

@@ -11,9 +11,9 @@ const verifyToken = (req, res, next) =>{
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,
             (err, decoded) => {
                 if(err) return response(403, null, "Token tidak valid atau kadaluarsa", res);
-                req.userId = decoded.userId;
-                req.username = decoded.username;
-                req.userType = decoded.userType;
+                req.userId = decoded.UserId;
+                req.username = decoded.Username;
+                req.userType = decoded.UserType;
                 next()
             }
         )
