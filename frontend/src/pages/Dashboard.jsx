@@ -2,6 +2,7 @@ import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
+import axiosToken, { setAuthToken } from "../utils/axiosToken";
 
 import Button from "../components/Button"
 import Overview from "./Overview"
@@ -25,11 +26,9 @@ const Dashboard = () => {
             const response = await axios.get('http://localhost:5000/token',{
                 withCredentials: true
             });
-            setToken(response.data[0].payload.accessToken);
-            const decoded = jwtDecode(response.data[0].payload.accessToken);
-            console.log(decoded);
-            setExpire(decoded.exp);
-
+            const token = response.data[0].payload.accessToken;
+            setAuthToken(token);
+            
         } catch (error) {
             if(error.response){
                 navigate("/login");
@@ -37,31 +36,11 @@ const Dashboard = () => {
         }
     }
 
-     const axiosToken =  axios.create();
 
-    axiosToken.interceptors.request.use(async (config) => {
-        const currentDate = new Date();
-        if (expire * 1000 < currentDate.getTime()) {
-            const response = await axios.get('http://localhost:5000/token',{
-                withCredentials: true
-            });
-            config.headers.Authorization = `Bearer ${response.data[0].payload.accessToken}`;
-            setToken(response.data[0].payload.accessToken);
-            const decoded = jwtDecode(response.data[0].payload.accessToken);
-            setExpire(decoded.exp);
-        }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
 
     const getUser = async () => {
         try {
-            const response = await axiosToken.get('http://localhost:5000/users',{
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            });
+            const response = await axiosToken.get('http://localhost:5000/users');
             setName(response.data[0]?.payload.guru.nama_lengkap);
         } catch (error) {
             console.log(error);
