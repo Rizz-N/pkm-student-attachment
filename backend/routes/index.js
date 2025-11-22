@@ -25,7 +25,7 @@ router.get('/murid/absensi', verifyToken, getMuridForAbsensi);
 // Admin routes
 router.get("/kelas", verifyToken, getKelasWithDetails);
 router.get("/guru", verifyToken, getGuru);
-router.post("/guru", verifyToken, createGuru);
+router.post("/guru", createGuru);
 router.get("/absensi/guru", verifyToken, getAbsensiGuru);                // Semua absensi guru (admin)
 router.get("/absensi/murid", verifyToken, getAbsensiMurid);              // Semua absensi murid (admin)
 

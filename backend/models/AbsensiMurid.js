@@ -33,7 +33,8 @@ const AbsensiMurid = db.define('absensi_murid',{
         allowNull: true
     },
 },{
-    freezeTableName:true
+    freezeTableName:true,
+    timestamps: true
 });
 
 Murid.hasMany(AbsensiMurid, {foreignKey: "murid_id", as: 'absensi'})

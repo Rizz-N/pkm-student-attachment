@@ -58,7 +58,8 @@ const Guru = db.define('guru',{
         }
     }
 },{
-    freezeTableName:true
+    freezeTableName:true,
+    timestamps: true
 });
 
 Guru.afterCreate(async (guru) => {

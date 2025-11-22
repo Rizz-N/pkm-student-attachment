@@ -22,7 +22,8 @@ const Kelas = db.define('kelas',{
         allowNull: false
     },
 },{
-    freezeTableName:true
+    freezeTableName:true,
+    timestamps: true
 });
 
 Kelas.belongsTo(Guru,{foreignKey:'wali_kelas_id',as:'walikelas'})

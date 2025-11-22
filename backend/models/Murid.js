@@ -57,7 +57,8 @@ const Murid = db.define('murid',{
         defaultValue: 'aktif'
     },
 },{
-    freezeTableName:true
+    freezeTableName:true,
+    timestamps: true
 });
 
 Murid.belongsTo(Users,{foreignKey:'user_id', onDelete: 'CASCADE'});

@@ -28,7 +28,8 @@ const AbsensiGuru = db.define('absensi_guru',{
         allowNull: true
     },
 },{
-    freezeTableName:true
+    freezeTableName:true,
+    timestamps: true
 });
 
 AbsensiGuru.belongsTo(Guru, {foreignKey: 'guru_id', as: 'guru'})
