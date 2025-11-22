@@ -5,6 +5,8 @@ import SearchBar from "../components/SearchBar"
 import Dropdown from "../components/Dropdown";
 
 const TeacherAttendance = () => {
+    const [fileName, setFileName] = useState("Surat Keterangan");
+
   return (
     <>
         <div className="m-10 bg-white rounded-xl p-5">
@@ -14,7 +16,7 @@ const TeacherAttendance = () => {
                 </div>
                 <div className="flex justify-between items-center w-2/6">
                     <div className="relative">
-                        <SearchBar placeholder="Cari Siswa"/>
+                        <SearchBar placeholder="Cari Nama Guru"/>
                     </div>
                     <div className="relative">
                         <GoDownload className="absolute text-white text-2xl left-3 top-1/2 transform -translate-y-1/2" />
@@ -59,7 +61,16 @@ const TeacherAttendance = () => {
                             <td className="px-3 py-2">12 MIPA 12</td>
                             <td className="px-3 py-2">07:00</td>
                             <td className="px-3 py-2">Hadir</td>
-                            <td className="px-3 py-2"><input type="file" name="file" id="" className="border-1 p-2 rounded-2xl" /></td>
+                            <td className="px-3 py-2">
+                                <label className="border-1 py-2 px-3 rounded-2xl w-50 cursor-pointer">
+                                    {fileName}
+                                    <input  type="file" 
+                                            name="file" 
+                                            id="" 
+                                            className="hidden"
+                                            onChange={(e) => setFileName(e.target.files[0]?.name || "Surat Keterangan")} />
+                                </label>
+                            </td>
                             <td className="px-3 py-2">
                                <Dropdown />
                             </td>

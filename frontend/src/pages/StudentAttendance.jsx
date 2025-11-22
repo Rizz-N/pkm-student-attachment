@@ -6,6 +6,7 @@ import Dropdown from "../components/Dropdown";
 
 const StudentAttendance = () => {
     const [kelas, setKelas] = useState("");
+    const [fileName, setFileName] = useState("Surat Keterangan");
 
   return (
     <>
@@ -16,7 +17,7 @@ const StudentAttendance = () => {
                 </div>
                 <div className="flex justify-between items-center w-2/6">
                     <div className="relative">
-                        <SearchBar placeholder="Cari Siswa"/>
+                        <SearchBar placeholder="Cari Nama Siswa"/>
                     </div>
                     <div className="relative">
                         <GoDownload className="absolute text-white text-2xl left-3 top-1/2 transform -translate-y-1/2" />
@@ -79,16 +80,17 @@ const StudentAttendance = () => {
                             <td className="px-3 py-2" >kel</td>
                             <td className="px-3 py-2" >ambil status</td>
                             <td className="px-3 py-2" >
-                                <input type="file" name="" id=""/>
+                                <label className="border-1 py-2 px-3 rounded-2xl w-50 cursor-pointer" >
+                                {fileName}
+                                <input  type="file" 
+                                        name="" 
+                                        id="" 
+                                        className="hidden" 
+                                        onChange={(e) => setFileName(e.target.files[0]?.name || "Surat Keterangan")} />
+                                </label>
                             </td>
                             <td className="px-3 py-2">
                                 <Dropdown />
-                                {/* <select name="" id="" className="border rounded-xl py-1 px-2">
-                                    <option value="Hadir">Hadir</option>
-                                    <option value="Sakit">Sakit</option>
-                                    <option value="Izin">Izin</option>
-                                    <option value="Tidak Hadir">Tidak Hadir</option>
-                                </select> */}
                             </td>
                         </tr>
     
