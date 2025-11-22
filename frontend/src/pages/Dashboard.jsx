@@ -17,6 +17,7 @@ const Dashboard = () => {
 
     useEffect(()=>{
         refreshToken();
+        getUser();
     },[]);
 
     const refreshToken = async () => {
@@ -27,13 +28,43 @@ const Dashboard = () => {
             setToken(response.data[0].payload.accessToken);
             const decoded = jwtDecode(response.data[0].payload.accessToken);
             console.log(decoded);
-            setName(decoded.Username);
             setExpire(decoded.exp);
 
         } catch (error) {
             if(error.response){
                 navigate("/login");
             }
+        }
+    }
+
+     const axiosToken =  axios.create();
+
+    axiosToken.interceptors.request.use(async (config) => {
+        const currentDate = new Date();
+        if (expire * 1000 < currentDate.getTime()) {
+            const response = await axios.get('http://localhost:5000/token',{
+                withCredentials: true
+            });
+            config.headers.Authorization = `Bearer ${response.data[0].payload.accessToken}`;
+            setToken(response.data[0].payload.accessToken);
+            const decoded = jwtDecode(response.data[0].payload.accessToken);
+            setExpire(decoded.exp);
+        }
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+
+    const getUser = async () => {
+        try {
+            const response = await axiosToken.get('http://localhost:5000/users',{
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setName(response.data[0]?.payload.guru.nama_lengkap);
+        } catch (error) {
+            console.log(error);
         }
     }
 
