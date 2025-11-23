@@ -3,7 +3,7 @@ const Guru = require ('../models/Guru')
 const Murid = require ('../models/Murid')
 const AbsensiGuru = require ('../models/AbsensiGuru')
 const AbsensiMurid = require ('../models/AbsensiMurid')
-const { fn , col, where } = require ('sequelize')
+const { fn , col, where, Sequelize } = require ('sequelize')
 const response = require ('../config/response')
 const Users = require('../models/UserModel')
 
@@ -64,21 +64,20 @@ const getKelasWithDetails = async (req, res) => {
                 'kelas_id',
                 'kode_kelas',
                 'nama_kelas',
-                [fn('COUNT', col('muridKelas.murid_id')), 'total_murid']
+                [Sequelize.literal(`(SELECT COUNT(*) FROM murid WHERE murid.kelas_id = kelas.kelas_id AND murid.status = 'aktif')`), 'jumlah_murid']
             ],
             include:[
                 {
                     model: Guru,
                     as: 'walikelas',
-                    attributes:[]
+                    attributes:['guru_id','nama_lengkap','nip']
                 },
                 {
                     model: Murid,
                     as: 'muridKelas',
-                    attributes:[]
+                    attributes:['murid_id','nama_lengkap','nis','jenis_kelamin','status']
                 }
-            ],
-            group: ['kelas.kelas_id','walikelas.guru_id']
+            ]
         });
         return response(200, kelas, 'data berhasil dimuat', res);
     } catch (error) {
@@ -109,29 +108,35 @@ const getAbsensiGuru = async (req, res) => {
 // buat ambil data absensi murid
 const getAbsensiMurid = async (req, res) => {
     try {
+        const {kelas_id} = req.params;
+        const today = new Date().toISOString().split('T')[0];
+
         const absensi = await AbsensiMurid.findAll({
-            include:[
-                {model: Murid,
-                    as: 'murid',
-                    attributes:[
-                        'nama_lengkap','nis', 'nisn'
-                    ]
+            where:{
+                tanggal: today,
+                '$murid.kelas_id$': kelas_id
+            },
+            include:[{
+                model: Murid,
+                as: 'murid',
+                attributes:['murid_id', 'nis', 'nama_lengkap'],
+                where:{
+                    status: 'aktif'
                 },
-                {model: Kelas,
+                include:[{
+                    model : Kelas,
                     as: 'kelas',
-                    attributes:[
-                        'nama_kelas','kode_kelas'
-                    ]
-                }
-            ],
-            order: [['tanggal','DESC']]
+                    attributes:['kelas_id', 'nama_kelas']
+                }]
+            }],
+            attributes:['murid_id', 'status', 'keterangan','tanggal']
         });
-        return response (200, absensi, "Memuat Data absensi murid", res)
+        return response (200, absensi,'Data Absensi hari ini berhasil dimuat', res);
     } catch (error) {
-        console.log('error message', error.message)
-        return response (500, null, "gagal memuat data absensi", res)
+        console.error('Error', error.message)
+        return response (500, null, 'Gagal Memuat data absensi', res);
     }
-} 
+}; 
 
 // untuk membuat atau input data guru
 const createGuru = async (req, res) => {
@@ -173,224 +178,110 @@ const getGuru = async (req, res) => {
     }
 }
 
-// buat ambil data absensi guru yang login
-const getMyAbsensiGuru = async (req,res) => {
+const getMuridByKelas = async (req, res) => {
     try {
-        const user_id = req.user.userId
-
-        const guru =  await Guru.findOne({
-            where:{user_id},
-            attributes:['guru_id','nama_lengkap']
-        });
-        if(!guru){
-            return response(404, null, "data guru tidak di temukan", res);
-        }
-
-        const absensi = await AbsensiGuru.findAll({
-            where:{guru_id: guru.guru_id},
-            order:[['tanggal', 'DESC'],['jam_masuk','DESC']],
-            include:[{
-                model: Guru,
-                as: 'guru',
-                attributes: ['nama_lengkap', 'mata_pelajaran']
+        const { kelas_id } = req.params;
+        
+        const murid = await Murid.findAll({
+            where: { 
+                kelas_id,
+                status: 'aktif' // hanya murid aktif
+            },
+            attributes: ['murid_id', 'nis', 'nama_lengkap', 'jenis_kelamin', 'status'],
+            include: [{
+                model: Kelas,
+                as: 'kelas',
+                attributes: ['kelas_id', 'nama_kelas']
             }]
         });
-        return response(200, {guru: guru.nama_lengkap, absensi: absensi}, "Absensi guru di ambil", res)
+
+        return response(200, murid, 'Data murid berhasil dimuat', res);
     } catch (error) {
-        console.error('Error my absensi', error);
-        return response(500, null,"terjadi kesalahan saat mengambil absen", res);
+        console.error('Error:', error.message);
+        return response(500, null, 'Gagal memuat data murid', res);
     }
-}
+};
 
-const createAbsensiGuru =  async (req, res) => {
-    try {
-        const user_id = req.user.userId;
-        const{status, keterangan} = req.body;
-
-        const guru = await Guru.findOne({
-            where:{user_id},
-            attributes:['guru_id','nama_lengkap']
-        });
-        if (!guru){
-            return response(400, null, "Data guru tidak ditemukan", res)
-        }
-
-        const today = new Date().toISOString().split('T')[0];
-        const existingAbsensi = await AbsensiGuru.findOne({
-            where:{
-                guru_id: guru.guru_id,
-                tanggal: today
-            }
-        });
-        if(existingAbsensi){
-            return response(400, null, "Anda sudah melakukan absensi", res)
-        }
-
-        const absensi = await AbsensiGuru.create({
-            guru_id: guru.guru_id,
-            tanggal: today,
-            jam_masuk: new Date().toTimeString().split(' ')[0],
-            status: status || 'Hadir',
-            keterangan: keterangan || null
-        });
-        return response(201, absensi, "Absensi berhasil di catat", res);
-    } catch (error) {
-        console.error('Erorr create absensi guru'. error);
-        return response(500, null, "terjadi kesalahan saat melakukan absensi", res)
-    }
-}
-
-const getMuridForAbsensi = async (req, res) => {
-    try {
-        const user_id = req.user.userId
-
-        const guru = await Guru.findOne({
-            where:{user_id},
-            attributes:['guru_id', 'nama_lengkap', 'mata_pelajaran']
-        });
-
-        if(!guru){
-            return response(404, null, "data guru tidak di temukan", res);
-        }
-        const kelas = await Kelas.findAll({
-            where:{wali_kelas_id: guru.guru_id},
-            include:[{
-                model: Murid,
-                as: 'muridKelas',
-                attributes:['murid_id','nis','nama_lengkap','jenis_kelamin','foto_profile'],
-                where:{
-                    status: 'aktif'
-                },
-                required: false
-            }]
-        });
-        return response (200, { guru: guru, kelas: kelas }, "Data murid untuk di absensi berhasil di ambil", res);
-    } catch (error) {
-        console.error('error get absensi murid', error);
-        return response(500, null, "Terjadi kelsalahan saat mengambul data murid", res);
-    }
-}
-
-// FUNGSI BARU: Create absensi murid oleh guru
 const createAbsensiMurid = async (req, res) => {
     try {
-        const user_id = req.user.userId;
-        const { murid_id, status, keterangan, semester } = req.body;
+        const user_id = req.userId;
+        const { absensi } = req.body;
 
-        // Verifikasi bahwa guru adalah wali kelas dari murid tersebut
         const guru = await Guru.findOne({
             where: { user_id },
-            attributes: ['guru_id']
+            attributes: ['guru_id', 'nama_lengkap']
         });
 
         if (!guru) {
             return response(404, null, "Data guru tidak ditemukan", res);
         }
 
-        // Cari murid dan kelasnya
-        const murid = await Murid.findOne({
-            where: { murid_id },
-            include: [
-                {
-                    model: Kelas,
-                    as: 'kelas',
-                    attributes: ['kelas_id', 'wali_kelas_id']
-                }
-            ]
-        });
-
-        if (!murid) {
-            return response(404, null, "Data murid tidak ditemukan", res);
-        }
-
-        // Cek apakah guru adalah wali kelas dari murid tersebut
-        if (murid.kelas.wali_kelas_id !== guru.guru_id) {
-            return response(403, null, "Anda tidak memiliki akses untuk mengabsen murid ini", res);
-        }
-
-        // Cek apakah sudah absen hari ini
         const today = new Date().toISOString().split('T')[0];
-        const existingAbsensi = await AbsensiMurid.findOne({
-            where: { 
-                murid_id: murid_id,
-                tanggal: today
-            }
-        });
-
-        if (existingAbsensi) {
-            return response(400, null, "Murid sudah dilakukan absensi hari ini", res);
-        }
-
-        // Buat absensi murid
-        const absensi = await AbsensiMurid.create({
-            murid_id: murid_id,
-            kelas_id: murid.kelas_id,
-            tanggal: today,
-            jam_masuk: new Date().toTimeString().split(' ')[0],
-            semester: semester || 'Ganjil',
-            status: status || 'Hadir',
-            keterangan: keterangan || null
-        });
-
-        return response(201, absensi, "Absensi murid berhasil dicatat", res);
-
-    } catch (error) {
-        console.error('Error createAbsensiMurid:', error);
-        return response(500, null, "Terjadi kesalahan saat melakukan absensi murid", res);
-    }
-}
-
-// FUNGSI BARU: Get riwayat absensi murid oleh guru
-const getAbsensiMuridByGuru = async (req, res) => {
-    try {
-        const user_id = req.user.userId;
+        const now =  new Date();
         
-        // Cari guru yang login
-        const guru = await Guru.findOne({
-            where: { user_id },
-            attributes: ['guru_id']
-        });
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const jamMasuk = `${hours}:${minutes}:${seconds}`;
 
-        if (!guru) {
-            return response(404, null, "Data guru tidak ditemukan", res);
-        }
+        const results = [];
+        const alreadyAbsensed = [];
 
-        // Cari kelas yang diampu guru
-        const kelas = await Kelas.findAll({
-            where: { wali_kelas_id: guru.guru_id },
-            attributes: ['kelas_id']
-        });
+        for (const absensiData of absensi) {
+            const { murid_id, status, keterangan, semester } = absensiData;
 
-        const kelasIds = kelas.map(k => k.kelas_id);
-
-        // Ambil absensi murid dari kelas yang diampu guru
-        const absensi = await AbsensiMurid.findAll({
-            where: {
-                kelas_id: kelasIds
-            },
-            include: [
-                {
-                    model: Murid,
-                    as: 'murid',
-                    attributes: ['nama_lengkap', 'nis']
-                },
-                {
+            const muridExist = await Murid.findOne({
+                where: {murid_id},
+                include: {
                     model: Kelas,
                     as: 'kelas',
-                    attributes: ['nama_kelas', 'kode_kelas']
+                    attributes:['kelas_id']
                 }
-            ],
-            order: [['tanggal', 'DESC'], ['jam_masuk', 'DESC']]
-        });
+            });
+            if(!muridExist) continue;
 
-        return response(200, absensi, "Riwayat absensi murid berhasil diambil", res);
+            const checkAbsensi = await AbsensiMurid.findOne({
+                where:{
+                    murid_id,
+                    tanggal: today
+                }
+            })
+            if(checkAbsensi){
+                alreadyAbsensed.push({
+                    murid_id,
+                    nama: muridExist.nama_lengkap
+                });
+                continue;
+            }
 
+            const newData = await AbsensiMurid.create({
+                guru_id: guru.guru_id,
+                murid_id,
+                kelas_id: muridExist.kelas.kelas_id,
+                tanggal: today,
+                jam_masuk: jamMasuk,
+                semester: semester || 'Ganjil',
+                status,
+                keterangan: keterangan || null
+            });
+
+            results.push(newData)
+        }
+
+        return response(201,
+                        {   guru: guru.nama_lengkap, 
+                            berhasil : results, 
+                            sudah_absen: alreadyAbsensed
+                        }, 
+                            alreadyAbsensed.length > 0 
+                            ? "Sebagian Murid sudah Pernah absen hari ini" 
+                            : "Absensi murid Berhasil di catat" , res);
     } catch (error) {
-        console.error('Error getAbsensiMuridByGuru:', error);
-        return response(500, null, "Terjadi kesalahan saat mengambil riwayat absensi", res);
+        console.error("Absensi Error:", error);
+        return response(500, null, "Terjadi kesalahan saat mencatat absensi", res);
     }
-}
-
+};
 
 module.exports = {  getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, createGuru, getGuru, getUser, 
-                    getMyAbsensiGuru, getAbsensiMuridByGuru, createAbsensiGuru , createAbsensiMurid, getMuridForAbsensi};
+                    createAbsensiMurid, getMuridByKelas
+};
