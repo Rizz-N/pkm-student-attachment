@@ -162,7 +162,7 @@ const StudentAttendance = () => {
               <h1 className="text-2xl">Absensi Siswa</h1>
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between w-100 items-center">
               <div className="relative">
                 <SearchBar 
                   placeholder="Cari Nama Siswa"
@@ -261,17 +261,17 @@ const StudentAttendance = () => {
 
           {/* Action Buttons */}
           <div className="flex gap-2 mb-4">
-            <button className="bg-gray-600 border-gray-300 text-white hover:bg-gray-700 py-2 px-4 rounded-xl"
+            <button className="bg-gray-600 border-gray-300 text-xl text-white hover:bg-gray-700 py-2 px-4 rounded-xl cursor-pointer"
                     onClick={handleSelectAll}>
                 Select All
             </button>
             
-            <button className="bg-blue-800 border-gray-300 text-white hover:bg-blue-900 py-2 px-4 rounded-xl"
+            <button className="bg-green-800 border-gray-300 text-xl text-white hover:bg-green-900 py-2 px-4 rounded-xl cursor-pointer"
                     onClick={markSelectedPresent}
                     disabled={selectedStudents.length === 0}>
                 Present
             </button>
-            <button className="bg-blue-800 border-gray-300 text-white hover:bg-blue-900 py-2 px-4 rounded-xl"
+            <button className="bg-red-800 border-gray-300 text-xl text-white hover:bg-red-900 py-2 px-4 rounded-xl cursor-pointer"
                     onClick={markSelectedAbsent}
                     disabled={selectedStudents.length === 0}>
                 Absent
@@ -373,7 +373,7 @@ const StudentAttendance = () => {
           
             <div className="flex justify-end p-2">
                 <button type="submit"
-                        className="bg-blue-800 border-gray-400 text-white hover:bg-blue-900 px-4 py-2 rounded-xl"
+                        className="bg-blue-800 border-gray-400 text-xl text-white hover:bg-blue-900 px-4 py-2 rounded-xl  cursor-pointer"
                         onClick={handleSubmit}
                         disabled={submitLoading || !muridList.length}>
                     Submit

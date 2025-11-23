@@ -66,7 +66,7 @@ const Dashboard = () => {
 
     return (
     <>
-    <div className="p-3 flex justify-between items-center bg-white shadow-sm fixed w-screen top-0">
+    <div className="py-3 px-15 flex justify-between items-center bg-white shadow-sm fixed w-screen top-0 z-1000">
         <div className="flex items-center gap-10">
             <div>
                 <img src="https://via.assets.so/img.jpg?w=60&h=60&shape=circle&bg=e5e7eb&f=png" alt="profile" className="border border-gray-400 rounded-full" />
@@ -76,7 +76,7 @@ const Dashboard = () => {
                 <p>welcome : {name} </p>
             </div>
         </div>
-        <button onClick={logout} className="border-gray-400 bg-yellow-300 hover:bg-yellow-400 px-4 py-2 rounded-xl">Logout</button>
+        <button onClick={logout} className="border-gray-400 text-white text-xl bg-blue-800 hover:bg-blue-900 px-4 py-2 rounded-xl cursor-pointer">Logout</button>
     </div>
     <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-800 mt-30">
         <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>
