@@ -1,10 +1,8 @@
 import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode";
 import axiosToken, { setAuthToken } from "../utils/axiosToken";
 
-import Button from "../components/Button"
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
 import TeacherAttendance from "./TeacherAttendance"
@@ -12,13 +10,14 @@ import TeacherAttendance from "./TeacherAttendance"
 const Dashboard = () => {
     const location = useLocation();
     const [name, setName] =  useState('');
-    const [token, setToken] =  useState('');
-    const [expire, setExpire] =  useState('');
     const navigate = useNavigate();
 
     useEffect(()=>{
-        refreshToken();
-        getUser();
+        const init = async () => {
+            refreshToken();
+            getUser();
+        }
+        init();
     },[]);
 
     const refreshToken = async () => {
@@ -28,7 +27,7 @@ const Dashboard = () => {
             });
             const token = response.data[0].payload.accessToken;
             setAuthToken(token);
-            
+            getUser();
         } catch (error) {
             if(error.response){
                 navigate("/login");
