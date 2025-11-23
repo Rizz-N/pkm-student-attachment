@@ -282,6 +282,84 @@ const createAbsensiMurid = async (req, res) => {
     }
 };
 
+ const createAbsensiGuru = async (req, res) => {
+    try {
+        const user_id = req.userId;
+        const { absensi } = req.body;
+
+        const guruPiket = await Guru.findOne({
+            where: {user_id},
+            attributes:['guru_id', 'nama_lengkap']
+        });
+
+        if (!guruPiket){
+            return response(404, null, "Akun guru piket tidak di temukan", res)
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+        const now =  new Date();
+        
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        const jamMasuk = `${hours}:${minutes}:${seconds}`;
+
+        const results = [];
+        const alreadyAbsensed = [];
+
+        for(const absensiData of absensi){
+            const{guru_id, status, keterangan} = absensiData;
+
+            const guruExist = await Guru.findOne({
+                where: {guru_id},
+                attributes: ['nama_lengkap']
+            });
+            if(!guruExist) continue;
+
+            const checkAbsensi = await AbsensiGuru.findOne({
+                where:{
+                    guru_id,
+                    tanggal: today
+                }
+            });
+
+            if(checkAbsensi){
+                alreadyAbsensed.push({
+                    guru_id,
+                    nama: guruExist.nama_lengkap
+                });
+                continue;
+            }
+
+            const newData = await AbsensiGuru.create({
+                guru_id,
+                tanggal: today,
+                jam_masuk: jamMasuk,
+                status,
+                keterangan: keterangan || null,
+                guru_piket_id: guruPiket.guru_id
+            });
+            results.push(newData);
+        }
+        return response(
+            201,
+            {
+                guru_piket: guruPiket.nama_lengkap,
+                berhasil: results,
+                sudah_absen: alreadyAbsensed
+            },
+            alreadyAbsensed.length > 0
+                ? "Sebagian guru sudah absen hari ini"
+                : "Absensi guru berhasil dicatat",
+            res
+        );
+
+    } catch (error) {
+        console.error("Absensi Error:", error);
+        return response(500, null, "Terjadi kesalahan saat mencatat absensi guru", res);
+    }
+ }
+
 module.exports = {  getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, createGuru, getGuru, getUser, 
-                    createAbsensiMurid, getMuridByKelas
+                    createAbsensiMurid, createAbsensiGuru, getMuridByKelas
 };
