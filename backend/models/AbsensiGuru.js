@@ -23,6 +23,10 @@ const AbsensiGuru = db.define('absensi_guru',{
     status:{
         type: DataTypes.ENUM('Hadir', 'Tidak Hadir', 'Izin')
     },
+    guru_piket_id:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
     keterangan:{
         type: DataTypes.STRING,
         allowNull: true
@@ -32,7 +36,10 @@ const AbsensiGuru = db.define('absensi_guru',{
     timestamps: true
 });
 
-AbsensiGuru.belongsTo(Guru, {foreignKey: 'guru_id', as: 'guru'})
-Guru.hasMany(AbsensiGuru, {foreignKey: "guru_id", as: 'absensi'})
+AbsensiGuru.belongsTo(Guru, {foreignKey: 'guru_id', as: 'guru'});
+Guru.hasMany(AbsensiGuru, {foreignKey: "guru_id", as: 'absensi'});
+
+AbsensiGuru.belongsTo(Guru, {foreignKey: 'guru_piket_id', as: 'guruPiket'});
+Guru.hasMany(AbsensiGuru,{foreignKey: 'guru_piket_id', as: 'absensiDibuat'});
 
 module.exports = AbsensiGuru;
