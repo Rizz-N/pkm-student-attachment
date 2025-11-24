@@ -233,14 +233,14 @@ const TeacherAttendance = () => {
                             Select All
                         </button>
                         <button
-                            className="bg-green-800 border-gray-300 text-xl text-white hover:bg-green-900 py-2 px-4 rounded-xl cursor-pointer"
+                            className="bg-green-400 border-gray-300 text-xl text-white hover:bg-green-500 py-2 px-4 rounded-xl cursor-pointer"
                             onClick={markSelectedPresent}
                             disabled={selectedGuru.length === 0}
                         >
                             Present
                         </button>
                         <button
-                            className="bg-red-800 border-gray-300 text-xl text-white hover:bg-red-900 py-2 px-4 rounded-xl cursor-pointer"
+                            className="bg-red-400 border-gray-300 text-xl text-white hover:bg-red-500 py-2 px-4 rounded-xl cursor-pointer"
                             onClick={markSelectedAbsent}
                             disabled={selectedGuru.length === 0}
                         >
@@ -284,7 +284,7 @@ const TeacherAttendance = () => {
                                         <StatusBadge status={guru.status_display} />
                                     </td>
                                     <td className="px-3 py-2">
-                                        <label className="border-1 py-2 px-3 rounded-2xl w-50 cursor-pointer">
+                                        <label className="border-2 border-gray-400 py-2 px-3 rounded-xl w-50 cursor-pointer">
                                             {guru.fileName}
                                             <input
                                                 type="file"

@@ -101,7 +101,7 @@ export const useAbsensi = () => {
             index === muridIndex ? {
                 ...murid, 
                 file, 
-                fileName: file ? file.name : 'surat keterangan'
+                fileName: file ? file.name : 'Surat keterangan'
             } : murid
         ));
     };

@@ -269,12 +269,12 @@ const StudentAttendance = () => {
                 Select All
             </button>
             
-            <button className="bg-green-800 border-gray-300 text-xl text-white hover:bg-green-900 py-2 px-4 rounded-xl cursor-pointer"
+            <button className="bg-green-400 border-gray-300 text-xl text-white hover:bg-green-500 py-2 px-4 rounded-xl cursor-pointer"
                     onClick={markSelectedPresent}
                     disabled={selectedStudents.length === 0}>
                 Present
             </button>
-            <button className="bg-red-800 border-gray-300 text-xl text-white hover:bg-red-900 py-2 px-4 rounded-xl cursor-pointer"
+            <button className="bg-red-400 border-gray-300 text-xl text-white hover:bg-red-500 py-2 px-4 rounded-xl cursor-pointer"
                     onClick={markSelectedAbsent}
                     disabled={selectedStudents.length === 0}>
                 Absent
@@ -311,7 +311,7 @@ const StudentAttendance = () => {
                   <td className="px-3 py-3">{murid.nama_lengkap}</td>
                   <td className="px-3 py-3">{murid.jenis_kelamin}</td>
                   <td className="px-3 py-3">
-                    <label className="inline-block border-1 py-1 px-4 rounded-xl cursor-pointer ">
+                    <label className="inline-block border-2 border-gray-400 py-1 px-4 rounded-xl cursor-pointer ">
                       {murid.fileName}
                       <input 
                         type="file" 
