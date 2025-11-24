@@ -99,21 +99,19 @@ const StudentAttendance = () => {
                 return;
             }
 
-            const invalidStatus = muridToSubmit.find(murid => 
-                !['Hadir', 'Izin', 'Sakit', 'Alpha'].includes(murid.status)
-            );
-
-            if (invalidStatus){
-                // alert(`Status tidak valid ${invalidStatus.nama_lengkap}: ${invalidStatus.status}`);
-                return;
-            }
-
-            const absensiData = muridToSubmit.map(murid => ({
+            const absensiData = muridToSubmit
+            .filter(murid => ['Hadir', 'Alpha', 'Izin', 'Sakit'].includes(murid.status))
+            .map(murid => ({
                 murid_id: murid.murid_id,
                 status: murid.status,
                 keterangan: murid.keterangan,
                 semester: semester
             }));
+
+            if(absensiData.length === 0){
+              alert('Silakan pilih status minimal untuk 1 guru sebelum menyimpan.');
+              result;
+            }
 
             console.log('data yang akan di kirim:', absensiData);
 
@@ -144,6 +142,12 @@ const StudentAttendance = () => {
     useEffect(() => {
         clearSubmitResult();
     }, [selectedKelas]);
+
+    useEffect(()=>{
+      if(kelasList && kelasList.length > 0 && ! selectedKelas){
+        setSelectedKelas(kelasList[0].kelas_id);
+      }
+    },[kelasList, selectedKelas]);
 
     if (loading && !muridList.length) {
         return(
@@ -193,7 +197,6 @@ const StudentAttendance = () => {
                 onChange={(e) => setSelectedKelas(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               >
-                <option value="">-- Pilih Kelas --</option>
                 {(kelasList || []).map((kelas) => (
                   <option key={kelas.kelas_id} value={kelas.kelas_id}>
                     {kelas.nama_kelas}
@@ -299,7 +302,9 @@ const StudentAttendance = () => {
                   <td className="px-3 py-3">
                     <input  type="checkbox" 
                             checked={selectedStudents.includes(murid.murid_id)}
-                            onChange={() => handleSelectStudent(murid.murid_id)} />
+                            onChange={() => handleSelectStudent(murid.murid_id)} 
+                            disabled={murid.sudah_absen}
+                    />
                   </td>
                   <td className="px-3 py-3">{index + 1}</td>
                   <td className="px-3 py-3">{murid.nis}</td>
@@ -325,11 +330,17 @@ const StudentAttendance = () => {
                       className="border border-gray-300 rounded px-2 py-1"
                       disabled={murid.sudah_absen}
                     >
+                      <option value="">Pilih Status</option>
                       <option value="Hadir">Hadir</option>
                       <option value="Izin">Izin</option>
                       <option value="Sakit">Sakit</option>
                       <option value="Alpha">Alpha</option>
                     </select>
+                    {murid.sudah_absen && (
+                      <div className="text-xs text-yellow-600 mt-1">
+                        Sudah absen hari ini
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
