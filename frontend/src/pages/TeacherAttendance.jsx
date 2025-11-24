@@ -164,9 +164,10 @@ const TeacherAttendance = () => {
                 </div>
                 <div className="flex justify-between items-center w-2/6">
                     <div className="relative">
-                        <SearchBar  placeholder="Cari Nama Guru"
-                                    value={searchTerm}
-                                    onchange={(e) => setSearchTerm(e.target.value)} 
+                        <SearchBar  
+                            placeholder="Cari Nama Guru"
+                            onChange={(e) => setSearchTerm(e.target.value)} 
+                            value={searchTerm}
                         />
                     </div>
                     <div className="relative">
