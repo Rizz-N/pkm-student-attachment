@@ -21,7 +21,7 @@ const AbsensiGuru = db.define('absensi_guru',{
         allowNull: false
     },
     status:{
-        type: DataTypes.ENUM('Hadir', 'Tidak Hadir', 'Izin')
+        type: DataTypes.ENUM('Hadir', 'Tidak Hadir', 'Izin', 'Sakit')
     },
     guru_piket_id:{
         type: DataTypes.INTEGER,

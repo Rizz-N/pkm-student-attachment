@@ -6,6 +6,7 @@ const AbsensiMurid = require ('../models/AbsensiMurid')
 const { fn , col, where, Sequelize } = require ('sequelize')
 const response = require ('../config/response')
 const Users = require('../models/UserModel')
+const moment = require('moment-timezone')
 
 // buat ambil data user yang login
 const getUser = async (req, res) => {
@@ -86,25 +87,6 @@ const getKelasWithDetails = async (req, res) => {
     }
 }
 
-// buat ambil data absensi semua guru
-const getAbsensiGuru = async (req, res) => {
-    try {
-        const guru = await AbsensiGuru.findAll({
-            include:[
-                {
-                    model: Guru,
-                    as: 'guru',
-                    attributes:['guru_id','nama_lengkap']
-                }
-            ]
-        });
-        return response(200, guru, "memuat data absensi guru", res);
-    } catch (error) {
-        console.error('error message', error)
-        return response(500, null, "gagal memuat data absensi", res);
-    }
-}
-
 // buat ambil data absensi murid
 const getAbsensiMurid = async (req, res) => {
     try {
@@ -137,46 +119,6 @@ const getAbsensiMurid = async (req, res) => {
         return response (500, null, 'Gagal Memuat data absensi', res);
     }
 }; 
-
-// untuk membuat atau input data guru
-const createGuru = async (req, res) => {
-    const {nip, nama_lengkap, jenis_kelamin, tanggal_lahir, alamat, no_telepon, email, jabatan, mata_pelajaran, foto_profile } = req.body;
-
-    try {
-        const existingGuru = await Guru.findOne({where: {nip} });
-        if(existingGuru){
-            return response(400, null, 'nip sudah terdaftar', res);
-        }
-        const guru = await Guru.create({
-            nip: nip,
-            nama_lengkap: nama_lengkap,
-            jenis_kelamin: jenis_kelamin,
-            tanggal_lahir: tanggal_lahir,
-            alamat: alamat,
-            no_telepon: no_telepon,
-            email: email,
-            jabatan: jabatan,
-            mata_pelajaran: mata_pelajaran,
-            foto_profile: foto_profile,
-        })
-        return response(201, guru, "Data guru dan akun berhasil di buat", res)
-    } catch (error) {
-        console.error(error.message);
-        return response(500, null, 'gagal menambahkan data guru', res)
-    }
-
-}
-
-// buat ambil semua data guru
-const getGuru = async (req, res) => {
-    try {
-        const guru = await Guru.findAll()
-        return response(200, guru, 'Memuat data guru', res)
-    } catch (error) {
-        console.error(error.message)
-        return response(500, null, 'Gagal memuat data guru', res)
-    }
-}
 
 const getMuridByKelas = async (req, res) => {
     try {
@@ -282,10 +224,120 @@ const createAbsensiMurid = async (req, res) => {
     }
 };
 
+// untuk membuat atau input data guru
+const createGuru = async (req, res) => {
+    const {nip, nama_lengkap, jenis_kelamin, tanggal_lahir, alamat, no_telepon, email, jabatan, mata_pelajaran, foto_profile } = req.body;
+
+    try {
+        const existingGuru = await Guru.findOne({where: {nip} });
+        if(existingGuru){
+            return response(400, null, 'nip sudah terdaftar', res);
+        }
+        const guru = await Guru.create({
+            nip: nip,
+            nama_lengkap: nama_lengkap,
+            jenis_kelamin: jenis_kelamin,
+            tanggal_lahir: tanggal_lahir,
+            alamat: alamat,
+            no_telepon: no_telepon,
+            email: email,
+            jabatan: jabatan,
+            mata_pelajaran: mata_pelajaran,
+            foto_profile: foto_profile,
+        })
+        return response(201, guru, "Data guru dan akun berhasil di buat", res)
+    } catch (error) {
+        console.error(error.message);
+        return response(500, null, 'gagal menambahkan data guru', res)
+    }
+
+}
+
+// buat ambil semua data guru
+const getGuru = async (req, res) => {
+    try {
+        const guru = await Guru.findAll({
+            attributes: ['guru_id', 'nip', 'nama_lengkap', 'jabatan', 'status']
+        })
+        return response(200, guru, 'Memuat data guru', res)
+    } catch (error) {
+        console.error('error get guru',error.message)
+        return response(500, null, 'Gagal memuat data guru', res)
+    }
+}
+
+// buat ambil data absensi semua guru
+const getAbsensiGuru = async (req, res) => {
+    try {
+        const { tanggal } = req.query;
+        const whereClause = {};
+        
+        if (tanggal) {
+            whereClause.tanggal = tanggal;
+        }
+
+        const absensiGuru = await AbsensiGuru.findAll({
+            where: whereClause,
+            include: [
+                {
+                    model: Guru,
+                    as: 'guru',
+                    attributes: ['guru_id', 'nama_lengkap', 'nip', 'jabatan']
+                },
+                {
+                    model: Guru,
+                    as: 'guruPiket',
+                    attributes: ['guru_id', 'nama_lengkap'],
+                    foreignKey: 'guru_piket_id'
+                }
+            ],
+            order: [['tanggal', 'DESC'], ['createdAt', 'DESC']]
+        });
+        
+        return response(200, absensiGuru, "Memuat data absensi guru", res);
+    } catch (error) {
+        console.error('error get absensi guru', error.message)
+        return response(500, null, "gagal memuat data absensi guru", res);
+    }
+}
+
+// buat ambil data absensi guru hari ini
+const getAbsensiGuruHariIni = async (req, res) => {
+    try {
+        const today = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        
+        const absensiGuru = await AbsensiGuru.findAll({
+            where: { tanggal: today },
+            include: [
+                {
+                    model: Guru,
+                    as: 'guru',
+                    attributes: ['guru_id', 'nama_lengkap', 'nip', 'jabatan']
+                },
+                {
+                    model: Guru,
+                    as: 'guruPiket',
+                    attributes: ['guru_id', 'nama_lengkap'],
+                    foreignKey: 'guru_piket_id'
+                }
+            ]
+        });
+        
+        return response(200, absensiGuru, "Memuat data absensi guru hari ini", res);
+    } catch (error) {
+        console.error('Error getAbsensiGuruHariIni:', error);
+        return response(500, null, "Gagal memuat data absensi guru hari ini", res);
+    }
+}
+
  const createAbsensiGuru = async (req, res) => {
     try {
         const user_id = req.userId;
         const { absensi } = req.body;
+
+        if (!absensi || !Array.isArray(absensi) || absensi.length === 0) {
+            return response(400, null, "Data absensi tidak valid", res);
+        }
 
         const guruPiket = await Guru.findOne({
             where: {user_id},
@@ -295,26 +347,30 @@ const createAbsensiMurid = async (req, res) => {
         if (!guruPiket){
             return response(404, null, "Akun guru piket tidak di temukan", res)
         }
-
-        const today = new Date().toISOString().split('T')[0];
-        const now =  new Date();
         
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const jamMasuk = `${hours}:${minutes}:${seconds}`;
+        const now = moment().tz('Asia/Jakarta');
+        const today = now.format('YYYY-MM-DD');
+        const jamMasuk = now.format('HH:mm:ss');
 
         const results = [];
         const alreadyAbsensed = [];
+        const notFoundGuru = [];
 
         for(const absensiData of absensi){
             const{guru_id, status, keterangan} = absensiData;
 
+            if (!guru_id || !status) {
+                continue;
+            }
+
             const guruExist = await Guru.findOne({
                 where: {guru_id},
-                attributes: ['nama_lengkap']
+                attributes: ['guru_id','nama_lengkap']
             });
-            if(!guruExist) continue;
+            if(!guruExist) {
+                notFoundGuru.push({guru_id});
+                continue;
+            }
 
             const checkAbsensi = await AbsensiGuru.findOne({
                 where:{
@@ -326,7 +382,8 @@ const createAbsensiMurid = async (req, res) => {
             if(checkAbsensi){
                 alreadyAbsensed.push({
                     guru_id,
-                    nama: guruExist.nama_lengkap
+                    nama: guruExist.nama_lengkap,
+                    absensi_id: checkAbsensi.id
                 });
                 continue;
             }
@@ -339,27 +396,44 @@ const createAbsensiMurid = async (req, res) => {
                 keterangan: keterangan || null,
                 guru_piket_id: guruPiket.guru_id
             });
-            results.push(newData);
+            results.push({
+                absensi_id: newData.id,
+                guru_id: newData.guru_id,
+                nama: guruExist.nama_lengkap,
+                status: newData.status,
+                jam_masuk: newData.jam_masuk
+            });
         }
-        return response(
-            201,
-            {
-                guru_piket: guruPiket.nama_lengkap,
-                berhasil: results,
-                sudah_absen: alreadyAbsensed
-            },
-            alreadyAbsensed.length > 0
-                ? "Sebagian guru sudah absen hari ini"
-                : "Absensi guru berhasil dicatat",
-            res
-        );
 
+        const responseData = {
+             guru_piket: guruPiket.nama_lengkap,
+            tanggal: today,
+            total_data: absensi.length,
+            berhasil_dicatat: results.length,
+            sudah_absen: alreadyAbsensed.length,
+            guru_tidak_ditemukan: notFoundGuru.length,
+            detail: {
+                berhasil: results,
+                sudah_absen: alreadyAbsensed,
+                tidak_ditemukan: notFoundGuru
+        }
+    };
+
+    let message = "absensi guru berhasil dicatat";
+    if(alreadyAbsensed.length > 0){
+        message = `Sebagian guru sudah absen hari ini. ${results.length} berhasil dicatat, ${alreadyAbsensed.length} sudah absen.`;
+    }
+    if( results.length == 0 && alreadyAbsensed.length === 0){
+        message = "Tidak ada data absensi yang berhasil diproses";
+    }
+    return response(201, responseData, message ,res)
     } catch (error) {
-        console.error("Absensi Error:", error);
+        console.error("Absensi Guru Error:", error);
         return response(500, null, "Terjadi kesalahan saat mencatat absensi guru", res);
     }
  }
 
-module.exports = {  getKelasWithDetails, getAbsensiGuru, getAbsensiMurid, createGuru, getGuru, getUser, 
-                    createAbsensiMurid, createAbsensiGuru, getMuridByKelas
-};
+module.exports = {  getUser, 
+                    getMuridByKelas, getAbsensiMurid, getKelasWithDetails, createAbsensiMurid, 
+                    createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni
+                };
