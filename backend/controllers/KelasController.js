@@ -91,7 +91,7 @@ const getKelasWithDetails = async (req, res) => {
 const getAbsensiMurid = async (req, res) => {
     try {
         const {kelas_id} = req.params;
-        const today = new Date().toISOString().split('T')[0];
+        const today = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
 
         const absensi = await AbsensiMurid.findAll({
             where:{
@@ -158,13 +158,9 @@ const createAbsensiMurid = async (req, res) => {
             return response(404, null, "Data guru tidak ditemukan", res);
         }
 
-        const today = new Date().toISOString().split('T')[0];
-        const now =  new Date();
-        
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const jamMasuk = `${hours}:${minutes}:${seconds}`;
+        const now = moment().tz('Asia/Jakarta');
+        const today = now.format('YYYY-MM-DD');
+        const jamMasuk = now.format('HH:mm:ss');
 
         const results = [];
         const alreadyAbsensed = [];
