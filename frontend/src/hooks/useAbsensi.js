@@ -115,11 +115,16 @@ export const useAbsensi = () => {
     // Handle perubahan tanggal
     const handleDateChange = (date) => {
       setSelectedDate(date);
-      const isHistory = date.toDateString() !== new Date().toDateString();
-      setIsViewingHistory(isHistory);
+      const today = new Date()
+      const isToday = date.toDateString() === today.toDateString();
+      setIsViewingHistory(!isToday);
       
       if (selectedKelas) {
-        loadMuridWithAbsensi(selectedKelas, date);
+        if(isToday){
+          loadMuridWithAbsensi(selectedKelas, today)
+        }else{
+          loadMuridWithAbsensi(selectedKelas, date);
+        }
       }
     };
 

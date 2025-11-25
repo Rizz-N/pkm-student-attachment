@@ -91,9 +91,16 @@ export const useAbsensiGuru = () => {
     // Handle perubahan tanggal
     const handleDateChange = (date) => {
         setSelectedDate(date);
-        const isHistory = date.toDateString() !== new Date().toDateString();
-        setIsViewingHistory(isHistory);
-        loadGuruAbsensiByDate(date);
+
+        const today =  new Date();
+        const isHistory = date.toDateString() === today.toDateString();
+        setIsViewingHistory(!isHistory);
+
+        if(isHistory){
+            loadGuruAbsensiByDate(today);
+        }else{
+            loadGuruAbsensiByDate(date);
+        }
     };
 
     // Kembali ke hari ini
