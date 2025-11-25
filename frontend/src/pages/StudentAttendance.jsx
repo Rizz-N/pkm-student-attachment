@@ -6,6 +6,7 @@ import Button from "../components/Button"
 import SearchBar from "../components/SearchBar"
 import { absensiService } from "../services/absensiService";
 import StatusBadge from "../components/StatusBadge";
+import Calendar from "../components/Calendar";
 
 const StudentAttendance = () => {
     const { kelasList,
@@ -18,6 +19,8 @@ const StudentAttendance = () => {
             loading,
             error,
             submitResult,
+            selectedDate,
+            isViewingHistory,
             updateMuridStatus,
             updateMuridKeterangan,
             updateMuridFile,
@@ -25,7 +28,9 @@ const StudentAttendance = () => {
             markSelectedAbsent,
             submitAbsensi,
             clearSubmitResult,
-            refetchMurid
+            refetchMurid,
+            handleDateChange,
+            goToToday,
           } = useAbsensi();
 
     const [semester, setSemester] = useState('Ganjil');
@@ -164,19 +169,38 @@ const StudentAttendance = () => {
           <div className="m-10 bg-white rounded-xl p-5">
             <div className="flex justify-between">
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Absensi Siswa</h1>
+                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+                  Absensi Siswa
+                  {isViewingHistory &&(
+                    <span className="text-lg font-normal - text-gray-600 ml-2">
+                      - {selectedDate.toLocaleDateString('id-ID',{
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                  )}
+                </h1>
               </div>
 
               <div className="flex flex-col gap-3">
 
                 <div className="flex gap-3 items-center justify-end">
 
-                  <div>
-                    <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-                      <GoCalendar className="text-white text-lg" />
-                      <span>Kalender</span>
+                  <Calendar 
+                    onDateSelect={handleDateChange}
+                    selectedDate={selectedDate}
+                  />
+
+                  {isViewingHistory && (
+                    <button
+                      onClick={goToToday}
+                      className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    >
+                      <span>Hari ini</span>
                     </button>
-                  </div>
+                  )}
 
                   <div>
                     <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
@@ -198,6 +222,23 @@ const StudentAttendance = () => {
               </div>
             </div>
 
+            {isViewingHistory && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                  <p className="text-yellow-700 text-sm">
+                    <strong>Mode Lihat Riwayat:</strong> Anda sedang melihat data absensi tanggal {
+                      selectedDate.toLocaleDateString('id-ID', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                      })
+                    }. Tidak dapat mengubah data absensi masa lalu.
+                  </p>
+                </div>
+              </div>
+            )}
+
         {/* Filter Section */}
         <div className="mt-10">
           <div className="flex gap-4 mb-3">
@@ -209,6 +250,7 @@ const StudentAttendance = () => {
                 value={selectedKelas}
                 onChange={(e) => setSelectedKelas(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                // disabled={isViewingHistory}
               >
                 {(kelasList || []).map((kelas) => (
                   <option key={kelas.kelas_id} value={kelas.kelas_id}>
@@ -226,6 +268,7 @@ const StudentAttendance = () => {
                 value={semester}
                 onChange={(e) => setSemester(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                disabled={isViewingHistory}
               >
                 <option value="Ganjil">Ganjil</option>
                 <option value="Genap">Genap</option>
@@ -298,27 +341,27 @@ const StudentAttendance = () => {
           <table className="table-auto w-full border-collapse text-center">
             <thead className="bg-gray-200">
               <tr>
-                <th className="px-3 py-2"></th>
+                {!isViewingHistory && <th className="px-3 py-2"></th>}
                 <th className="px-3 py-2">No</th>
                 <th className="px-3 py-2">NIS</th>
                 <th className="px-3 py-2">Nama Lengkap</th>
                 <th className="px-3 py-2">Jenis Kelamin</th>
                 <th className="px-3 py-2">Surat Keterangan</th>
                 <th className="px-3 py-2">Status</th>
-                <th className="px-3 py-2">Aksi</th>
+                {!isViewingHistory && <th className="px-3 py-2">Aksi</th>}
               </tr>
             </thead>
 
             <tbody>
               {filteredMurid.map((murid, index) => (
                 <tr key={murid.murid_id} className="border-b border-gray-300">
-                  <td className="px-3 py-3">
+                  {!isViewingHistory && ( <td className="px-3 py-3">
                     <input  type="checkbox" 
                             checked={selectedStudents.includes(murid.murid_id)}
                             onChange={() => handleSelectStudent(murid.murid_id)} 
                             disabled={murid.sudah_absen}
                     />
-                  </td>
+                  </td>)}
                   <td className="px-3 py-3">{index + 1}</td>
                   <td className="px-3 py-3">{murid.nis}</td>
                   <td className="px-3 py-3">{murid.nama_lengkap}</td>
@@ -336,6 +379,7 @@ const StudentAttendance = () => {
                   <td className="px-3 py-3">
                     <StatusBadge status={murid.status_display} />
                   </td>
+                  {!isViewingHistory && (
                   <td className="px-3 py-3">
                     <select
                       value={murid.status}
@@ -355,6 +399,7 @@ const StudentAttendance = () => {
                       </div>
                     )}
                   </td>
+                  )}
                 </tr>
               ))}
               
@@ -394,7 +439,7 @@ const StudentAttendance = () => {
                         </span>
                     </div>
                 </div>            
-          
+            {!isViewingHistory && (
             <div className="flex justify-end p-2">
                 <button type="submit"
                         className="bg-blue-800 border-gray-400 text-xl text-white hover:bg-blue-900 px-4 py-2 rounded-xl  cursor-pointer"
@@ -403,6 +448,7 @@ const StudentAttendance = () => {
                     Submit
                 </button>
           </div>
+          )}
         </div>
       </div>
         </>

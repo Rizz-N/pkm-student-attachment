@@ -1,185 +1,171 @@
-import { useState, useEffect } from 'react';
+import { useState } from "react"
+import { GoCalendar } from "react-icons/go"
 
-const Calendar = () => {
+const Calendar = ({onDateSelect, selectedDate}) => {
+
+  const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Update waktu real-time
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      setCurrentDate(now);
-      
-      // Jika hari berganti, update selected date juga
-      if (selectedDate.toDateString() !== now.toDateString()) {
-        setSelectedDate(now);
-      }
-    }, 1000); // Update setiap detik
+  const today = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
 
-    return () => clearInterval(timer);
-  }, [selectedDate]);
-
-  const months = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-  ];
-
-  const days = ['Mg', 'Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb'];
-
-  const getDaysInMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  const getDaysInMonth = (year, month) =>{
+    return new Date (year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  const getFirstDayOfMonth = (year, month) =>{
+    return new Date(year, month, 1).getDay();
   };
 
-  const generateCalendar = () => {
-    const daysInMonth = getDaysInMonth(selectedDate);
-    const firstDay = getFirstDayOfMonth(selectedDate);
-    const calendar = [];
-
-    // Hari dari bulan sebelumnya
-    const prevMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1);
-    const prevMonthDays = getDaysInMonth(prevMonth);
+  const generateCalendarDays = () =>{
+    const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+    const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
+    const days = [];
     
-    for (let i = firstDay - 1; i >= 0; i--) {
-      calendar.push(
-        <div
-          key={`prev-${i}`}
-          className="p-2 text-center text-gray-400 border rounded-lg"
-        >
-          {prevMonthDays - i}
-        </div>
-      );
+    for(let i = 0; i < firstDay; i++){
+      days.push(null);
     }
-
-    // Hari dalam bulan ini
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day);
-      const isToday = date.toDateString() === currentDate.toDateString();
-      const isSelected = date.toDateString() === selectedDate.toDateString();
-
-      calendar.push(
-        <div
-          key={day}
-          onClick={() => setSelectedDate(date)}
-          className={`p-2 text-center border rounded-lg cursor-pointer transition-colors ${
-            isToday && isSelected
-              ? 'bg-blue-600 text-white'
-              : isToday
-              ? 'bg-blue-100 text-blue-600 border-blue-300'
-              : isSelected
-              ? 'bg-blue-500 text-white'
-              : 'hover:bg-gray-100'
-          }`}
-        >
-          {day}
-        </div>
-      );
-    }
-
-    // Hari dari bulan berikutnya
-    const totalCells = 42; // 6 minggu × 7 hari
-    const remainingCells = totalCells - calendar.length;
     
-    for (let day = 1; day <= remainingCells; day++) {
-      calendar.push(
-        <div
-          key={`next-${day}`}
-          className="p-2 text-center text-gray-400 border rounded-lg"
-        >
-          {day}
-        </div>
-      );
+    for(let i = 1; i <= daysInMonth; i++){
+      days.push(i);
     }
 
-    return calendar;
+    return days;
   };
 
-  const navigateMonth = (direction) => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(selectedDate.getMonth() + direction);
-    setSelectedDate(newDate);
+  const handleDateSelect = (day) => {
+    if(day){
+      const selected = new Date(currentYear, currentMonth, day);
+      onDateSelect(selected);
+      setShowCalendar(false);
+    }
   };
+
+  const goToPreviousMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth -1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(new Date(currentYear, currentMonth +1, 1));
+  }
 
   const goToToday = () => {
     const today = new Date();
-    setSelectedDate(today);
+    setCurrentDate(today);
+    onDateSelect(today);
+    setShowCalendar(false);
   };
 
+  const monthNames = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ];
+
+  const dayNames = [
+    "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
+  ];
+
+  const calendarDays = generateCalendarDays();
+
   return (
-    <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <button 
-          onClick={() => navigateMonth(-1)}
-          className="p-2 hover:bg-gray-100 rounded-lg text-xl transition-colors"
-        >
-          ‹
-        </button>
-        
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-gray-800">
-            {months[selectedDate.getMonth()]} {selectedDate.getFullYear()}
-          </h2>
-          <div className="text-sm text-gray-600 space-y-1 mt-2">
-            <div>{currentDate.toLocaleTimeString('id-ID')}</div>
-            <div>{currentDate.toLocaleDateString('id-ID', { 
-              weekday: 'long', 
-              day: 'numeric', 
-              month: 'long', 
-              year: 'numeric' 
-            })}</div>
+    <div className="relative">
+      <button
+        className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+        onClick={() => setShowCalendar(!showCalendar)}
+      >
+        <GoCalendar className="text-white text-lg" />
+        <span>
+          {selectedDate 
+            ? selectedDate.toLocaleDateString('id-ID', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric' 
+              })
+            : 'Pilih Tanggal'
+          }
+        </span>
+      </button>
+
+      {showCalendar && (
+        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-80 p-4">
+          {/* Calendar Header */}
+          <div className="flex justify-between items-center mb-4">
+            <button
+              onClick={goToPreviousMonth}
+              className="p-2 hover:bg-gray-100 rounded-lg"
+            >
+              ‹
+            </button>
+            <div className="font-semibold">
+              {monthNames[currentMonth]} {currentYear}
+            </div>
+            <button
+              onClick={goToNextMonth}
+              className="p-2 hover:bg-gray-100 rounded-lg"
+            >
+              ›
+            </button>
+          </div>
+
+          {/* Day Names */}
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {dayNames.map(day => (
+              <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
+                {day.charAt(0)}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Days */}
+          <div className="grid grid-cols-7 gap-1">
+            {calendarDays.map((day, index) => {
+              const isToday = day === today.getDate() && 
+                            currentMonth === today.getMonth() && 
+                            currentYear === today.getFullYear();
+              const isSelected = day && selectedDate && 
+                               day === selectedDate.getDate() && 
+                               currentMonth === selectedDate.getMonth() && 
+                               currentYear === selectedDate.getFullYear();
+              
+              return (
+                <button
+                  key={index}
+                  onClick={() => handleDateSelect(day)}
+                  disabled={!day}
+                  className={`
+                    h-8 rounded-lg text-sm font-medium
+                    ${!day ? 'invisible' : ''}
+                    ${isToday && !isSelected ? 'bg-blue-100 text-blue-600' : ''}
+                    ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}
+                    ${day ? 'cursor-pointer' : 'cursor-default'}
+                  `}
+                >
+                  {day}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-4 flex justify-between">
+            <button
+              onClick={goToToday}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Hari Ini
+            </button>
+            <button
+              onClick={() => setShowCalendar(false)}
+              className="text-gray-600 hover:text-gray-700 text-sm font-medium"
+            >
+              Tutup
+            </button>
           </div>
         </div>
-        
-        <button 
-          onClick={() => navigateMonth(1)}
-          className="p-2 hover:bg-gray-100 rounded-lg text-xl transition-colors"
-        >
-          ›
-        </button>
-      </div>
-
-      {/* Tombol Aksi */}
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={goToToday}
-          className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm"
-        >
-          Hari Ini
-        </button>
-      </div>
-
-      {/* Nama Hari */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
-        {days.map(day => (
-          <div key={day} className="text-center font-semibold text-gray-600 py-2 text-sm">
-            {day}
-          </div>
-        ))}
-      </div>
-
-      {/* Tanggal */}
-      <div className="grid grid-cols-7 gap-1">
-        {generateCalendar()}
-      </div>
-
-      {/* Info Tanggal Terpilih */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-semibold text-gray-800 mb-2">Tanggal Terpilih:</h3>
-        <p className="text-gray-600">
-          {selectedDate.toLocaleDateString('id-ID', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </p>
-      </div>
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default Calendar;
+export default Calendar

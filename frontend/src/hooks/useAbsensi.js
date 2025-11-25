@@ -11,6 +11,9 @@ export const useAbsensi = () => {
     const [error, setError] = useState(null);
     const [submitResult, setSubmitResult] = useState(null);
 
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [isViewingHistory, setIsViewingHistory] = useState(false)
+
     const loadKelas = async () => {
         try {
             setLoading(true);
@@ -25,18 +28,46 @@ export const useAbsensi = () => {
         }
     };
 
-    const loadAbsensiToday = async (kelas_id) => {
-      if(!kelas_id){
-      setAbsensiToday([]);
-      return;
-      }
-
+    const loadMuridWithAbsensi = async (kelas_id, date = null) => {
       try {
-        const response = await absensiService.getAbsensiToday(kelas_id);
-        setAbsensiToday(Array.isArray(response)? response : []);
+        setLoading(true);
+
+        const dateString = date
+        ? date.toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
+        
+        const[muridResponse, absensiResponse] = await Promise.all([
+          absensiService.getMuridByKelas(kelas_id),
+          absensiService.getAbsensiByDate(kelas_id, dateString)
+        ]);
+
+        const muridData = Array.isArray(muridResponse) ? muridResponse : [];
+        const absensiData = Array.isArray(absensiResponse) ? absensiResponse : [];
+
+        const formatedMurid = muridData.map(murid =>{
+          const absensi = absensiData.find(a => a.murid_id === murid.murid_id);
+          return{
+            ...murid,
+            status: absensi ? absensi.status : '',
+            keterangan: absensi ? absensi.keterangan : '',
+            file: null,
+            fileName: 'Surat Keterangan',
+            sudah_absen: !!absensi,
+            status_display: absensi ? absensi.status : 'Belum Presensi',
+            jam_masuk: absensi ? absensi.jam_masuk : '-',
+            tanggal_absen: absensi ? absensi.tanggal : null
+          };
+        });
+
+        setMuridList(formatedMurid);
+        setAbsensiToday(absensiData);
+        setError(null);
       } catch (error) {
-        console.error('error load absensi:', error );
-        setAbsensiToday([]);
+        setError('Gagal memuat data murid')
+        setMuridList([])
+        setAbsensiToday([])
+      }finally{
+        setLoading(false)
       }
     };
 
@@ -80,6 +111,41 @@ export const useAbsensi = () => {
             setLoading(false);
         }
     };
+
+    // Handle perubahan tanggal
+    const handleDateChange = (date) => {
+      setSelectedDate(date);
+      const isHistory = date.toDateString() !== new Date().toDateString();
+      setIsViewingHistory(isHistory);
+      
+      if (selectedKelas) {
+        loadMuridWithAbsensi(selectedKelas, date);
+      }
+    };
+
+    // Kembali ke hari ini
+    const goToToday = () => {
+      const today = new Date();
+      setSelectedDate(today);
+      setIsViewingHistory(false);
+      
+      if (selectedKelas) {
+        loadMuridWithAbsensi(selectedKelas, today);
+      }
+    };
+
+    // Effect untuk load kelas pertama kali
+    useEffect(() => {
+      loadKelas();
+    }, []);
+
+    // Effect untuk load murid ketika kelas berubah
+    useEffect(() => {
+      if (selectedKelas) {
+        loadMuridWithAbsensi(selectedKelas, selectedDate);
+        setSelectedStudents([]);
+      }
+    }, [selectedKelas]);
 
       // Update status murid
     const updateMuridStatus = (muridIndex, status) => {
@@ -153,13 +219,11 @@ export const useAbsensi = () => {
     loadKelas();
   }, []);
 
-  useEffect(() => {
-    if (selectedKelas) {
-      loadMuridByKelas(selectedKelas);
-    } else {
-      setMuridList([]);
-    }
-  }, [selectedKelas]);
+ const refetchMurid = () =>{
+  if(selectedKelas){
+    return loadMuridWithAbsensi(selectedKelas, selectedDate)
+  }
+ }
 
   return {
     kelasList,
@@ -172,6 +236,8 @@ export const useAbsensi = () => {
     loading,
     error,
     submitResult,
+    selectedDate,
+    isViewingHistory,
     updateMuridStatus,
     updateMuridKeterangan,
     updateMuridFile,
@@ -179,7 +245,8 @@ export const useAbsensi = () => {
     markSelectedAbsent,
     submitAbsensi,
     clearSubmitResult,
-    refetchKelas: loadKelas,
-    refetchMurid: () => loadMuridByKelas(selectedKelas)
+    refetchMurid,
+    handleDateChange,
+    goToToday,
   };
-}
+};

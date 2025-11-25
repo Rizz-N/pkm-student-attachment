@@ -144,6 +144,44 @@ const getMuridByKelas = async (req, res) => {
     }
 };
 
+const getAbsensiMuridByDate = async (req, res) => {
+    try {
+        const { kelas_id, tanggal } = req.query;
+        const whereClause = {};
+        
+        if (kelas_id) {
+            whereClause['$murid.kelas_id$'] = kelas_id;
+        }
+        
+        // Jika tidak ada tanggal, default ke hari ini
+        const targetDate = tanggal || moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        whereClause.tanggal = targetDate;
+
+        const absensi = await AbsensiMurid.findAll({
+            where: whereClause,
+            include: [{
+                model: Murid,
+                as: 'murid',
+                attributes: ['murid_id', 'nis', 'nama_lengkap', 'jenis_kelamin'],
+                where: {
+                    status: 'aktif'
+                },
+                include: [{
+                    model: Kelas,
+                    as: 'kelas',
+                    attributes: ['kelas_id', 'nama_kelas']
+                }]
+            }],
+            attributes: ['murid_id', 'status', 'keterangan', 'tanggal', 'jam_masuk']
+        });
+        
+        return response(200, absensi, `Data absensi tanggal ${targetDate} berhasil dimuat`, res);
+    } catch (error) {
+        console.error('Error getAbsensiMuridByDate:', error.message);
+        return response(500, null, 'Gagal memuat data absensi', res);
+    }
+}
+
 const createAbsensiMurid = async (req, res) => {
     try {
         const user_id = req.userId;
@@ -430,6 +468,6 @@ const getAbsensiGuruHariIni = async (req, res) => {
  }
 
 module.exports = {  getUser, 
-                    getMuridByKelas, getAbsensiMurid, getKelasWithDetails, createAbsensiMurid, 
+                    getMuridByKelas, getAbsensiMurid, getKelasWithDetails, getAbsensiMuridByDate, createAbsensiMurid, 
                     createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni
                 };

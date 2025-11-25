@@ -31,6 +31,20 @@ export const absensiService = {
         }
     },
 
+    getAbsensiByDate: async (kelas_id, tanggal = null) => {
+        try {
+            const params = {kelas_id};
+            if(tanggal){
+                params.tanggal = tanggal;
+            }
+            const response = await axiosToken.get('/absensi/murid', {params});
+            return response.data[0]?.payload || [];
+        } catch (error) {
+            console.error('Error fetching absensi murid by date', error);
+            throw error;
+        }
+    },
+
     createAbsensi: async (absensiData) => {
         try {
             const response = await axiosToken.post('/absensi', absensiData);
