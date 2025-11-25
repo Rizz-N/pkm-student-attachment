@@ -1,14 +1,33 @@
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { GoCalendar } from "react-icons/go"
 
 const Calendar = ({onDateSelect, selectedDate}) => {
+
+  const calendarRef = useRef(null)
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const today = new Date();
+  const todayStart = new Date (today.getFullYear(), today.getMonth(), today.getDate());
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
+
+  useEffect(() =>{
+    const handleClickOutside = (event) => {
+    if(calendarRef.current && ! calendarRef.current.contains(event.target)){
+      setShowCalendar(false)
+    }
+    };
+
+    if(showCalendar){
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () =>{
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCalendar]);
 
   const getDaysInMonth = (year, month) =>{
     return new Date (year, month + 1, 0).getDate();
@@ -46,8 +65,19 @@ const Calendar = ({onDateSelect, selectedDate}) => {
     setCurrentDate(new Date(currentYear, currentMonth -1, 1));
   };
 
+  const isFutureDate = (day) => {
+    const checkDate = new Date(currentYear, currentMonth, day);
+    const checkDateStart = new Date(checkDate.getFullYear(), checkDate.getMonth(), checkDate.getDate());
+    return checkDateStart > todayStart;
+  }
+
   const goToNextMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth +1, 1));
+    const nextMonth = new Date(currentYear, currentMonth +1, 1);
+    const nextMonthStart = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
+
+    if(nextMonthStart <= new Date(todayStart.getFullYear(), todayStart.getMonth() +1, 1 )){
+      setCurrentDate(nextMonth);
+    }
   }
 
   const goToToday = () => {
@@ -69,7 +99,7 @@ const Calendar = ({onDateSelect, selectedDate}) => {
   const calendarDays = generateCalendarDays();
 
   return (
-    <div className="relative">
+    <div className="relative" ref={calendarRef}>
       <button
         className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
         onClick={() => setShowCalendar(!showCalendar)}
@@ -131,14 +161,15 @@ const Calendar = ({onDateSelect, selectedDate}) => {
               return (
                 <button
                   key={index}
-                  onClick={() => handleDateSelect(day)}
-                  disabled={!day}
+                  onClick={() => !isFutureDate(day) && handleDateSelect(day)}
+                  disabled={!day || isFutureDate(day)}
                   className={`
                     h-8 rounded-lg text-sm font-medium
                     ${!day ? 'invisible' : ''}
-                    ${isToday && !isSelected ? 'bg-blue-100 text-blue-600' : ''}
-                    ${isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'}
-                    ${day ? 'cursor-pointer' : 'cursor-default'}
+                    ${isFutureDate(day) ? 'text-gray-400' : ''}
+                    ${!isFutureDate(day) && isToday && !isSelected ? 'bg-blue-100 text-blue-600' : ''}
+                    ${!isFutureDate(day) && isSelected ? 'bg-blue-600 text-white' : 'hover:bg-gray-200'}
+                    ${!isFutureDate(day) ? 'cursor-pointer' : 'cursor-default'}
                   `}
                 >
                   {day}

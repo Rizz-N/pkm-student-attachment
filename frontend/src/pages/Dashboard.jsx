@@ -2,7 +2,7 @@ import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import axiosToken, { setAuthToken } from "../utils/axiosToken";
-
+import { GoSignOut } from "react-icons/go";
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
 import TeacherAttendance from "./TeacherAttendance"
@@ -75,7 +75,10 @@ const Dashboard = () => {
                 <p>welcome : {name} </p>
             </div>
         </div>
-        <button onClick={logout} className="border-gray-400 text-white text-xl bg-blue-800 hover:bg-blue-900 px-4 py-2 rounded-xl cursor-pointer">Logout</button>
+        <button onClick={logout} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
+            <GoSignOut  className=" text-lg"/>
+            Logout
+        </button>
     </div>
     <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-800 mt-30">
         <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>
