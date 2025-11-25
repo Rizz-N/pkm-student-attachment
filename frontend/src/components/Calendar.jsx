@@ -88,7 +88,7 @@ const Calendar = ({onDateSelect, selectedDate}) => {
       </button>
 
       {showCalendar && (
-        <div className="absolute top-full left-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-80 p-4">
+        <div className="absolute top-full right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-xl z-50 w-80 p-4">
           {/* Calendar Header */}
           <div className="flex justify-between items-center mb-4">
             <button
