@@ -140,6 +140,15 @@ const StudentAttendance = () => {
     };
 
     useEffect(() => {
+      if(submitResult){
+        const timer = setTimeout(() => {
+          clearSubmitResult();
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+    }, [submitResult, clearSubmitResult])
+
+    useEffect(() => {
         if (submitResult) {
             console.log('Submit result updated:', submitResult);
         }
@@ -435,7 +444,7 @@ const StudentAttendance = () => {
                         </span>
                         <span className="flex items-center">
                             <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-                            Belum: {muridList.filter(m => m.status === 'Belum Presensi').length}
+                            Belum: {muridList.filter(m => m.status >= 0).length}
                         </span>
                     </div>
                 </div>            
