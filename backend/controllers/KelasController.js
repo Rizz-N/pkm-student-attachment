@@ -364,6 +364,38 @@ const getAbsensiGuruHariIni = async (req, res) => {
     }
 }
 
+const getAbsenGuruByDate = async (req, res) => {
+    try {
+        const {tanggal} = req.query;
+        const whereClause = {};
+
+        const targetDate = tanggal || moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        whereClause.tanggal = targetDate;
+
+        const absensi = await AbsensiGuru.findAll({
+            where: whereClause,
+            include:[{
+                model: Guru,
+                as: 'guru',
+                attributes:['guru_id', 'nama_lengkap', 'nip', 'jabatan'],
+                where:{
+                    status: 'aktif'
+                }
+            },{
+                model: Guru,
+                as: 'guruPiket',
+                attributes:['guru_id', 'nama_lengkap'],
+                foreignKey: 'guru_piket_id'
+            }],
+            order:[['createdAt', 'DESC']]
+        });
+        return response(200, absensi, `Data absensi tanggal ${targetDate} berhasil dimuat`, res);
+    } catch (error) {
+        console.error('Error getAbsensiGuruByDate', error.message);
+        return response(500, null, 'Gagal memuat data absensi', res);
+    }
+}
+
  const createAbsensiGuru = async (req, res) => {
     try {
         const user_id = req.userId;
@@ -469,5 +501,5 @@ const getAbsensiGuruHariIni = async (req, res) => {
 
 module.exports = {  getUser, 
                     getMuridByKelas, getAbsensiMurid, getKelasWithDetails, getAbsensiMuridByDate, createAbsensiMurid, 
-                    createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni
+                    createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni, getAbsenGuruByDate
                 };

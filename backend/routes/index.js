@@ -2,7 +2,7 @@ const express = require ('express')
 const { Register, login, Logout } = require ('../controllers/User')
 const { getUser, 
         getMuridByKelas, getAbsensiMurid, getKelasWithDetails, getAbsensiMuridByDate, createAbsensiMurid, 
-        createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni
+        createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni, getAbsenGuruByDate
         } = require('../controllers/KelasController')
 const {verifyToken} = require ('../middleware/VerifyToken')
 const { refreshToken } = require ('../controllers/RefreshToken')
@@ -21,6 +21,7 @@ router.delete('/logout', Logout );
 router.get("/kelas", verifyToken, getKelasWithDetails);
 router.get("/kelas/:kelas_id/murid", verifyToken, getMuridByKelas);  // buat absensi murid oleh guru
 router.get("/kelas/:kelas_id/absensi/hari-ini", verifyToken, getAbsensiMurid)
+router.get("/absensi/guru", verifyToken, getAbsenGuruByDate)
 router.get("/absensi/murid", verifyToken, getAbsensiMuridByDate)
 router.post("/absensi/bulk", verifyToken, createAbsensiMurid); // Create absensi
 
