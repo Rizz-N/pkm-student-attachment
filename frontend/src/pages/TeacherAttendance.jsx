@@ -7,6 +7,7 @@ import SearchBar from "../components/SearchBar"
 import { absensiGuru } from "../services/absensiGuru";
 import Dropdown from "../components/Dropdown";
 import StatusBadge from "../components/StatusBadge";
+import Calendar from "../components/Calendar";
 
 const TeacherAttendance = () => {
     const {
@@ -17,6 +18,8 @@ const TeacherAttendance = () => {
         loading,
         error,
         submitResult,
+        selectedDate,
+        isViewingHistory,
         updateGuruStatus,
         updateGuruKeterangan,
         updateGuruFile,
@@ -24,7 +27,9 @@ const TeacherAttendance = () => {
         markSelectedAbsent,
         submitAbsensi,
         clearSubmitResult,
-        refetchGuru
+        refetchGuru,
+        handleDateChange,
+        goToToday
     } = useAbsensiGuru();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -161,19 +166,38 @@ const TeacherAttendance = () => {
         <div className="m-10 bg-white rounded-xl p-5">
             <div className="flex justify-between">
               <div className="flex-1">
-                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Absensi Guru</h1>
+                <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+                    Absensi Guru
+                    {isViewingHistory &&(
+                        <span className="text-lg font-normal - text-gray-600 ml-2">
+                      - {selectedDate.toLocaleDateString('id-ID',{
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </span>
+                    )}
+                </h1>
               </div>
 
               <div className="flex flex-col gap-3">
 
                 <div className="flex gap-3 items-center justify-end">
 
-                  <div>
-                    <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-                      <GoCalendar className="text-white text-lg" />
-                      <span>Kalender</span>
+                    <Calendar 
+                        onDateSelect={handleDateChange}
+                        selectedDate={selectedDate}
+                    />
+
+                    {isViewingHistory && (
+                    <button
+                      onClick={goToToday}
+                      className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
+                    >
+                      <span>Hari ini</span>
                     </button>
-                  </div>
+                  )}
 
                   <div>
                     <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
@@ -194,6 +218,23 @@ const TeacherAttendance = () => {
 
               </div>
             </div>
+
+            {isViewingHistory && (
+              <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                  <p className="text-yellow-700 text-sm">
+                    <strong>Mode Lihat Riwayat:</strong> Anda sedang melihat data absensi tanggal {
+                      selectedDate.toLocaleDateString('id-ID', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                      })
+                    }. Tidak dapat mengubah data absensi masa lalu.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Filter Section */}
                 <div className="mt-10">
@@ -270,7 +311,7 @@ const TeacherAttendance = () => {
                     <table className="table-auto w-full border-collapse text-center">
                         <thead className="bg-gray-200">
                             <tr>
-                                <th className="px-3 py-2"></th>
+                                {!isViewingHistory && <th className="px-3 py-2"></th>}
                                 <th className="px-3 py-2">No</th>
                                 <th className="px-3 py-2">NIP</th>
                                 <th className="px-3 py-2">Nama</th>
@@ -278,21 +319,21 @@ const TeacherAttendance = () => {
                                 <th className="px-3 py-2">Jam Masuk</th>
                                 <th className="px-3 py-2">Status</th>
                                 <th className="px-3 py-2">Surat Keterangan</th>
-                                <th className="px-3 py-2">Aksi</th>
+                                {!isViewingHistory &&<th className="px-3 py-2">Aksi</th>}
                             </tr>
                         </thead>
 
                         <tbody>
                             {filteredGuru.map((guru, index) => (
                                 <tr key={guru.guru_id} className="border-b border-gray-300">
-                                    <td className="px-3 py-2">
+                                    {!isViewingHistory && (<td className="px-3 py-2">
                                         <input
                                             type="checkbox"
                                             checked={selectedGuru.includes(guru.guru_id)}
                                             onChange={() => handleSelectGuru(guru.guru_id)}
                                             disabled={guru.sudah_absen}
                                         />
-                                    </td>
+                                    </td>)}
                                     <td className="px-3 py-2">{index + 1}</td>
                                     <td className="px-3 py-2">{guru.nip}</td>
                                     <td className="px-3 py-2">{guru.nama_lengkap}</td>
@@ -312,6 +353,7 @@ const TeacherAttendance = () => {
                                             />
                                         </label>
                                     </td>
+                                    {!isViewingHistory && (
                                     <td className="px-3 py-2">
                                         <select
                                             value={guru.status}
@@ -331,6 +373,7 @@ const TeacherAttendance = () => {
                                             </div>
                                         )}
                                     </td>
+                                    )}
                                 </tr>
                             ))}
 

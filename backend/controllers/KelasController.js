@@ -304,14 +304,10 @@ const getGuru = async (req, res) => {
 const getAbsensiGuru = async (req, res) => {
     try {
         const { tanggal } = req.query;
-        const whereClause = {};
-        
-        if (tanggal) {
-            whereClause.tanggal = tanggal;
-        }
+        const targetDate = tanggal || moment().tz('Asia/Jakarta').format('YYYY-MM-DD')
 
         const absensiGuru = await AbsensiGuru.findAll({
-            where: whereClause,
+            where: {tanggal: targetDate},
             include: [
                 {
                     model: Guru,

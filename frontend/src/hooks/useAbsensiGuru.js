@@ -9,6 +9,9 @@ export const useAbsensiGuru = () => {
     const [error, setError] = useState(null);
     const [submitResult, setSubmitResult] = useState(null);
 
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [isViewingHistory, setIsViewingHistory] = useState(false);
+
     const loadGuru = async () => {
         try {
             setLoading(true);
@@ -33,18 +36,26 @@ export const useAbsensiGuru = () => {
         }
     };
 
-    const loadGuruWithAbsensi = async () => {
+    const loadGuruAbsensiByDate = async (date = null) => {
         try {
             setLoading(true);
 
+            const dateString = date 
+                ? date.toISOString().split('T')[0]
+                : new Date().toISOString().split('T')[0];
+            
             const [guruResponse, absensiResponse] = await Promise.all([
                 absensiGuru.getGuruForAbsensi(),
-                absensiGuru.getAbsensiGuruToday()
+                absensiGuru.getAbsensiGuruByDate(dateString)
             ]);
 
             const guruData = Array.isArray(guruResponse) ? guruResponse : [];
             const absensiData = Array.isArray(absensiResponse) ? absensiResponse : [];
-            setAbsensiToday(absensiData);
+            
+            const isToday = dateString === new Date().toISOString().split('T')[0];
+            if (isToday) {
+                setAbsensiToday(absensiData);
+            }
 
             const formattedGuru = guruData.map(guru => {
                 const absensi = absensiData.find(a => a.guru_id === guru.guru_id);
@@ -57,7 +68,8 @@ export const useAbsensiGuru = () => {
                     fileName: 'Surat Keterangan',
                     sudah_absen: !!absensi,
                     status_display: absensi ? absensi.status : 'Belum Presensi',
-                    jam_masuk: absensi ? absensi.jam_masuk : '-'
+                    jam_masuk: absensi ? absensi.jam_masuk : '-',
+                    tanggal_absen: absensi ? absensi.tanggal : null
                 };
             });
 
@@ -72,8 +84,30 @@ export const useAbsensiGuru = () => {
         }
     };
 
+    const loadGuruWithAbsensi = async () => {
+       return loadGuruAbsensiByDate(new Date());
+    };
+
+    // Handle perubahan tanggal
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+        const isHistory = date.toDateString() !== new Date().toDateString();
+        setIsViewingHistory(isHistory);
+        loadGuruAbsensiByDate(date);
+    };
+
+    // Kembali ke hari ini
+    const goToToday = () => {
+        const today = new Date();
+        setSelectedDate(today);
+        setIsViewingHistory(false);
+        loadGuruAbsensiByDate(today);
+    };
+
     // Update status guru
     const updateGuruStatus = (guruIndex, status) => {
+        if(isViewingHistory) return;
+
         setGuruList(prev => prev.map((guru, index) =>
             index === guruIndex ? { ...guru, status } : guru
         ));
@@ -81,6 +115,8 @@ export const useAbsensiGuru = () => {
 
     // Update keterangan guru
     const updateGuruKeterangan = (guruIndex, keterangan) => {
+        if(isViewingHistory) return;
+
         setGuruList(prev => prev.map((guru, index) =>
             index === guruIndex ? { ...guru, keterangan } : guru
         ));
@@ -88,6 +124,8 @@ export const useAbsensiGuru = () => {
 
     // Update file guru
     const updateGuruFile = (guruIndex, file) => {
+        if(isViewingHistory) return;
+
         setGuruList(prev => prev.map((guru, index) =>
             index === guruIndex ? {
                 ...guru,
@@ -99,6 +137,7 @@ export const useAbsensiGuru = () => {
 
     // Mark selected present
     const markSelectedPresent = () => {
+        if(isViewingHistory || selectedGuru.length === 0) return;
         setGuruList(prev => prev.map(guru =>
             selectedGuru.includes(guru.guru_id)
                 ? { ...guru, status: 'Hadir' }
@@ -108,6 +147,8 @@ export const useAbsensiGuru = () => {
 
     // Mark selected absent
     const markSelectedAbsent = () => {
+        if(isViewingHistory || selectedGuru.length === 0) return;
+
         setGuruList(prev => prev.map(guru =>
             selectedGuru.includes(guru.guru_id)
                 ? { ...guru, status: 'Tidak Hadir' }
@@ -118,6 +159,10 @@ export const useAbsensiGuru = () => {
     // Submit absensi
     const submitAbsensi = async (absensiData) => {
         try {
+            if(isViewingHistory){
+                throw new error('Tidak dapat menyimpan absensi untuk tanggal sebelumnya')
+            }
+
             setLoading(true);
             setSubmitResult(null);
 
@@ -143,7 +188,7 @@ export const useAbsensiGuru = () => {
     };
 
     useEffect(() => {
-        loadGuruWithAbsensi();
+        loadGuruAbsensiByDate(new Date());
     }, []);
 
     return {
@@ -154,6 +199,8 @@ export const useAbsensiGuru = () => {
         loading,
         error,
         submitResult,
+        selectedDate,
+        isViewingHistory,
         updateGuruStatus,
         updateGuruKeterangan,
         updateGuruFile,
@@ -161,6 +208,8 @@ export const useAbsensiGuru = () => {
         markSelectedAbsent,
         submitAbsensi,
         clearSubmitResult,
-        refetchGuru: loadGuruWithAbsensi
+        refetchGuru: loadGuruWithAbsensi,
+        handleDateChange,
+        goToToday
     };
 }
