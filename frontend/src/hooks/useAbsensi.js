@@ -12,7 +12,14 @@ export const useAbsensi = () => {
     const [submitResult, setSubmitResult] = useState(null);
 
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [isViewingHistory, setIsViewingHistory] = useState(false)
+    const [isViewingHistory, setIsViewingHistory] = useState(false);
+
+    const formatDateLocal = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`; // hasil = "2025-11-25"
+    };
 
     const loadKelas = async () => {
         try {
@@ -33,8 +40,8 @@ export const useAbsensi = () => {
         setLoading(true);
 
         const dateString = date
-        ? date.toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0];
+        ? formatDateLocal(date)
+        : formatDateLocal(new Date())
         
         const[muridResponse, absensiResponse] = await Promise.all([
           absensiService.getMuridByKelas(kelas_id),

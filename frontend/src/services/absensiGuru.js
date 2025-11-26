@@ -27,7 +27,7 @@ export const absensiGuru ={
             if(tanggal){
                 params.tanggal = tanggal;
             }
-            const response = await axiosToken.get('/absensi/guru/tanggal',{params});
+            const response = await axiosToken.get('/absensi/guru', {params});
             return response.data[0]?.payload || [];
         } catch (error) {
             console.error('Error fetching absensi guru by date', error);
@@ -43,17 +43,6 @@ export const absensiGuru ={
             return response.data;
         } catch (error) {
              console.error('Error creating absensi guru:', error);
-            throw error;
-        }
-    },
-
-     getAbsensiGuru: async (tanggal = null) => {
-        try {
-            const params = tanggal ? { tanggal } : {};
-            const response = await axiosToken.get('/absensi/guru', { params });
-            return response.data.payload || response.data[0]?.payload || [];
-        } catch (error) {
-            console.error('Error fetching absensi guru:', error);
             throw error;
         }
     }

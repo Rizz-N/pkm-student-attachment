@@ -12,6 +12,13 @@ export const useAbsensiGuru = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [isViewingHistory, setIsViewingHistory] = useState(false);
 
+    const formatDateLocal = (date) => {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`; // hasil = "2025-11-25"
+    };
+
     const loadGuru = async () => {
         try {
             setLoading(true);
@@ -41,8 +48,10 @@ export const useAbsensiGuru = () => {
             setLoading(true);
 
             const dateString = date 
-                ? date.toISOString().split('T')[0]
-                : new Date().toISOString().split('T')[0];
+                ? formatDateLocal(date)
+                : formatDateLocal(new Date())
+            
+            // console.log('[loadGuruAbsensiByDate] Memuat data untuk tanggal:', dateString);
             
             const [guruResponse, absensiResponse] = await Promise.all([
                 absensiGuru.getGuruForAbsensi(),
@@ -51,6 +60,10 @@ export const useAbsensiGuru = () => {
 
             const guruData = Array.isArray(guruResponse) ? guruResponse : [];
             const absensiData = Array.isArray(absensiResponse) ? absensiResponse : [];
+
+            // console.log('[loadGuruAbsensiByDate] Jumlah guru:', guruData.length);
+            // console.log('[loadGuruAbsensiByDate] Jumlah absensi:', absensiData.length);
+            // console.log('[loadGuruAbsensiByDate] Data absensi:', absensiData);
             
             const isToday = dateString === new Date().toISOString().split('T')[0];
             if (isToday) {
@@ -58,7 +71,11 @@ export const useAbsensiGuru = () => {
             }
 
             const formattedGuru = guruData.map(guru => {
-                const absensi = absensiData.find(a => a.guru_id === guru.guru_id);
+                const absensi = absensiData.find(a => {
+                    const isMatch = a.guru_id === guru.guru_id;
+                    // console.log(`Mapping: ${guru.nama_lengkap} (${guru.guru_id}) -> ${isMatch ? `ABSENSI: ${a.status}` : 'TIDAK ABSEN'}`);
+                    return isMatch;
+                });
 
                 return {
                     ...guru,
@@ -72,6 +89,8 @@ export const useAbsensiGuru = () => {
                     tanggal_absen: absensi ? absensi.tanggal : null
                 };
             });
+
+            //  console.log('[loadGuruAbsensiByDate] Hasil akhir:', formattedGuru);
 
             setGuruList(formattedGuru);
             setError(null);
@@ -90,22 +109,21 @@ export const useAbsensiGuru = () => {
 
     // Handle perubahan tanggal
     const handleDateChange = (date) => {
+        // console.log('[handleDateChange] Tanggal dipilih:', date);
         setSelectedDate(date);
 
         const today =  new Date();
-        const isHistory = date.toDateString() === today.toDateString();
-        setIsViewingHistory(!isHistory);
+        const isHistory = date.toDateString() !== today.toDateString();
+        //  console.log('[handleDateChange] Is viewing history:', isHistory);
 
-        if(isHistory){
-            loadGuruAbsensiByDate(today);
-        }else{
-            loadGuruAbsensiByDate(date);
-        }
+        setIsViewingHistory(isHistory);
+        loadGuruAbsensiByDate(date);
     };
 
     // Kembali ke hari ini
     const goToToday = () => {
         const today = new Date();
+        // console.log('[goToToday] Kembali ke hari ini');
         setSelectedDate(today);
         setIsViewingHistory(false);
         loadGuruAbsensiByDate(today);
@@ -167,7 +185,7 @@ export const useAbsensiGuru = () => {
     const submitAbsensi = async (absensiData) => {
         try {
             if(isViewingHistory){
-                throw new error('Tidak dapat menyimpan absensi untuk tanggal sebelumnya')
+                throw new Error('Tidak dapat menyimpan absensi untuk tanggal sebelumnya')
             }
 
             setLoading(true);
@@ -176,13 +194,15 @@ export const useAbsensiGuru = () => {
             const result = await absensiGuru.createAbsensiGuru(absensiData);
             setSubmitResult(result);
 
+            await loadGuruAbsensiByDate(selectedDate)
+
             return result;
         } catch (error) {
             console.error('error submiting absensi guru', error);
 
             setSubmitResult({
                 success: false,
-                message: error.response?.data?.[0]?.message || 'Gagal menyimpan absensi guru'
+                message: error.response?.data?.[0]?.message || error.message || 'Gagal menyimpan absensi guru'
             });
             throw error;
         } finally {
@@ -208,14 +228,47 @@ export const useAbsensiGuru = () => {
         submitResult,
         selectedDate,
         isViewingHistory,
-        updateGuruStatus,
-        updateGuruKeterangan,
-        updateGuruFile,
-        markSelectedPresent,
-        markSelectedAbsent,
+        updateGuruStatus: (guruIndex, status) => {
+            if(isViewingHistory) return;
+            setGuruList(prev => prev.map((guru, index) =>
+                index === guruIndex ? {...guru, status } : guru
+            ));
+        },
+        updateGuruKeterangan: (guruIndex, keterangan) =>{
+            if(isViewingHistory) return;
+            setGuruList(prev => prev.map((guru, index) =>
+                index === guruIndex ? { ...guru, keterangan } : guru
+            ));
+        },
+        updateGuruFile: (guruIndex, file) => {
+            if(isViewingHistory) return;
+            setGuruList(prev => prev.map((guru, index) =>
+                index === guruIndex ? {
+                    ...guru,
+                    file,
+                    fileName: file ? file.name : 'Surat Keterangan'
+                } : guru
+            ));
+        },
+        markSelectedPresent: () => {
+            if(isViewingHistory || selectedGuru.length === 0) return;
+            setGuruList(prev => prev.map(guru =>
+                selectedGuru.includes(guru.guru_id)
+                    ? { ...guru, status: 'Hadir' }
+                    : guru
+            ));
+        },
+        markSelectedAbsent: () =>{
+            if(isViewingHistory || selectedGuru.length === 0) return;
+            setGuruList(prev => prev.map(guru =>
+                selectedGuru.includes(guru.guru_id)
+                    ? { ...guru, status: 'Tidak Hadir' }
+                    : guru
+            ));
+        },
         submitAbsensi,
         clearSubmitResult,
-        refetchGuru: loadGuruWithAbsensi,
+        refetchGuru: () => loadGuruAbsensiByDate(selectedDate),
         handleDateChange,
         goToToday
     };
