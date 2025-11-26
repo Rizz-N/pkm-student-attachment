@@ -94,8 +94,8 @@ const getAbsensiMurid = async (req, res) => {
         const today = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
 
         const absensi = await AbsensiMurid.findAll({
+            tanggal: today,
             where:{
-                tanggal: today,
                 '$murid.kelas_id$': kelas_id
             },
             include:[{
@@ -119,6 +119,85 @@ const getAbsensiMurid = async (req, res) => {
         return response (500, null, 'Gagal Memuat data absensi', res);
     }
 }; 
+
+// ambil data semua murid
+const getAllMurid = async (req, res) => {
+    try {
+        const murid = await Murid.findAll({
+            where: {
+                status: 'aktif'
+            },
+            attributes: [
+                'murid_id',
+                'nis',
+                'nisn',
+                'nama_lengkap',
+                'jenis_kelamin',
+                'kelas_id',
+                'tanggal_lahir',
+                'agama',
+                'alamat',
+                'no_telepon',
+                'nama_orangtua',
+                'no_telepon_orangtua',
+                'foto_profile',
+                'tahun_masuk',
+                'status'
+            ],
+            include: [{
+                model: Kelas,
+                as: 'kelas',
+                attributes: ['kelas_id', 'kode_kelas', 'nama_kelas']
+            }],
+            order: [
+                ['kelas_id', 'ASC'],
+                ['nama_lengkap', 'ASC']
+            ]
+        });
+
+        return response(200, murid, 'Semua data murid berhasil dimuat', res);
+    } catch (error) {
+        console.error('Error getAllMurid:', error.message);
+        return response(500, null, 'Gagal memuat semua data murid', res);
+    }
+};
+
+
+// ambil data semua murid yang hadir
+const getMuridAllPresence = async (req, res) => {
+    try {
+        const { tanggal } = req.query;
+        const targetDate = tanggal || moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+
+        const muridHadir = await AbsensiMurid.findAll({
+            where:{
+                tanggal: targetDate,
+                status: 'hadir'
+            },include:[{
+                model: Murid,
+                as: 'murid',
+                attributes:[
+                    'murid_id', 'nis', 'nama_lengkap', 'jenis_kelamin', 'kelas_id'
+                ],
+                include:[{
+                    model: Kelas,
+                    as: 'kelas',
+                    attributes: ['kelas_id', 'nama_kelas']
+                }]
+            }],
+            attributes: [
+                'murid_id', 'status', 'keterangan', 'tanggal', 'jam_masuk'
+            ],
+            order: [
+                [{model: Murid, as: 'murid'}, 'kelas_id', 'ASC']
+            ]
+        });
+        return response(200, muridHadir, `Data murid hadir tanggal ${targetDate} berhasil dimuat`, res);
+    } catch (error) {
+        console.error('Error getMuridAllPresence:', error.message);
+        return response(500, null, 'Gagal memuat data murid hadir', res);
+    }    
+};
 
 const getMuridByKelas = async (req, res) => {
     try {
@@ -496,6 +575,6 @@ const getAbsenGuruByDate = async (req, res) => {
  }
 
 module.exports = {  getUser, 
-                    getMuridByKelas, getAbsensiMurid, getKelasWithDetails, getAbsensiMuridByDate, createAbsensiMurid, 
+                    getMuridByKelas, getAllMurid, getAbsensiMurid, getMuridAllPresence, getKelasWithDetails, getAbsensiMuridByDate, createAbsensiMurid, 
                     createGuru, getGuru, getAbsensiGuru, createAbsensiGuru, getAbsensiGuruHariIni, getAbsenGuruByDate
                 };
