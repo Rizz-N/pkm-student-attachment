@@ -1,17 +1,23 @@
 import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import axiosToken, { setAuthToken } from "../utils/axiosToken";
 import { GoSignOut } from "react-icons/go";
+import { GoSidebarExpand } from "react-icons/go";
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
 import TeacherAttendance from "./TeacherAttendance"
+import ProfileBar from "../components/ProfileBar";
 import { getTotal } from "../services/getTotal";
 
 const Dashboard = () => {
     const location = useLocation();
     const [name, setName] =  useState('');
     const navigate = useNavigate();
+
+    const sidebarRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false)
+
 
     useEffect(()=>{
         const init = async () => {
@@ -20,6 +26,24 @@ const Dashboard = () => {
         }
         init();
     },[]);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (
+                isOpen &&
+                sidebarRef.current &&
+                !sidebarRef.current.contains(e.target)
+            ) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isOpen]);
 
     const refreshToken = async () => {
         try {
@@ -66,10 +90,21 @@ const Dashboard = () => {
 
     return (
     <>
-    <div className="py-3 px-15 flex justify-between items-center bg-white shadow-sm fixed w-screen top-0 z-1000">
+        <div ref={sidebarRef}>
+            <ProfileBar isOpen={isOpen} setIsOpen={setIsOpen} />
+        </div>
+    {/* Navbar */}
+    <div className="py-3 px-15 flex justify-between items-center bg-white shadow-sm fixed w-screen top-0 z-[900]">
         <div className="flex items-center gap-10">
             <div>
-                <img src="https://via.assets.so/img.jpg?w=60&h=60&shape=circle&bg=e5e7eb&f=png" alt="profile" className="border border-gray-400 rounded-full" />
+                {!isOpen && (
+                    <button
+                        onClick={() => setIsOpen(true)}
+                        className="bg-white p-2 rounded-xl shadow-lg hover:bg-gray-200"
+                    >
+                        <GoSidebarExpand className="text-4xl" />
+                            </button>
+                )}
             </div>
             <div>
                 <h1 className="text-2xl" >Attendance Management</h1>
@@ -81,6 +116,7 @@ const Dashboard = () => {
             Logout
         </button>
     </div>
+    {/* Navbar Link Halaman */}
     <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-600 mt-30 shadow-xl shadow-gray-400">
         <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>
         <Link to="/dashboard/student" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard/student")}`} >Student Attendance</Link>
