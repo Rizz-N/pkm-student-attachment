@@ -22,5 +22,27 @@ export const getTotal= {
             console.error('Error fetching absensi guru today:', error);
             throw error;
         }
+    },
+
+    getAbsensiMuridToday : async () => {
+        try {
+            const response = await axiosToken.get('/absensi/murid/hadir');
+            // console.log('Total murid hadir', response.data[0])
+            return response.data[0]?.payload || [];
+        } catch (error) {
+            console.error('Error fetching absensi murid hadir:', error);
+            throw error;
+        }
+    },
+
+    getMuridTotal : async () => {
+        try {
+            const response = await axiosToken.get('/murid');
+            // console.log('Total murid', response.data[0])
+            return response.data[0]?.payload || [];
+        } catch (error) {
+            console.error('Error fetching total murid:', error);
+            throw error;
+        }
     }
 }
