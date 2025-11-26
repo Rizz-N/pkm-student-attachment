@@ -62,7 +62,7 @@ const Dashboard = () => {
     const active = (path) =>
         location.pathname === path
         ? "bg-yellow-500 text-white"
-        : "hover:bg-yellow-400 hover:text-white";
+        : "hover:bg-yellow-500 hover:text-white";
 
     return (
     <>
@@ -81,7 +81,7 @@ const Dashboard = () => {
             Logout
         </button>
     </div>
-    <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-800 mt-30">
+    <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-600 mt-30 shadow-xl shadow-gray-400">
         <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>
         <Link to="/dashboard/student" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard/student")}`} >Student Attendance</Link>
         <Link to="/dashboard/teacher" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard/teacher")}`} >Teacher Attendance</Link>

@@ -4,7 +4,9 @@ const Card = (props) => {
     <div className={props.container} > 
       <div className={props.top}>
         <p>{props.title}</p>
-        <img src={props.source} alt="icon" />
+        <div className="text-3xl">
+          {props.icon}
+        </div>
       </div>
       <div>
         <h1 className={props.rstyle} >{props.result}</h1>
