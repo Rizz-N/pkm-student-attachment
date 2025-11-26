@@ -1,7 +1,18 @@
 import { useState } from "react";
-import { GoSidebarCollapse } from "react-icons/go";
-const ProfileBar = ({isOpen, setIsOpen}) => {
+import { GoSidebarExpand } from "react-icons/go";
+import { useLoginUsers } from "../hooks/useLoginUsers";
 
+const ProfileBar = ({isOpen, setIsOpen}) => {
+    const{  isUser,
+            isNip,
+            isAlamat,
+            isMataPelajaran,
+            isJabatan,
+            isJenisKelamin,
+            isTanggalLahir,
+            loading,
+            error
+        } = useLoginUsers();
   return (
     <>
         <div className={`
@@ -17,33 +28,37 @@ const ProfileBar = ({isOpen, setIsOpen}) => {
                 <button
                     onClick={() => setIsOpen(false)} 
                     className="absolute right-1 top-1/2 -translate-y-1/2 cursor-pointer shadow-lg hover:bg-gray-200 p-2 rounded-xl" >
-                    <GoSidebarCollapse className="text-4xl " />
+                    <GoSidebarExpand className="text-4xl " />
                 </button>
             </div>
-            <div className="flex flex-col py-5 gap-4 px-8 bg-white h-7/10 mt-20 mx-2 rounded-xl">
+            <div className="flex flex-col bg-gray-200 py-5 gap-4 px-8 h-123 mt-20 mx-2 rounded-xl">
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm"> NIP</label>
-                    <h1 className="pl-3 text-xl">024828401</h1>
+                    <h1 className="pl-3 text-md">{isNip}</h1>
                 </div>
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm"> Name</label>
-                    <h1 className="pl-3 text-xl">Name</h1>
+                    <h1 className="pl-3 text-md">{isUser}</h1>
+                </div>
+                <div className="border-b-2 border-gray-300">
+                    <label className="text-gray-500 text-sm">Tanggal Lahir</label>
+                    <h1 className="pl-3 text-md">{isTanggalLahir}</h1>
                 </div>
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm"> Jenis Kelamin</label>
-                    <h1 className="pl-3 text-xl">Laki laki</h1>
+                    <h1 className="pl-3 text-md">{isJenisKelamin}</h1>
                 </div>
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm"> Mata pelajaran</label>
-                    <h1 className="pl-3 text-xl">B.Indonesia</h1>
+                    <h1 className="pl-3 text-md">{isMataPelajaran}</h1>
                 </div>
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm">Jabatan</label>
-                    <h1 className="pl-3 text-xl">Wali kelas</h1>
+                    <h1 className="pl-3 text-md">{isJabatan}</h1>
                 </div>
                 <div className="border-b-2 border-gray-300">
                     <label className="text-gray-500 text-sm">Alamat</label>
-                    <h1 className="pl-3 text-xl">Jakarta</h1>
+                    <h1 className="pl-3 text-md">{isAlamat}</h1>
                 </div>
             </div>
         </div>

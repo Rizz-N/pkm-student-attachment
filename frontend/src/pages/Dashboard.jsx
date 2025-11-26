@@ -3,12 +3,13 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import axiosToken, { setAuthToken } from "../utils/axiosToken";
 import { GoSignOut } from "react-icons/go";
-import { GoSidebarExpand } from "react-icons/go";
+import { FaUserCog } from "react-icons/fa";
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
 import TeacherAttendance from "./TeacherAttendance"
 import ProfileBar from "../components/ProfileBar";
 import { getTotal } from "../services/getTotal";
+import { useLoginUsers } from "../hooks/useLoginUsers";
 
 const Dashboard = () => {
     const location = useLocation();
@@ -102,7 +103,7 @@ const Dashboard = () => {
                         onClick={() => setIsOpen(true)}
                         className="bg-white p-2 rounded-xl shadow-lg hover:bg-gray-200"
                     >
-                        <GoSidebarExpand className="text-4xl" />
+                        <FaUserCog className="text-4xl" />
                             </button>
                 )}
             </div>
