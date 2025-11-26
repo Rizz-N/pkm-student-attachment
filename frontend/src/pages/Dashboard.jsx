@@ -6,6 +6,7 @@ import { GoSignOut } from "react-icons/go";
 import Overview from "./Overview"
 import StudentAttendance from "./StudentAttendance"
 import TeacherAttendance from "./TeacherAttendance"
+import { getTotal } from "../services/getTotal";
 
 const Dashboard = () => {
     const location = useLocation();
