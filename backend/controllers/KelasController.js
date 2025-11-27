@@ -370,6 +370,7 @@ const createAbsensiMurid = async (req, res) => {
 
     const results = [];
     const alreadyAbsensed = [];
+    const notFoundMurid = [];
 
     for (const absensiData of absensi) {
       const { murid_id, status, keterangan, semester } = absensiData;
@@ -382,7 +383,10 @@ const createAbsensiMurid = async (req, res) => {
           attributes: ["kelas_id"],
         },
       });
-      if (!muridExist) continue;
+      if (!muridExist) {
+        notFoundMurid.push({ murid_id });
+        continue;
+      }
 
       const checkAbsensi = await AbsensiMurid.findOne({
         where: {
@@ -390,6 +394,7 @@ const createAbsensiMurid = async (req, res) => {
           tanggal: today,
         },
       });
+
       if (checkAbsensi) {
         alreadyAbsensed.push({
           murid_id,
@@ -409,21 +414,39 @@ const createAbsensiMurid = async (req, res) => {
         keterangan: keterangan || null,
       });
 
-      results.push(newData);
+      results.push({
+        murid_id: newData.murid_id,
+        nama: muridExist.nama_lengkap,
+        status: newData.status,
+        jam_masuk: newData.jam_masuk,
+      });
     }
 
-    return response(
-      201,
-      {
-        guru: guru.nama_lengkap,
+    const responseData = {
+      guru: guru.nama_lengkap,
+      tanggal: today,
+      total_data: absensi.length,
+      berhasil_dicatat: results.length,
+      sudah_absen: alreadyAbsensed.length,
+      murid_tidak_ditemukan: notFoundMurid.length,
+      detail: {
         berhasil: results,
         sudah_absen: alreadyAbsensed,
+        tidak_ditemukan: notFoundMurid,
       },
-      alreadyAbsensed.length > 0
-        ? "Sebagian Murid sudah Pernah absen hari ini"
-        : "Absensi murid Berhasil di catat",
-      res
-    );
+    };
+
+    let message = "Absensi murid berhasil di catat";
+
+    if (alreadyAbsensed.length > 0) {
+      message = `Sebagian murid sudah absen hari ini. ${results.length} berhasil dicatat, ${alreadyAbsensed.length} sudah absen.`;
+    }
+
+    if (results.length === 0 && alreadyAbsensed.length === 0) {
+      message = "Tidak ada data absensi yang berhasil diproses";
+    }
+
+    return response(201, responseData, message, res);
   } catch (error) {
     console.error("Absensi Error:", error);
     return response(500, null, "Terjadi kesalahan saat mencatat absensi", res);

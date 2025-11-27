@@ -127,7 +127,7 @@ const StudentAttendance = () => {
         setAlertMessage(
           "Silakan pilih status minimal untuk 1 guru sebelum menyimpan."
         );
-        result;
+        return;
       }
 
       console.log("data yang akan di kirim:", absensiData);
@@ -596,52 +596,6 @@ const StudentAttendance = () => {
             </p>
           )}
 
-          {/* Error & Success Messages - Sama seperti sebelumnya */}
-          {error && (
-            <div className="mb-4 p-3 md:p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium text-sm">
-              {error}
-            </div>
-          )}
-
-          {submitResult && submitResult[0] && !alertMessage && (
-            <div
-              className={`mb-4 p-3 md:p-4 rounded-xl font-medium text-sm ${
-                submitResult[0].message.includes("Berhasil")
-                  ? "bg-green-50/80 backdrop-blur-sm border border-green-300/50 text-green-700"
-                  : "bg-yellow-50/80 backdrop-blur-sm border border-yellow-300/50 text-yellow-700"
-              }`}
-            >
-              <strong>{submitResult[0].message}</strong>
-              {submitResult[0].payload && (
-                <div className="mt-2 text-sm">
-                  {submitResult[0].payload.berhasil &&
-                    submitResult[0].payload.berhasil.length > 0 && (
-                      <p>
-                        Berhasil absen:{" "}
-                        {submitResult[0].payload.berhasil.length} murid
-                      </p>
-                    )}
-                  {submitResult[0].payload.sudah_absen &&
-                    submitResult[0].payload.sudah_absen.length > 0 && (
-                      <div>
-                        <p>
-                          Sudah absen:{" "}
-                          {submitResult[0].payload.sudah_absen.length} murid
-                        </p>
-                        <ul className="list-disc list-inside">
-                          {submitResult[0].payload.sudah_absen.map(
-                            (murid, index) => (
-                              <li key={index}>{murid.nama}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 mb-6 sm:w-132">
             <button
@@ -902,6 +856,52 @@ const StudentAttendance = () => {
         {alertMessage && (
           <div className="mb-4 p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium">
             <p className="text-red-800">{alertMessage}</p>
+          </div>
+        )}
+        {/* Error & Success Messages*/}
+        {error && (
+          <div className="mb-4 p-3 md:p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium text-sm">
+            {error}
+          </div>
+        )}
+
+        {submitResult && submitResult[0] && !alertMessage && (
+          <div
+            className={`mb-4 p-3 md:p-4 rounded-xl font-medium text-sm ${
+              submitResult[0].message.includes("berhasil")
+                ? "bg-green-50/80 backdrop-blur-sm border border-green-300/50 text-green-700"
+                : "bg-yellow-50/80 backdrop-blur-sm border border-yellow-300/50 text-yellow-700"
+            }`}
+          >
+            <strong>{submitResult[0].message}</strong>
+            {submitResult[0].payload && (
+              <div className="mt-2 text-sm">
+                {submitResult[0].payload.detail.berhasil &&
+                  submitResult[0].payload.detail.berhasil.length > 0 && (
+                    <p>
+                      Berhasil absen:{" "}
+                      {submitResult[0].payload.detail.berhasil.length} murid
+                    </p>
+                  )}
+                {submitResult[0].payload.detail.sudah_absen &&
+                  submitResult[0].payload.detail.sudah_absen.length > 0 && (
+                    <div className="text-yellow-600">
+                      <p>
+                        Yang Sudah absen:{" "}
+                        {submitResult[0].payload.detail.sudah_absen.length}{" "}
+                        murid
+                      </p>
+                      <ul className="list-disc list-inside">
+                        {submitResult[0].payload.detail.sudah_absen.map(
+                          (murid, index) => (
+                            <li key={index}>{murid.nama}</li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -102,7 +102,7 @@ const TeacherAttendance = () => {
 
       if (guruWithStatus.length === 0) {
         setAlertMessage(
-          "Tidak ada perubahan absensi untuk disimpan. Silakan pilih status untuk beberapa guru."
+          "Tidak ada guru yang di catat, Silahkan pilih status dahulu."
         );
         return;
       }
@@ -142,6 +142,21 @@ const TeacherAttendance = () => {
       setSubmitLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (submitResult) {
+      console.log("Submit result updated:", submitResult);
+    }
+  }, [submitResult]);
+
+  useEffect(() => {
+    if (submitResult) {
+      const timer = setTimeout(() => {
+        clearSubmitResult();
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [submitResult, clearSubmitResult]);
 
   useEffect(() => {
     if (submitResult) {
@@ -507,47 +522,6 @@ const TeacherAttendance = () => {
             </div>
           )}
 
-          {/* Success Message */}
-          {submitResult && submitResult[0] && !alertMessage && (
-            <div
-              className={`mb-4 p-3 md:p-4 rounded-xl font-medium text-sm ${
-                submitResult[0].message.includes("Berhasil")
-                  ? "bg-green-50/80 backdrop-blur-sm border border-green-300/50 text-green-700"
-                  : "bg-yellow-50/80 backdrop-blur-sm border border-yellow-300/50 text-yellow-700"
-              }`}
-            >
-              <strong>{submitResult[0].message}</strong>
-              {submitResult[0].payload && (
-                <div className="mt-2 text-sm">
-                  {submitResult[0].payload.detail.berhasil &&
-                    submitResult[0].payload.detail.berhasil.length > 0 && (
-                      <p>
-                        Berhasil absen:{" "}
-                        {submitResult[0].payload.detail.berhasil.length} guru
-                      </p>
-                    )}
-                  {submitResult[0].payload.detail.sudah_absen &&
-                    submitResult[0].payload.detail.sudah_absen.length > 0 && (
-                      <div className="text-yellow-600">
-                        <p>
-                          Sudah absen:{" "}
-                          {submitResult[0].payload.detail.sudah_absen.length}{" "}
-                          guru
-                        </p>
-                        <ul className="list-disc list-inside">
-                          {submitResult[0].payload.detail.sudah_absen.map(
-                            (guru, index) => (
-                              <li key={index}>{guru.nama}</li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Action Buttons */}
           <div className="flex flex-col gap-2 mb-6 sm:w-132">
             <button
@@ -834,6 +808,45 @@ const TeacherAttendance = () => {
         {alertMessage && (
           <div className="mb-4 p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium">
             <p className="text-red-800">{alertMessage}</p>
+          </div>
+        )}
+        {/* Success Message */}
+        {submitResult && submitResult[0] && !alertMessage && (
+          <div
+            className={`mb-4 p-3 md:p-4 rounded-xl font-medium text-sm ${
+              submitResult[0].message.includes("berhasil")
+                ? "bg-green-50/80 backdrop-blur-sm border border-green-300/50 text-green-700"
+                : "bg-yellow-50/80 backdrop-blur-sm border border-yellow-300/50 text-yellow-700"
+            }`}
+          >
+            <strong>{submitResult[0].message}</strong>
+            {submitResult[0].payload && (
+              <div className="mt-2 text-sm">
+                {submitResult[0].payload.detail.berhasil &&
+                  submitResult[0].payload.detail.berhasil.length > 0 && (
+                    <p>
+                      Berhasil Melakukan absensi:{" "}
+                      {submitResult[0].payload.detail.berhasil.length} guru
+                    </p>
+                  )}
+                {submitResult[0].payload.detail.sudah_absen &&
+                  submitResult[0].payload.detail.sudah_absen.length > 0 && (
+                    <div className="text-yellow-600">
+                      <p>
+                        Yang Sudah absen:{" "}
+                        {submitResult[0].payload.detail.sudah_absen.length} guru
+                      </p>
+                      <ul className="list-disc list-inside">
+                        {submitResult[0].payload.detail.sudah_absen.map(
+                          (guru, index) => (
+                            <li key={index}>{guru.nama}</li>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         )}
       </div>
