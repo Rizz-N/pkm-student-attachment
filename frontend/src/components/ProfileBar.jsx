@@ -103,6 +103,14 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
 
           <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-300/50 shadow-lg shadow-xl transition-all duration-200">
             <label className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
+              Wali Kelas
+            </label>
+            <p className="text-gray-800 font-semibold mt-1">
+              {user?.kelasDibimbing?.[0]?.nama_kelas || ""}
+            </p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-300/50 shadow-lg shadow-xl transition-all duration-200">
+            <label className="text-gray-500 text-xs font-semibold uppercase tracking-wide">
               Mata Pelajaran
             </label>
             <p className="text-gray-800 font-semibold mt-1">
