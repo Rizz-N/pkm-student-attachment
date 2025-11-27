@@ -1,52 +1,133 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useUser } from "../context/UserContext";
 
 const LoginPage = () => {
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { refreshUser } = useUser();
 
   const Login = async (e) => {
     e.preventDefault();
-    if(!username || !password){
+    if (!username || !password) {
       setMessage("Username dan Password wajib di isi");
       return;
     }
+
+    setIsLoading(true);
     try {
-      await axios.post('http://localhost:5000/login',{
-        username : username,
-        password: password
-      },{
-        withCredentials: true
-      }
-    )
+      await axios.post(
+        "http://localhost:5000/login",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      await refreshUser();
+
       navigate("/");
     } catch (error) {
-      if(error.response){
+      if (error.response) {
         setMessage(error.response.data[0].message);
-      }else{
-        setMessage("Error tidak di ketahui");
+      } else {
+        setMessage("Terjadi kesalahan, silakan coba lagi");
       }
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="h-screen flex items-center justify-center p-4">
-      <div className="ring-2 ring-sky-500 w-full max-w-md flex flex-col p-8 rounded-xl shadow-lg bg-white">
-        <h1 className="text-center text-2xl">Sekolah</h1>
-        <p className="text-center text-xl">Attandace Management System</p>
-        <form onSubmit={Login} className="flex flex-col mt-10 gap-5">
-            <p className="text-center p-2 text-red-500" >{message}</p>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username" className="bg-gray-300 text-2xl rounded-xl p-2 focus:outline-2"/>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" className="bg-gray-300 text-2xl rounded-xl p-2 mb-10 focus:outline-2"/>
-            <button type="submit" className="text-2xl rounded-xl p-2 bg-sky-400 shadow-lg shadow-blue-500/50 hover:bg-sky-600  " >Login</button>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-purple-50/80">
+      <div className="w-full max-w-md flex flex-col p-6 md:p-8 rounded-2xl shadow-2xl bg-white/90 backdrop-blur-xl border border-gray-300/50">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            Sekolah Mandiri
+          </h1>
+          <p className="text-gray-600 text-sm md:text-base font-medium">
+            Attendance Management System
+          </p>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={Login} className="flex flex-col gap-4">
+          {/* Error Message */}
+          {message && (
+            <div className="p-3 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl text-sm font-medium text-center">
+              {message}
+            </div>
+          )}
+
+          {/* Username Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 block">
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Masukkan username Anda"
+              className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Password Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-gray-700 block">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Masukkan password Anda"
+              className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Login Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-base md:text-lg mt-4"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Memproses...</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <span>Masuk</span>
+              </div>
+            )}
+          </button>
         </form>
+
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-500 font-medium">
+            Sistem Manajemen Kehadiran Digital
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            © 2024 Sekolah Mandiri. All rights reserved.
+          </p>
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

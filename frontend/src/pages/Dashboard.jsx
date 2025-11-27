@@ -1,137 +1,179 @@
-import {Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import axiosToken, { setAuthToken } from "../utils/axiosToken";
 import { GoSignOut } from "react-icons/go";
 import { FaUserCog } from "react-icons/fa";
-import Overview from "./Overview"
-import StudentAttendance from "./StudentAttendance"
-import TeacherAttendance from "./TeacherAttendance"
+import Overview from "./Overview";
+import StudentAttendance from "./StudentAttendance";
+import TeacherAttendance from "./TeacherAttendance";
 import ProfileBar from "../components/ProfileBar";
-import { getTotal } from "../services/getTotal";
-import { useLoginUsers } from "../hooks/useLoginUsers";
+import { useUser } from "../context/UserContext";
 
 const Dashboard = () => {
-    const location = useLocation();
-    const [name, setName] =  useState('');
-    const navigate = useNavigate();
+  const location = useLocation();
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
 
-    const sidebarRef = useRef(null);
-    const [isOpen, setIsOpen] = useState(false)
+  const sidebarRef = useRef(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, refreshUser } = useUser();
 
+  useEffect(() => {
+    const init = async () => {
+      refreshToken();
+      if (user?.nama_lengkap) setName(user.nama_lengkap);
+    };
+    init();
+  }, []);
 
-    useEffect(()=>{
-        const init = async () => {
-            refreshToken();
-            getUser();
-        }
-        init();
-    },[]);
+  useEffect(() => {
+    setName(user?.nama_lengkap || "");
+  }, [user]);
 
-    useEffect(() => {
-        const handleClickOutside = (e) => {
-            if (
-                isOpen &&
-                sidebarRef.current &&
-                !sidebarRef.current.contains(e.target)
-            ) {
-                setIsOpen(false);
-            }
-        };
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        isOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(e.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
-        document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [isOpen]);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
-    const refreshToken = async () => {
-        try {
-            const response = await axios.get('http://localhost:5000/token',{
-                withCredentials: true
-            });
-            const token = response.data[0].payload.accessToken;
-            setAuthToken(token);
-            getUser();
-        } catch (error) {
-            if(error.response){
-                navigate("/login");
-            }
-        }
+  const refreshToken = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/token", {
+        withCredentials: true,
+      });
+      const token = response.data[0].payload.accessToken;
+      setAuthToken(token);
+      await refreshUser();
+    } catch (error) {
+      if (error.response) {
+        navigate("/login");
+      }
     }
+  };
 
-
-
-    const getUser = async () => {
-        try {
-            const response = await axiosToken.get('http://localhost:5000/users');
-            setName(response.data[0]?.payload.guru.nama_lengkap);
-        } catch (error) {
-            console.log(error);
-        }
+  const getUser = async () => {
+    try {
+      const response = await axiosToken.get("http://localhost:5000/users");
+      setName(response.data[0]?.payload.guru.nama_lengkap);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    const logout = async () => {
-        try {
-            await axios.delete('http://localhost:5000/logout',{
-                withCredentials: true
-            });
-            navigate("/login");
-        } catch (error) {
-            console.log(error);
-        }
+  const logout = async () => {
+    try {
+      await axios.delete("http://localhost:5000/logout", {
+        withCredentials: true,
+      });
+      await refreshUser();
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
     }
+  };
 
+  const active = (path) =>
+    location.pathname === path
+      ? "bg-white/30 backdrop-blur-sm text-white shadow-inner border border-white/20"
+      : "hover:bg-white/20 hover:text-white backdrop-blur-sm transition-all duration-200";
 
-    const active = (path) =>
-        location.pathname === path
-        ? "bg-yellow-500 text-white"
-        : "hover:bg-yellow-500 hover:text-white";
-
-    return (
+  return (
     <>
-        <div ref={sidebarRef}>
-            <ProfileBar isOpen={isOpen} setIsOpen={setIsOpen} />
+      <div ref={sidebarRef}>
+        <ProfileBar isOpen={isOpen} setIsOpen={setIsOpen} />
+      </div>
+      {/* Navbar */}
+      <div
+        className="py-4 px-6 flex justify-between items-center bg-gradient-to-r from-white to-gray-50/80 backdrop-blur-xl shadow-lg border-b border-gray-300/30 
+                    fixed w-screen top-0 z-[900] text-[1.1rem] sm:text-[1rem] tracking-wide"
+      >
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6">
+            {!isOpen && (
+              <button
+                onClick={() => setIsOpen(true)}
+                className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl shadow-lg hover:shadow-xl border border-gray-300/50 hover:bg-gray-50/80 transition-all duration-200 hover:-translate-y-0.5"
+              >
+                <FaUserCog className="text-2xl sm:text-3xl text-gray-700" />
+              </button>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Attendance Management
+            </h1>
+            <p className="text-sm sm:text-base text-gray-600 font-medium">
+              Welcome back,{" "}
+              <span className="text-blue-600 font-semibold">{name}</span>{" "}
+            </p>
+          </div>
         </div>
-    {/* Navbar */}
-    <div className="py-3 px-15 flex justify-between items-center bg-white shadow-sm fixed w-screen top-0 z-[900]">
-        <div className="flex items-center gap-10">
-            <div>
-                {!isOpen && (
-                    <button
-                        onClick={() => setIsOpen(true)}
-                        className="bg-white p-2 rounded-xl shadow-lg hover:bg-gray-200"
-                    >
-                        <FaUserCog className="text-4xl" />
-                            </button>
-                )}
-            </div>
-            <div>
-                <h1 className="text-2xl" >Attendance Management</h1>
-                <p>welcome : {name} </p>
-            </div>
-        </div>
-        <button onClick={logout} className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-            <GoSignOut  className=" text-lg"/>
-            Logout
+        <button
+          onClick={logout}
+          className="hidden sm:flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 
+                        hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 
+                        rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+        >
+          <GoSignOut className="text-lg" />
+          Logout
         </button>
-    </div>
-    {/* Navbar Link Halaman */}
-    <div className="flex justify-between rounded-full w-1/2 p-3 m-10 bg-blue-600 mt-30 shadow-xl shadow-gray-400">
-        <Link to="/dashboard" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard")}`}>Overview</Link>
-        <Link to="/dashboard/student" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard/student")}`} >Student Attendance</Link>
-        <Link to="/dashboard/teacher" className={` text-2xl text-white border-gray-700 px-2 py-1 rounded-full ${active("/dashboard/teacher")}`} >Teacher Attendance</Link>
-    </div>
-    <div>
+      </div>
+
+      {/* Navbar Link Halaman */}
+      <div className="mt-28 mx-4 sm:mx-auto bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border border-blue-500/30 shadow-xl flex justify-between p-2 rounded-2xl sm:rounded-full sm:max-w-2xl">
+        <Link
+          to="/dashboard"
+          className={`text-xs sm:text-lg text-white font-semibold px-4 sm:px-6 py-3 rounded-2xl sm:rounded-full transition-all duration-200 ${active(
+            "/dashboard"
+          )} hover:bg-white/20 backdrop-blur-sm`}
+        >
+          Overview
+        </Link>
+        <Link
+          to="/dashboard/student"
+          className={`text-xs sm:text-lg text-white font-semibold px-4 sm:px-6 py-3 rounded-2xl sm:rounded-full transition-all duration-200 ${active(
+            "/dashboard/student"
+          )} hover:bg-white/20 backdrop-blur-sm`}
+        >
+          Student
+        </Link>
+        <Link
+          to="/dashboard/teacher"
+          className={`text-xs sm:text-lg text-white font-semibold px-4 sm:px-6 py-3 rounded-2xl sm:rounded-full transition-all duration-200 ${active(
+            "/dashboard/teacher"
+          )} hover:bg-white/20 backdrop-blur-sm`}
+        >
+          Teacher
+        </Link>
+      </div>
+      <div>
         <Routes>
           <Route index element={<Overview />} />
           <Route path="student" element={<StudentAttendance />} />
           <Route path="teacher" element={<TeacherAttendance />} />
         </Routes>
-    </div>
-  </>
-  )
-}
+      </div>
+    </>
+  );
+};
 
-export default Dashboard
+export default Dashboard;

@@ -11,9 +11,9 @@ export const useLoginUsers =  () => {
     const [isTanggalLahir, setIsTanggalLahir] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    useEffect(() => {
-        const loadUser = async () => {
+    const loadUser = async () => {
             try {
                 const dataUser = await getUsers.getUserLogin();
                 console.log('user login', dataUser);
@@ -31,8 +31,25 @@ export const useLoginUsers =  () => {
                 setLoading(false)
             }
         };
-        loadUser(); 
-    }, []);
+
+        const forceRefresh = () => {
+            setRefreshTrigger(prev => prev + 1);
+        };
+
+    useEffect(() => {
+        loadUser();
+
+        const handleUserChange = () =>{
+            console.log('User changed event detected, refreshing data...');
+            loadUser();
+        };
+
+        window.addEventListener ('userChanged', handleUserChange);
+        
+        return () =>{
+            window.removeEventListener('userChanged', handleUserChange);
+        };
+    }, [refreshTrigger]);
     return {
         isUser,
         isNip,
@@ -42,6 +59,7 @@ export const useLoginUsers =  () => {
         isJabatan,
         isTanggalLahir,
         loading,
-        error
+        error,
+        forceRefresh
     };
 }
