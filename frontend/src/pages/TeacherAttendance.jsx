@@ -118,7 +118,9 @@ const TeacherAttendance = () => {
         }));
 
       if (absensiData.length === 0) {
-        alert("Silakan pilih status minimal untuk 1 guru sebelum menyimpan.");
+        setAlertMessage(
+          "Silakan pilih status minimal untuk 1 guru sebelum menyimpan."
+        );
         return;
       }
 
@@ -546,35 +548,30 @@ const TeacherAttendance = () => {
             </div>
           )}
 
-          {/* Alert Message */}
-          {alertMessage && (
-            <div className="mb-4 p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium">
-              <p className="text-red-800">{alertMessage}</p>
-            </div>
-          )}
-
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-col gap-2 mb-6 sm:w-132">
             <button
               className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm flex-1 min-w-[120px]"
               onClick={handleSelectAll}
             >
               Select All
             </button>
-            <button
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm flex-1 min-w-[120px]"
-              onClick={markSelectedPresent}
-              disabled={selectedGuru.length === 0}
-            >
-              Present
-            </button>
-            <button
-              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm flex-1 min-w-[120px]"
-              onClick={markSelectedAbsent}
-              disabled={selectedGuru.length === 0}
-            >
-              Absent
-            </button>
+            <div className="flex flex-wrap gap-2">
+              <button
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm flex-1 min-w-[120px]"
+                onClick={markSelectedPresent}
+                disabled={selectedGuru.length === 0}
+              >
+                Present
+              </button>
+              <button
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm flex-1 min-w-[120px]"
+                onClick={markSelectedAbsent}
+                disabled={selectedGuru.length === 0}
+              >
+                Absent
+              </button>
+            </div>
           </div>
 
           {/* Mobile Card View */}
@@ -603,7 +600,6 @@ const TeacherAttendance = () => {
                       <p className="text-gray-600 text-sm">NIP: {guru.nip}</p>
                     </div>
                   </div>
-                  <StatusBadge status={guru.status_display} />
                 </div>
 
                 {/* Detail Info */}
@@ -638,6 +634,10 @@ const TeacherAttendance = () => {
                       disabled={guru.sudah_absen}
                     />
                   </label>
+                </div>
+                {/* status badge */}
+                <div className="mb-4">
+                  <StatusBadge status={guru.status_display} />
                 </div>
 
                 {/* Action Section */}
@@ -684,7 +684,7 @@ const TeacherAttendance = () => {
                   <th className="px-4 py-4 font-semibold">No</th>
                   <th className="px-4 py-4 font-semibold">NIP</th>
                   <th className="px-4 py-4 font-semibold">Nama</th>
-                  <th className="px-4 py-4 font-semibold">Jabatan</th>
+                  <th className="px-4 py-4 font-semibold">Wali kelas</th>
                   <th className="px-4 py-4 font-semibold">Jam Masuk</th>
                   <th className="px-4 py-4 font-semibold">Status</th>
                   <th className="px-4 py-4 font-semibold">Surat Keterangan</th>
@@ -720,7 +720,9 @@ const TeacherAttendance = () => {
                     <td className="px-4 py-4 font-medium text-gray-800">
                       {guru.nama_lengkap}
                     </td>
-                    <td className="px-4 py-4 text-gray-600">{guru.jabatan}</td>
+                    <td className="px-4 py-4 font-medium text-gray-600">
+                      {guru.kelasDibimbing?.[0]?.nama_kelas}
+                    </td>
                     <td className="px-4 py-4 font-medium text-gray-700">
                       {guru.jam_masuk}
                     </td>
@@ -828,6 +830,12 @@ const TeacherAttendance = () => {
             </div>
           )}
         </div>
+        {/* Alert Message */}
+        {alertMessage && (
+          <div className="mb-4 p-4 bg-red-50/80 backdrop-blur-sm border border-red-300/50 text-red-700 rounded-xl font-medium">
+            <p className="text-red-800">{alertMessage}</p>
+          </div>
+        )}
       </div>
     </>
   );

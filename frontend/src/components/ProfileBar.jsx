@@ -3,7 +3,7 @@ import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
+const ProfileBar = ({ isOpen, setIsOpen }) => {
   const { user, loading, refreshUser } = useUser();
   const navigate = useNavigate();
 
@@ -63,10 +63,10 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
 
             <div className="flex flex-col">
               <h2 className="text-lg font-bold text-white">
-                {loading ? "Memuat..." : user?.nama_lengkap || "-"}
+                {loading ? "Memuat..." : user?.guru.nama_lengkap || "-"}
               </h2>
               <p className="text-blue-100 text-sm font-medium">
-                {user?.jabatan || ""}
+                {user?.guru.jabatan || ""}
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               NIP
             </label>
             <p className="text-gray-800 font-semibold mt-1">
-              {user?.nip || ""}
+              {user?.guru.nip || ""}
             </p>
           </div>
 
@@ -88,7 +88,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               Tanggal Lahir
             </label>
             <p className="text-gray-800 font-semibold mt-1">
-              {user?.tanggal_lahir || ""}
+              {user?.guru.tanggal_lahir || ""}
             </p>
           </div>
 
@@ -97,7 +97,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               Jenis Kelamin
             </label>
             <p className="text-gray-800 font-semibold mt-1">
-              {user?.jenis_kelamin || ""}
+              {user?.guru.jenis_kelamin || ""}
             </p>
           </div>
 
@@ -106,7 +106,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               Wali Kelas
             </label>
             <p className="text-gray-800 font-semibold mt-1">
-              {user?.kelasDibimbing?.[0]?.nama_kelas || ""}
+              {user?.guru.kelasDibimbing?.[0]?.nama_kelas || ""}
             </p>
           </div>
           <div className="p-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-gray-300/50 shadow-lg shadow-xl transition-all duration-200">
@@ -114,7 +114,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               Mata Pelajaran
             </label>
             <p className="text-gray-800 font-semibold mt-1">
-              {user?.mata_pelajaran || ""}
+              {user?.guru.mata_pelajaran || ""}
             </p>
           </div>
 
@@ -123,7 +123,7 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               Alamat
             </label>
             <p className="text-gray-800 font-semibold mt-1 leading-relaxed">
-              {user?.alamat || ""}
+              {user?.guru.alamat || ""}
             </p>
           </div>
           <button

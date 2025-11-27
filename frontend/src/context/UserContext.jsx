@@ -11,8 +11,9 @@ export const UserProvider = ({ children }) => {
     try {
       setLoading(true);
       const data = await getUsers.getUserLogin();
-      console.log("data:", data?.guru);
-      setUser(data?.guru || null);
+      // console.log("data:", data);
+      setUser(data || null);
+      return data;
     } catch (err) {
       setUser(null);
       console.error("UserContext.refreshUser error:", err);

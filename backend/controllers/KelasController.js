@@ -474,6 +474,13 @@ const getGuru = async (req, res) => {
   try {
     const guru = await Guru.findAll({
       attributes: ["guru_id", "nip", "nama_lengkap", "jabatan", "status"],
+      include: [
+        {
+          model: Kelas,
+          as: "kelasDibimbing",
+          attributes: ["kelas_id", "kode_kelas", "nama_kelas", "wali_kelas_id"],
+        },
+      ],
     });
     return response(200, guru, "Memuat data guru", res);
   } catch (error) {

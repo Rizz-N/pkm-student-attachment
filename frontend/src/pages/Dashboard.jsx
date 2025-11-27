@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import axiosToken, { setAuthToken } from "../utils/axiosToken";
+import { setAuthToken } from "../utils/axiosToken";
 import { GoSignOut } from "react-icons/go";
 import { FaUserCog } from "react-icons/fa";
 import Overview from "./Overview";
@@ -18,7 +18,6 @@ import { useUser } from "../context/UserContext";
 
 const Dashboard = () => {
   const location = useLocation();
-  const [name, setName] = useState("");
   const navigate = useNavigate();
 
   const sidebarRef = useRef(null);
@@ -26,16 +25,8 @@ const Dashboard = () => {
   const { user, refreshUser } = useUser();
 
   useEffect(() => {
-    const init = async () => {
-      refreshToken();
-      if (user?.nama_lengkap) setName(user.nama_lengkap);
-    };
-    init();
+    refreshToken();
   }, []);
-
-  useEffect(() => {
-    setName(user?.nama_lengkap || "");
-  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -67,15 +58,6 @@ const Dashboard = () => {
       if (error.response) {
         navigate("/login");
       }
-    }
-  };
-
-  const getUser = async () => {
-    try {
-      const response = await axiosToken.get("http://localhost:5000/users");
-      setName(response.data[0]?.payload.guru.nama_lengkap);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -123,7 +105,9 @@ const Dashboard = () => {
             </h1>
             <p className="text-sm sm:text-base text-gray-600 font-medium">
               Welcome back,{" "}
-              <span className="text-blue-600 font-semibold">{name}</span>{" "}
+              <span className="text-blue-600 font-semibold">
+                {user?.guru.nama_lengkap}
+              </span>{" "}
             </p>
           </div>
         </div>

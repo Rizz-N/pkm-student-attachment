@@ -2,18 +2,18 @@ const StatusBadge = ({ status }) => {
   const getStatusColor = (status) => {
     switch (status) {
       case "Hadir":
-        return "bg-green-400 text-center";
+        return "bg-green-400 text-center w-full px-4 py-2";
       case "Izin":
-        return "bg-blue-400 text-center";
+        return "bg-blue-400 text-center w-full px-4 py-2";
       case "Sakit":
-        return "bg-yellow-400 text-center";
+        return "bg-yellow-400 text-center w-full px-4 py-2";
       case "Alpha":
-        return "bg-red-400 text-center";
+        return "bg-red-400 text-center w-full px-4 py-2";
       case "Tidak Hadir":
-        return "bg-red-400 text-center";
+        return "bg-red-400 text-center w-full px-4 py-2";
       case "Belum Presensi":
       default:
-        return "bg-gray-400 text-center";
+        return "bg-gray-400 text-center w-full px-4 py-2";
     }
   };
 

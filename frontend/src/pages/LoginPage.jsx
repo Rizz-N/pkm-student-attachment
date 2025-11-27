@@ -31,9 +31,15 @@ const LoginPage = () => {
           withCredentials: true,
         }
       );
-      await refreshUser();
-
-      navigate("/");
+      const currentUser = await refreshUser();
+      if (!currentUser) {
+        setMessage("Gagal memuat data user");
+      }
+      if (currentUser.role === "admin") {
+        navigate("/admin");
+      } else if (currentUser.role === "guru") {
+        navigate("/");
+      }
     } catch (error) {
       if (error.response) {
         setMessage(error.response.data[0].message);
