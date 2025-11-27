@@ -575,7 +575,7 @@ const TeacherAttendance = () => {
           </div>
 
           {/* Mobile Card View */}
-          <div className="block md:hidden space-y-4">
+          <div className="block lg:hidden space-y-4">
             {filteredGuru.map((guru, index) => (
               <div
                 key={guru.guru_id}
@@ -674,7 +674,7 @@ const TeacherAttendance = () => {
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
+          <div className="hidden lg:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
             <table className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
               <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                 <tr>

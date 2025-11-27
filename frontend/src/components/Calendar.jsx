@@ -24,11 +24,13 @@ const Calendar = ({ onDateSelect, selectedDate }) => {
     };
 
     if (showCalendar) {
-      document.addEventListener("mousedown", handleClickOutside);
-      // Prevent body scroll when calendar is open on mobile
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      // desktop mode
+      if (window.innerWidth > 768) {
+        document.addEventListener("mousedown", handleClickOutside);
+        document.body.style.overflow = "unset";
+      } else {
+        document.body.style.overflow = "hidden";
+      }
     }
 
     return () => {
@@ -160,7 +162,7 @@ const Calendar = ({ onDateSelect, selectedDate }) => {
           />
 
           {/* Calendar Container */}
-          <div className="fixed md:absolute top-1/9 left-1/2 md:top-full md:left-auto md:right-0 md:transform-none transform -translate-x-1/2 -translate-y-1/2 md:mt-2 bg-white/95 backdrop-blur-xl border border-gray-300/50 rounded-2xl shadow-2xl z-50 w-[95vw] max-w-sm md:w-80 p-4 md:p-4">
+          <div className="fixed md:absolute top-50 left-1/2 md:top-full md:left-auto md:right-0 md:transform-none transform -translate-x-1/2 -translate-y-1/2 md:mt-2 bg-white/95 backdrop-blur-xl border border-gray-300/50 rounded-2xl shadow-2xl z-50 w-[95vw] max-w-sm md:w-80 p-4 md:p-4">
             {/* Calendar Header */}
             <div className="flex justify-between items-center mb-4">
               <button
