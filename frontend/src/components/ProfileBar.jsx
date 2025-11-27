@@ -1,8 +1,24 @@
-import { GoSidebarExpand } from "react-icons/go";
+import { GoSidebarExpand, GoSignOut } from "react-icons/go";
 import { useUser } from "../context/UserContext";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
-  const { user, loading } = useUser();
+  const { user, loading, refreshUser } = useUser();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await axios.delete("http://localhost:5000/logout", {
+        withCredentials: true,
+      });
+      await refreshUser();
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       {/* Overlay untuk HP */}
@@ -102,6 +118,15 @@ const ProfileBar = ({ isOpen, setIsOpen, userData }) => {
               {user?.alamat || ""}
             </p>
           </div>
+          <button
+            onClick={logout}
+            className="sm:hidden flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 
+                                  hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 
+                                  rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <GoSignOut className="text-lg" />
+            Logout
+          </button>
         </div>
       </div>
 
