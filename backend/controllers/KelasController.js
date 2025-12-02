@@ -455,6 +455,8 @@ const createAbsensiMurid = async (req, res) => {
 
 // untuk membuat atau input data guru
 const createGuru = async (req, res) => {
+  console.log("=== BACKEND DEBUG: CREATE GURU ===");
+  console.log("Request body:", JSON.stringify(req.body, null, 2));
   const {
     nip,
     nama_lengkap,
@@ -469,8 +471,10 @@ const createGuru = async (req, res) => {
   } = req.body;
 
   try {
+    console.log("🔍 Checking existing guru dengan NIP:", nip);
     const existingGuru = await Guru.findOne({ where: { nip } });
     if (existingGuru) {
+      console.log("❌ NIP sudah terdaftar:", nip);
       return response(400, null, "nip sudah terdaftar", res);
     }
     const guru = await Guru.create({
@@ -496,7 +500,19 @@ const createGuru = async (req, res) => {
 const getGuru = async (req, res) => {
   try {
     const guru = await Guru.findAll({
-      attributes: ["guru_id", "nip", "nama_lengkap", "jabatan", "status"],
+      attributes: [
+        "guru_id",
+        "nip",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "tanggal_lahir",
+        "alamat",
+        "no_telepon",
+        "email",
+        "jabatan",
+        "mata_pelajaran",
+        "status",
+      ],
       include: [
         {
           model: Kelas,
@@ -725,6 +741,146 @@ const createAbsensiGuru = async (req, res) => {
   }
 };
 
+const deleteGuru = async (req, res) => {
+  try {
+    const { guru_id } = req.params;
+    console.log("=== BACKEND DEBUG: DELETE GURU ===");
+    console.log("Guru ID yang akan dihapus:", guru_id);
+    // 1. Cari data guru beserta user_id-nya
+    const guru = await Guru.findOne({
+      where: { guru_id },
+      attributes: ["guru_id", "user_id", "nama_lengkap"],
+    });
+
+    if (!guru) {
+      console.log("Guru tidak ditemukan");
+      return response(404, null, "Data guru tidak ditemukan", res);
+    }
+
+    // 2. Hapus data guru (akan trigger cascade ke user karena relasi onDelete: 'CASCADE')
+    await guru.destroy();
+
+    // 3. Jika user_id ada, hapus juga user
+    if (guru.user_id) {
+      await Users.destroy({
+        where: { user_id: guru.user_id },
+      });
+      console.log("User berhasil dihapus bersama guru");
+    }
+
+    console.log("Guru berhasil dihapus:", guru.nama_lengkap);
+    return response(
+      200,
+      null,
+      `Data guru ${guru.nama_lengkap} berhasil dihapus`,
+      res
+    );
+  } catch (error) {
+    console.error("Error delete guru:", error.message);
+    return response(500, null, "Gagal menghapus data guru", res);
+  }
+};
+
+const updateGuru = async (req, res) => {
+  console.log("=== BACKEND DEBUG: UPDATE GURU ===");
+  console.log("Request body:", JSON.stringify(req.body, null, 2));
+
+  const { guru_id } = req.params;
+  const {
+    nip,
+    nama_lengkap,
+    jenis_kelamin,
+    tanggal_lahir,
+    alamat,
+    no_telepon,
+    email,
+    jabatan,
+    mata_pelajaran,
+    foto_profile,
+    status,
+  } = req.body;
+
+  try {
+    console.log("🔍 Mencari guru dengan ID:", guru_id);
+
+    // Cari guru berdasarkan ID
+    const guru = await Guru.findOne({
+      where: { guru_id },
+    });
+
+    if (!guru) {
+      console.log("Guru tidak ditemukan");
+      return response(404, null, "Data guru tidak ditemukan", res);
+    }
+
+    // Cek jika NIP diubah dan sudah digunakan oleh guru lain
+    if (nip && nip !== guru.nip) {
+      const existingNip = await Guru.findOne({
+        where: { nip },
+      });
+
+      if (existingNip && existingNip.guru_id !== parseInt(guru_id)) {
+        console.log("NIP sudah digunakan oleh guru lain");
+        return response(400, null, "NIP sudah digunakan oleh guru lain", res);
+      }
+    }
+
+    // Update data guru
+    const updateData = {};
+
+    if (nip !== undefined) updateData.nip = nip;
+    if (nama_lengkap !== undefined) updateData.nama_lengkap = nama_lengkap;
+    if (jenis_kelamin !== undefined) updateData.jenis_kelamin = jenis_kelamin;
+    if (tanggal_lahir !== undefined) updateData.tanggal_lahir = tanggal_lahir;
+    if (alamat !== undefined) updateData.alamat = alamat;
+    if (no_telepon !== undefined) updateData.no_telepon = no_telepon;
+    if (email !== undefined) updateData.email = email;
+    if (jabatan !== undefined) updateData.jabatan = jabatan;
+    if (mata_pelajaran !== undefined)
+      updateData.mata_pelajaran = mata_pelajaran;
+    if (foto_profile !== undefined) updateData.foto_profile = foto_profile;
+    if (status !== undefined) updateData.status = status;
+
+    console.log("Data yang akan diupdate:", updateData);
+
+    // Lakukan update
+    await guru.update(updateData);
+
+    console.log("Guru berhasil diupdate:", guru.nama_lengkap);
+
+    // Ambil data terbaru dengan relasi
+    const updatedGuru = await Guru.findOne({
+      where: { guru_id },
+      attributes: [
+        "guru_id",
+        "nip",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "tanggal_lahir",
+        "alamat",
+        "no_telepon",
+        "email",
+        "jabatan",
+        "mata_pelajaran",
+        "foto_profile",
+        "status",
+      ],
+      include: [
+        {
+          model: Kelas,
+          as: "kelasDibimbing",
+          attributes: ["kelas_id", "kode_kelas", "nama_kelas", "wali_kelas_id"],
+        },
+      ],
+    });
+
+    return response(200, updatedGuru, "Data guru berhasil diperbarui", res);
+  } catch (error) {
+    console.error("Error update guru:", error.message);
+    return response(500, null, "Gagal memperbarui data guru", res);
+  }
+};
+
 module.exports = {
   getUser,
   getMuridByKelas,
@@ -740,4 +896,6 @@ module.exports = {
   createAbsensiGuru,
   getAbsensiGuruHariIni,
   getAbsenGuruByDate,
+  deleteGuru,
+  updateGuru,
 };
