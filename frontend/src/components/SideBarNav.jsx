@@ -56,7 +56,7 @@ const SideBarNav = () => {
             </Link>
           </div>
         </div>
-        <div className="mt-20 ml-50">
+        <div className="ml-50">
           <Routes>
             <Route index element={<AdminDash />} />
             <Route path="panelguru" element={<PanelGuru />} />

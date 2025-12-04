@@ -127,9 +127,6 @@ const LoginPage = () => {
           <p className="text-xs text-gray-500 font-medium">
             Sistem Manajemen Kehadiran Digital
           </p>
-          <p className="text-xs text-gray-400 mt-1">
-            © 2024 Sekolah Mandiri. All rights reserved.
-          </p>
         </div>
       </div>
     </div>

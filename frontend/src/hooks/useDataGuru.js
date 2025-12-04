@@ -11,7 +11,7 @@ export const useDataGuru = () => {
       setLoading(true);
       const response = await getDataGuru.getGuru();
       setGuruList(Array.isArray(response) ? response : []);
-      // console.log("data terkirim:", response);
+      // console.log("data guru:", response);
       setError(null);
     } catch (error) {
       setError(error.response?.data?.[0]?.message || "Gagal memuat data guru");
