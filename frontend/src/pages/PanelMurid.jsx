@@ -93,6 +93,8 @@ const PanelMurid = () => {
   const [selectedMurid, setSelectedMurid] = useState([]);
   const [selectedMuridForEdit, setSelectedMuridForEdit] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterMurid, setFilterMurid] = useState([]);
   const [isMessage, setIsMessage] = useState("");
   const [toast, setToast] = useState({ show: false, message: "", type: "" });
   const [confirmationModal, setConfirmationModal] = useState({
@@ -105,6 +107,21 @@ const PanelMurid = () => {
   const hideToast = () => {
     setToast({ show: false, message: "", type: "" });
   };
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilterMurid(muridList);
+      return;
+    }
+    const filtered = muridList.filter(
+      (murid) =>
+        murid.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        murid.nis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        murid.nisn?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        murid.kelas.kode_kelas?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilterMurid(filtered);
+  }, [muridList, searchTerm]);
 
   // Handle checkbox selection
   const handleCheckboxChange = (murid) => {
@@ -280,7 +297,11 @@ const PanelMurid = () => {
               <GoDownload className="text-2xl" />
               unduh
             </button>
-            <SearchBar placeholder="Cari Nama atau NIP" />
+            <SearchBar
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Cari Nama, NIS, NISN, Kelas"
+            />
           </div>
         </div>
         <div className="flex flex-wrap gap-3 mb-5">
@@ -351,14 +372,30 @@ const PanelMurid = () => {
                     Memuat data Murid...
                   </td>
                 </tr>
-              ) : muridList.length === 0 ? (
+              ) : filterMurid.length === 0 ? (
                 <tr>
-                  <td colSpan={14} className="text-center py-10">
-                    Tidak ada data Murid
+                  <td colSpan={14} className="px-6 py-10 text-center">
+                    {searchTerm ? (
+                      <div>
+                        <p className="text-gray-500">
+                          Tidak ditemukan murid dengan kata kunci "{searchTerm}"
+                        </p>
+                        <button
+                          onClick={() => setSearchTerm("")}
+                          className="mt-2 text-blue-600 hover:text-blue-800"
+                        >
+                          Tampilkan semua murid
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-gray-500">Belum ada data Murid</p>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ) : (
-                muridList.map((murid, index) => {
+                filterMurid.map((murid, index) => {
                   const isSelected = selectedMurid.some(
                     (m) => m.murid_id === murid.murid_id
                   );
@@ -388,7 +425,7 @@ const PanelMurid = () => {
                         {murid.nama_lengkap}
                       </td>
                       <td className="px-4 py-4 font-medium text-gray-700">
-                        {murid.kelas.nama_kelas}
+                        {murid.kelas.kode_kelas}
                       </td>
                       <td className="px-4 py-4 font-medium text-gray-700">
                         {murid.jenis_kelamin}

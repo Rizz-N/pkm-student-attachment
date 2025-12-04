@@ -91,6 +91,8 @@ const PanelGuru = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedGuru, setSelectedGuru] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterGuru, setFilterGuru] = useState([]);
 
   const showToast = (message, type = "success") => {
     setToast({ show: true, message, type });
@@ -224,6 +226,19 @@ const PanelGuru = () => {
     };
   }, [isModalOpen]);
 
+  useEffect(() => {
+    if (!searchTerm) {
+      setFilterGuru(guruList);
+      return;
+    }
+    const filtered = guruList.filter(
+      (guru) =>
+        guru.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        guru.nip?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilterGuru(filtered);
+  }, [guruList, searchTerm]);
+
   return (
     <>
       <div className="bg-white m-10 p-5">
@@ -237,7 +252,11 @@ const PanelGuru = () => {
               <GoDownload className="text-2xl" />
               unduh
             </button>
-            <SearchBar placeholder="Cari Nama atau NIP" />
+            <SearchBar
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Cari Nama atau NIP"
+            />
           </div>
         </div>
         <div className="mb-5">
@@ -277,14 +296,30 @@ const PanelGuru = () => {
                     Memuat data guru...
                   </td>
                 </tr>
-              ) : guruList.length === 0 ? (
+              ) : filterGuru.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="text-center py-10">
-                    Tidak ada data guru
+                  <td colSpan={10} className="px-6 py-10 text-center">
+                    {searchTerm ? (
+                      <div>
+                        <p className="text-gray-500">
+                          Tidak ditemukan guru dengan kata kunci "{searchTerm}"
+                        </p>
+                        <button
+                          onClick={() => setSearchTerm("")}
+                          className="mt-2 text-blue-600 hover:text-blue-800"
+                        >
+                          Tampilkan semua guru
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-gray-500">Belum ada data Guru</p>
+                      </div>
+                    )}
                   </td>
                 </tr>
-              ) : guruList.length > 0 ? (
-                guruList.map((guru, index) => (
+              ) : filterGuru.length > 0 ? (
+                filterGuru.map((guru, index) => (
                   <tr
                     key={guru.guru_id}
                     className="border-b border-gray-300/50 hover:bg-gray-50/80 transition-colors duration-150"
