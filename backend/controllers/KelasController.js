@@ -7,6 +7,7 @@ const { fn, col, where, Op, Sequelize } = require("sequelize");
 const response = require("../config/response");
 const Users = require("../models/UserModel");
 const moment = require("moment-timezone");
+const bcrypt = require("bcrypt");
 
 // GET ALL ADMIN USERS
 const getAllAdminUsers = async (req, res) => {
@@ -94,7 +95,7 @@ const createAdminUser = async (req, res) => {
     });
 
     if (existingUser) {
-      console.log("❌ Username sudah digunakan");
+      console.log("Username sudah digunakan");
       return response(400, null, "Username sudah digunakan", res);
     }
 
@@ -591,6 +592,12 @@ const getUser = async (req, res) => {
     if (!user) {
       return response(404, null, "User tidak ditemukan", res);
     }
+
+    // Validate refreshToken exists in DB to prevent returning stale user data after logout
+    if (!user.refresh_token) {
+      return response(401, null, "Session telah berakhir, silakan login kembali", res);
+    }
+
     let userData = {
       user_id: user.user_id,
       username: user.username,

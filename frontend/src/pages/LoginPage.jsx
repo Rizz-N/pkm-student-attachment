@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
@@ -11,7 +11,6 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const { refreshUser } = useUser();
-
   const Login = async (e) => {
     e.preventDefault();
     if (!username || !password) {
@@ -23,30 +22,39 @@ const LoginPage = () => {
     try {
       await axios.post(
         "http://localhost:5000/login",
-        {
-          username: username,
-          password: password,
-        },
-        {
-          withCredentials: true,
-        }
+        { username, password },
+        { withCredentials: true }
       );
-      const currentUser = await refreshUser();
+      const currentUser = await refreshUser(true);
+
       if (!currentUser) {
         setMessage("Gagal memuat data user");
+        setIsLoading(false);
+        return;
       }
+
       if (currentUser.role === "admin") {
-        navigate("/admin");
+        navigate("/admin", { replace: true });
       } else if (currentUser.role === "guru") {
-        navigate("/");
+        navigate("/dashboard", { replace: true });
       }
+      console.log("Login success, user role:", currentUser.role);
+
+      localStorage.setItem(
+        "userData",
+        JSON.stringify({
+          role: currentUser.role,
+          nama: currentUser.guru?.nama_lengkap || currentUser.nama,
+          timestamp: Date.now(),
+        })
+      );
     } catch (error) {
+      console.error("Login error:", error);
       if (error.response) {
-        setMessage(error.response.data[0].message);
+        setMessage(error.response.data[0]?.message || "Login gagal");
       } else {
         setMessage("Terjadi kesalahan, silakan coba lagi");
       }
-    } finally {
       setIsLoading(false);
     }
   };

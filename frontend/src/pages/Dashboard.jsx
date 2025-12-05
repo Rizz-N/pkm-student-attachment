@@ -4,10 +4,10 @@ import {
   Link,
   useLocation,
   useNavigate,
+  Navigate,
 } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { setAuthToken } from "../utils/axiosToken";
 import { GoSignOut } from "react-icons/go";
 import { FaUserCog } from "react-icons/fa";
 import Overview from "./Overview";
@@ -22,11 +22,11 @@ const Dashboard = () => {
 
   const sidebarRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
-  const { user, refreshUser } = useUser();
+  const { user, refreshUser, logout: clearUser } = useUser();
 
-  useEffect(() => {
-    refreshToken();
-  }, []);
+  if (user && user.role !== "guru") {
+    return <Navigate to="/login" replace />;
+  }
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -46,31 +46,11 @@ const Dashboard = () => {
     };
   }, [isOpen]);
 
-  const refreshToken = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/token", {
-        withCredentials: true,
-      });
-      const token = response.data[0].payload.accessToken;
-      setAuthToken(token);
-      await refreshUser();
-    } catch (error) {
-      if (error.response) {
-        navigate("/login");
-      }
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await axios.delete("http://localhost:5000/logout", {
-        withCredentials: true,
-      });
-      await refreshUser();
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
+  const handleLogout = async () => {
+    console.log("Data sebelum logout", user);
+    await clearUser();
+    console.log("Data sesudah logout");
+    navigate("login");
   };
 
   const active = (path) =>
@@ -112,7 +92,7 @@ const Dashboard = () => {
           </div>
         </div>
         <button
-          onClick={logout}
+          onClick={handleLogout}
           className="hidden sm:flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 
                         hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 
                         rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"

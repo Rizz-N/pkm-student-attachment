@@ -105,7 +105,7 @@ router.get(
   adminMiddleware,
   getAdminUserById
 );
-router.post("/admin/users", verifyToken, adminMiddleware, createAdminUser);
+router.post("/admin/users", verifyToken, createAdminUser);
 router.put(
   "/admin/users/:user_id",
   verifyToken,

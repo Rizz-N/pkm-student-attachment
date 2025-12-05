@@ -10,6 +10,11 @@ export const setAuthToken = (token) => {
   exp = decode.exp;
 };
 
+export const clearAuthToken = () => {
+  accessToken = "";
+  exp = 0;
+};
+
 const axiosToken = axios.create({
   baseURL: "http://localhost:5000",
   withCredentials: true,
