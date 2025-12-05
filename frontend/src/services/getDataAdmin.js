@@ -30,6 +30,8 @@ export const getDataAdmin = {
     try {
       const response = await axiosToken.post("/admin/users", formData);
       console.log("Admin berhasil dibuat:", response.data[0].message);
+      console.log("Data yang di kirim:", response.data);
+
       return response.data[0];
     } catch (error) {
       console.error(
@@ -68,7 +70,7 @@ export const getDataAdmin = {
     }
   },
 
-  // UPDATE ADMIN PASSWORD (self)
+  // UPDATE PASSWORD User
   updateAdminPassword: async (formData) => {
     try {
       const response = await axiosToken.put(

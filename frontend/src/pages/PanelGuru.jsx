@@ -241,7 +241,7 @@ const PanelGuru = () => {
 
   return (
     <>
-      <div className="bg-white m-10 p-5">
+      <div className="bg-white mt-10 ml-5 p-5 rounded-s-lg shadow-lg">
         <div className=" flex justify-between mb-10">
           <div>
             <h1 className="text-2xl">Data Guru</h1>

@@ -14,6 +14,11 @@ import DaftarAdmin from "./pages/DaftarAdmin";
 import AdminDash from "./pages/AdminDash";
 import ProtectedRoute from "./components/ProtectedRoute";
 import RoleRedirect from "./components/RoleRedirect";
+import ServicePanel from "./pages/ServicePanel";
+import Overview from "./pages/Overview";
+import StudentAttendance from "./pages/StudentAttendance";
+import TeacherAttendance from "./pages/TeacherAttendance";
+import ChangePassUser from "./components/ChangePassUser";
 
 function App() {
   return (
@@ -29,14 +34,29 @@ function App() {
             }
           />
           <Route path="login" element={<LoginPage />} />
+          {/* Route khusus service */}
           <Route
             path="/dashboard/*"
             element={
               <ProtectedRoute allowedRoles={["guru"]}>
-                <Dashboard />
+                <ServicePanel />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Overview />} />
+            <Route path="student" element={<StudentAttendance />} />
+            <Route path="teacher" element={<TeacherAttendance />} />
+          </Route>
+
+          <Route
+            path="/user/changepass"
+            element={
+              <ProtectedRoute allowedRoles={["guru", "admin"]}>
+                <ChangePassUser />
               </ProtectedRoute>
             }
           />
+
           {/* path khusus admin */}
           <Route
             path="/admin"

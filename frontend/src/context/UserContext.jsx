@@ -16,7 +16,8 @@ export const UserProvider = ({ children }) => {
       setError(null);
 
       const data = await getUsers.getUserLogin();
-      console.log("data di usecontext:", data);
+      // console.log("data di usecontext:", data);
+
       if (data && data.role) {
         setUser(data);
         localStorage.setItem(

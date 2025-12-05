@@ -88,7 +88,7 @@ const SideBarNav = () => {
                     </div>
                     <div className="text-left hidden md:block">
                       <h3 className="text-sm font-semibold text-gray-800">
-                        Welcome <label>{user.username}</label>
+                        Welcome <label>{user.user_nama_lengkap}</label>
                       </h3>
                       <p className="text-xs text-gray-500">{user.role}</p>
                     </div>
@@ -101,6 +101,14 @@ const SideBarNav = () => {
                         Admin Panel
                       </h4>
                       <p className="text-xs text-gray-500 mt-1">Admin Access</p>
+                    </div>
+                    <div className="p-2">
+                      <Link
+                        className="w-full flex items-center gap-3 px-4 py-3 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200 font-medium"
+                        to={"/user/changepass"}
+                      >
+                        Ganti Password
+                      </Link>
                     </div>
                     <div className="p-2">
                       <button

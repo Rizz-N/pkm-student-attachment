@@ -271,7 +271,7 @@ const PanelKelas = () => {
 
   return (
     <>
-      <div className="bg-white m-10 p-5 rounded-xl shadow-sm">
+      <div className="bg-white mt-10 ml-5 p-5 rounded-s-lg shadow-sm">
         <div className="flex justify-between mb-10">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">Data Kelas</h1>

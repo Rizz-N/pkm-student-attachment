@@ -129,13 +129,6 @@ const Dashboard = () => {
           Teacher
         </Link>
       </div>
-      <div>
-        <Routes>
-          <Route index element={<Overview />} />
-          <Route path="student" element={<StudentAttendance />} />
-          <Route path="teacher" element={<TeacherAttendance />} />
-        </Routes>
-      </div>
     </>
   );
 };

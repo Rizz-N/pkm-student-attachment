@@ -126,16 +126,6 @@ const ModalMurid = ({ open, onClose, onSubmit }) => {
 
           {/* Error Message */}
 
-          {/* Debug info */}
-          <div className="mx-6 mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-            <p>
-              Debug: Kelas ID terpilih:{" "}
-              <strong>{form.kelas_id || "(belum dipilih)"}</strong>
-            </p>
-            <p>
-              Total pilihan kelas: <strong>{kelasOption.length}</strong>
-            </p>
-          </div>
           {/* Form */}
           <form
             onSubmit={handleSubmit}
@@ -273,19 +263,33 @@ const ModalMurid = ({ open, onClose, onSubmit }) => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 hover:bg-white"
               />
             </div>
-            {/* No Telepon */}
+            {/* agama */}
             <div className="space-y-2">
               <label className="text-sm font-semibold text-gray-700">
                 Agama
               </label>
-              <input
+              <select
+                name="agama"
+                value={form.agama}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 hover:bg-white appearance-none"
+              >
+                <option value="">Pilih Agama</option>
+                <option value="islam">Islam</option>
+                <option value="kristen">Kristen</option>
+                <option value="khatolik">Khatolik</option>
+                <option value="budha">Budha</option>
+                <option value="konghucu">Konghucu</option>
+              </select>
+              {/* <input
                 name="agama"
                 value={form.agama}
                 placeholder="Masukan agama resmi"
                 onChange={handleChange}
                 disabled={loading}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 hover:bg-white"
-              />
+              /> */}
             </div>
             {/* nama orangtua */}
             <div className="space-y-2">

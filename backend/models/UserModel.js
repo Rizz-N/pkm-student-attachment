@@ -1,33 +1,70 @@
-const {Sequelize, DataTypes} = require ('sequelize')
-const db = require ('../config/database')
+const { Sequelize, DataTypes } = require("sequelize");
+const db = require("../config/database");
 
-const Users = db.define('users',{
-    user_id:{
-        type: DataTypes.INTEGER,
-        autoIncrement:true,
-        primaryKey:true
+const Users = db.define(
+  "users",
+  {
+    user_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
     },
-    username:{
-        type: DataTypes.STRING,
-        unique: true
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
     },
-    password:{
-        type: DataTypes.STRING,
-        allowNull: false
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    role:{
-        type: DataTypes.ENUM('admin','guru','murid'),
-        allowNull: false
+    role: {
+      type: DataTypes.ENUM("admin", "guru", "murid"),
+      allowNull: false,
     },
-    user_type:{
-        type: DataTypes.ENUM('guru','murid'),
-        allowNull:true
+    user_type: {
+      type: DataTypes.ENUM("guru", "murid"),
+      allowNull: true,
     },
-    refresh_token:{
-        type: DataTypes.STRING
+    refresh_token: {
+      type: DataTypes.STRING,
     },
-},{
-    freezeTableName:true
-});
+    // ini data baru yang saya tambahkan
+    user_nip: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: true, //ganti false nanti
+    },
+    user_nama_lengkap: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    user_jenis_kelamin: {
+      type: DataTypes.ENUM("laki-laki", "perempuan"),
+      allowNull: true,
+    },
+    user_tanggal_lahir: {
+      type: DataTypes.DATEONLY,
+    },
+    user_alamat: {
+      type: DataTypes.STRING,
+    },
+    user_no_telepon: {
+      type: DataTypes.STRING,
+    },
+    user_email: {
+      type: DataTypes.STRING,
+    },
+    user_foto_profile: {
+      type: DataTypes.STRING,
+    },
+    user_status: {
+      type: DataTypes.ENUM("aktif", "non-aktif"),
+      defaultValue: "aktif",
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
 
-module.exports = Users
+module.exports = Users;

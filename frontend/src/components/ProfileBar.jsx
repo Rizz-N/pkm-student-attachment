@@ -1,6 +1,6 @@
 import { GoSidebarExpand, GoSignOut } from "react-icons/go";
 import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const ProfileBar = ({ isOpen, setIsOpen }) => {
@@ -125,6 +125,11 @@ const ProfileBar = ({ isOpen, setIsOpen }) => {
             <p className="text-gray-800 font-semibold mt-1 leading-relaxed">
               {user?.guru.alamat || ""}
             </p>
+          </div>
+          <div className="mt-5 px-2 text-end">
+            <Link to={"/user/changepass"} className="cursor-pointer underline">
+              Ganti password
+            </Link>
           </div>
           <button
             onClick={logout}

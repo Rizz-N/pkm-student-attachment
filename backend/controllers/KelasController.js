@@ -23,6 +23,14 @@ const getAllAdminUsers = async (req, res) => {
         "username",
         "role",
         "user_type",
+        "nip",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "tanggal_lahir",
+        "alamat",
+        "no_telepon",
+        "email",
+        "foto_profile",
         "createdAt",
         "updatedAt",
       ],
@@ -54,6 +62,14 @@ const getAdminUserById = async (req, res) => {
         "username",
         "role",
         "user_type",
+        "nip",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "tanggal_lahir",
+        "alamat",
+        "no_telepon",
+        "email",
+        "foto_profile",
         "createdAt",
         "updatedAt",
       ],
@@ -77,16 +93,36 @@ const createAdminUser = async (req, res) => {
   console.log("=== BACKEND DEBUG: CREATE ADMIN USER ===");
   console.log("Request body:", JSON.stringify(req.body, null, 2));
 
-  const { username, password } = req.body;
+  const {
+    username,
+    password,
+    nip,
+    nama_lengkap,
+    jenis_kelamin,
+    tanggal_lahir,
+    alamat,
+    no_telepon,
+    email,
+    foto_profile,
+  } = req.body;
 
   try {
-    // Validasi input
+    // Validasi input wajib
     if (!username || !password) {
       return response(400, null, "Username dan password wajib diisi", res);
     }
 
+    if (!nama_lengkap) {
+      return response(400, null, "Nama lengkap wajib diisi", res);
+    }
+
     if (password.length < 6) {
       return response(400, null, "Password minimal 6 karakter", res);
+    }
+
+    // Validasi email jika diisi
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      return response(400, null, "Format email tidak valid", res);
     }
 
     // Cek username sudah digunakan
@@ -99,17 +135,39 @@ const createAdminUser = async (req, res) => {
       return response(400, null, "Username sudah digunakan", res);
     }
 
+    // Cek NIP jika diisi
+    if (nip) {
+      const existingNIP = await Users.findOne({
+        where: { user_nip: nip },
+      });
+      if (existingNIP) {
+        return response(400, null, "NIP sudah digunakan", res);
+      }
+    }
+
     // Hash password
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
 
-    // Buat user admin baru
+    // Buat user admin baru dengan kolom baru
     const newAdminUser = await Users.create({
       username,
       password: hashPassword,
-      role: "admin", // Set role langsung ke admin
-      user_type: null, // Admin tidak punya user_type
+      role: "admin",
+      user_type: null,
+
+      user_nip: nip || null,
+      user_nama_lengkap: nama_lengkap,
+      user_jenis_kelamin: jenis_kelamin || null,
+      user_tanggal_lahir: tanggal_lahir || null,
+      user_alamat: alamat || null,
+      user_no_telepon: no_telepon || null,
+      user_email: email || null,
+      user_foto_profile: foto_profile || null,
+      user_status: "aktif",
     });
+
+    console.log("Admin user created successfully:", newAdminUser.user_id);
 
     // Ambil data tanpa password
     const adminData = await Users.findOne({
@@ -119,26 +177,45 @@ const createAdminUser = async (req, res) => {
         "username",
         "role",
         "user_type",
+        "user_nip",
+        "user_nama_lengkap",
+        "user_jenis_kelamin",
+        "user_tanggal_lahir",
+        "user_alamat",
+        "user_no_telepon",
+        "user_email",
+        "user_foto_profile",
+        "user_status",
         "createdAt",
         "updatedAt",
       ],
     });
 
-    console.log("Admin user berhasil dibuat:", adminData.username);
-    return response(201, adminData, "Admin berhasil dibuat", res);
+    response(
+      201,
+      {
+        success: true,
+        message: "Admin berhasil dibuat",
+        data: adminData,
+      },
+      "Admin berhasil dibuat",
+      res
+    );
   } catch (error) {
-    console.error("Error create admin user:", error.message);
+    console.error("Error creating admin user:", error);
+
+    // Handle specific Sequelize errors
+    if (error.name === "SequelizeUniqueConstraintError") {
+      const field = error.errors[0]?.path;
+      return response(400, null, `${field} sudah digunakan`, res);
+    }
 
     if (error.name === "SequelizeValidationError") {
-      const messages = error.errors.map((err) => err.message);
-      return response(400, null, messages.join(", "), res);
+      const message = error.errors[0]?.message;
+      return response(400, null, message || "Validasi data gagal", res);
     }
 
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return response(400, null, "Username sudah terdaftar", res);
-    }
-
-    return response(500, null, "Gagal membuat admin", res);
+    response(500, null, "Terjadi kesalahan saat membuat admin", res);
   }
 };
 
@@ -149,7 +226,18 @@ const updateAdminUser = async (req, res) => {
   console.log("Request body:", JSON.stringify(req.body, null, 2));
 
   const { user_id } = req.params;
-  const { username } = req.body;
+  const {
+    username,
+    nip,
+    nama_lengkap,
+    jenis_kelamin,
+    tanggal_lahir,
+    alamat,
+    no_telepon,
+    email,
+    foto_profile,
+    status,
+  } = req.body;
 
   try {
     // Cari admin berdasarkan ID
@@ -184,6 +272,15 @@ const updateAdminUser = async (req, res) => {
     // Update data
     const updateData = {};
     if (username !== undefined) updateData.username = username;
+    if (nip !== undefined) updateData.nip = nip;
+    if (nama_lengkap !== undefined) updateData.nama_lengkap = nama_lengkap;
+    if (jenis_kelamin !== undefined) updateData.jenis_kelamin = jenis_kelamin;
+    if (tanggal_lahir !== undefined) updateData.tanggal_lahir = tanggal_lahir;
+    if (alamat !== undefined) updateData.alamat = alamat;
+    if (no_telepon !== undefined) updateData.no_telepon = no_telepon;
+    if (email !== undefined) updateData.email = email;
+    if (foto_profile !== undefined) updateData.foto_profile = foto_profile;
+    if (status !== undefined) updateData.status = status;
 
     console.log("Data yang akan diupdate:", updateData);
 
@@ -200,6 +297,15 @@ const updateAdminUser = async (req, res) => {
         "user_type",
         "createdAt",
         "updatedAt",
+        "nip",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "tanggal_lahir",
+        "alamat",
+        "no_telepon",
+        "email",
+        "foto_profile",
+        "status",
       ],
     });
 
@@ -224,10 +330,11 @@ const updateAdminUser = async (req, res) => {
 // UPDATE ADMIN PASSWORD
 const updateAdminPassword = async (req, res) => {
   console.log("=== BACKEND DEBUG: UPDATE ADMIN PASSWORD ===");
-  console.log("Request params:", req.params);
+  console.log("Request userId from JWT:", req.userId);
   console.log("Request body:", JSON.stringify(req.body, null, 2));
 
-  const { user_id } = req.params;
+  // Get user_id from JWT token (req.userId), not from params
+  const user_id = req.userId;
   const { current_password, new_password, confirm_password } = req.body;
 
   try {
@@ -263,17 +370,16 @@ const updateAdminPassword = async (req, res) => {
       );
     }
 
-    // Cari admin berdasarkan ID
+    // Cari user berdasarkan ID dari JWT
     const adminUser = await Users.findOne({
       where: {
         user_id,
-        role: "admin",
       },
     });
 
     if (!adminUser) {
-      console.log("❌ Admin tidak ditemukan");
-      return response(404, null, "Data admin tidak ditemukan", res);
+      console.log("User tidak ditemukan untuk user_id:", user_id);
+      return response(404, null, "Data User tidak ditemukan", res);
     }
 
     // Verifikasi password saat ini
@@ -293,7 +399,10 @@ const updateAdminPassword = async (req, res) => {
     // Update password
     await adminUser.update({ password: hashPassword });
 
-    console.log("✅ Password admin berhasil diupdate:", adminUser.username);
+    console.log(
+      "✅ Password berhasil diupdate untuk user:",
+      adminUser.username
+    );
     return response(200, null, "Password berhasil diperbarui", res);
   } catch (error) {
     console.error("❌ Error update admin password:", error.message);
@@ -595,7 +704,12 @@ const getUser = async (req, res) => {
 
     // Validate refreshToken exists in DB to prevent returning stale user data after logout
     if (!user.refresh_token) {
-      return response(401, null, "Session telah berakhir, silakan login kembali", res);
+      return response(
+        401,
+        null,
+        "Session telah berakhir, silakan login kembali",
+        res
+      );
     }
 
     let userData = {
@@ -603,6 +717,15 @@ const getUser = async (req, res) => {
       username: user.username,
       role: user.role,
       user_type: user.user_type,
+      user_nip: user.user_nip,
+      user_nama_lengkap: user.user_nama_lengkap,
+      user_jenis_kelamin: user.user_jenis_kelamin,
+      user_tanggal_lahir: user.user_tanggal_lahir,
+      user_alamat: user.user_alamat,
+      user_no_telepon: user.user_no_telepon,
+      user_email: user.user_email,
+      user_foto_profile: user.user_foto_profile,
+      user_status: user.user_status,
     };
 
     if (user.role === "guru" && user.guru) {
@@ -2454,9 +2577,6 @@ const getAbsensiMuridBulanan = async (req, res) => {
       nest: true,
     });
 
-    // ============================
-    // Hitung statistik harian
-    // ============================
     const daysInMonth = moment(`${targetYear}-${targetMonth}`).daysInMonth();
     const monthlyStats = [];
 
@@ -2511,18 +2631,14 @@ const getAbsensiMuridBulanan = async (req, res) => {
         ? ((totalStats.hadir / totalStats.total) * 100).toFixed(1)
         : "0.0";
 
-    // 🔥🔥🔥 ============================================
-    // PERUBAHAN TERPENTING — ⬇⬇⬇ AMBIL 12 BULAN SEKALIGUS
-    // ================================================
     const chartData = await getChartData1Year(targetYear, kelas_id);
-    // 🔥🔥🔥 ============================================
 
     const responseData = {
       tahun: parseInt(targetYear),
       bulan: parseInt(targetMonth),
       statistik_harian: monthlyStats,
       total_statistik: totalStats,
-      chart_data_1_tahun: chartData, // 🔥 data 12 bulan
+      chart_data_1_tahun: chartData,
       detail: {
         jumlah_murid:
           absensiData.length > 0
@@ -2615,7 +2731,7 @@ const getAbsensiGuruBulanan = async (req, res) => {
         hadir: 0,
         sakit: 0,
         izin: 0,
-        alpha: 0,
+        tidak_hadir: 0,
         total: 0,
         persentase: 0,
       });
@@ -2629,17 +2745,17 @@ const getAbsensiGuruBulanan = async (req, res) => {
 
       if (statIndex >= 0 && statIndex < monthlyStats.length) {
         switch (absen.status) {
-          case "hadir":
+          case "Hadir":
             monthlyStats[statIndex].hadir++;
             break;
-          case "sakit":
+          case "Sakit":
             monthlyStats[statIndex].sakit++;
             break;
-          case "izin":
+          case "Izin":
             monthlyStats[statIndex].izin++;
             break;
-          case "alpha":
-            monthlyStats[statIndex].alpha++;
+          case "Tidak Hadir":
+            monthlyStats[statIndex].tidak_hadir++;
             break;
         }
         monthlyStats[statIndex].total++;
@@ -2651,7 +2767,7 @@ const getAbsensiGuruBulanan = async (req, res) => {
       hadir: monthlyStats.reduce((sum, day) => sum + day.hadir, 0),
       sakit: monthlyStats.reduce((sum, day) => sum + day.sakit, 0),
       izin: monthlyStats.reduce((sum, day) => sum + day.izin, 0),
-      alpha: monthlyStats.reduce((sum, day) => sum + day.alpha, 0),
+      tidak_hadir: monthlyStats.reduce((sum, day) => sum + day.tidak_hadir, 0),
       total: monthlyStats.reduce((sum, day) => sum + day.total, 0),
     };
 
@@ -2673,23 +2789,23 @@ const getAbsensiGuruBulanan = async (req, res) => {
           hadir: 0,
           sakit: 0,
           izin: 0,
-          alpha: 0,
+          tidak_hadir: 0,
           total: 0,
         };
       }
 
       switch (absen.status) {
-        case "hadir":
+        case "Hadir":
           guruStats[guruId].hadir++;
           break;
-        case "sakit":
+        case "Sakit":
           guruStats[guruId].sakit++;
           break;
-        case "izin":
+        case "Izin":
           guruStats[guruId].izin++;
           break;
-        case "alpha":
-          guruStats[guruId].alpha++;
+        case "Tidak Hadir":
+          guruStats[guruId].tidak_hadir++;
           break;
       }
       guruStats[guruId].total++;
@@ -2701,7 +2817,6 @@ const getAbsensiGuruBulanan = async (req, res) => {
         guru.total > 0 ? ((guru.hadir / guru.total) * 100).toFixed(1) : 0,
     }));
 
-    // Format untuk chart (6 bulan terakhir)
     const chartData = await getChartDataGuru(targetYear, targetMonth);
 
     const responseData = {
@@ -2906,10 +3021,10 @@ const getAbsensiGuruTahunan = async (req, res) => {
         (absen) => moment(absen.tanggal).month() + 1 === month
       );
 
-      const hadir = monthData.filter((a) => a.status === "hadir").length;
-      const sakit = monthData.filter((a) => a.status === "sakit").length;
-      const izin = monthData.filter((a) => a.status === "izin").length;
-      const alpha = monthData.filter((a) => a.status === "alpha").length;
+      const hadir = monthData.filter((a) => a.status === "Hadir").length;
+      const sakit = monthData.filter((a) => a.status === "Sakit").length;
+      const izin = monthData.filter((a) => a.status === "Izin").length;
+      const alpha = monthData.filter((a) => a.status === "Tidak Hadir").length;
       const total = monthData.length;
 
       monthlyStats.push({
@@ -2958,16 +3073,16 @@ const getAbsensiGuruTahunan = async (req, res) => {
       }
 
       switch (absen.status) {
-        case "hadir":
+        case "Hadir":
           guruStats[guruId].hadir++;
           break;
-        case "sakit":
+        case "Sakit":
           guruStats[guruId].sakit++;
           break;
-        case "izin":
+        case "Izin":
           guruStats[guruId].izin++;
           break;
-        case "alpha":
+        case "Tidak Hadir":
           guruStats[guruId].alpha++;
           break;
       }
@@ -3020,8 +3135,8 @@ const getChartData = async (tahun, bulan, kelas_id = null) => {
     const chartData = [];
     const currentDate = moment();
 
-    // Ambil data untuk 6 bulan terakhir
-    for (let i = 5; i >= 0; i--) {
+    // Ambil data untuk 12 bulan terakhir (bukan 6)
+    for (let i = 11; i >= 0; i--) {
       const targetDate = currentDate.clone().subtract(i, "months");
       const targetYear = targetDate.year();
       const targetMonth = targetDate.month() + 1;
@@ -3098,8 +3213,8 @@ const getChartDataGuru = async (tahun, bulan) => {
     const chartData = [];
     const currentDate = moment();
 
-    // Ambil data untuk 6 bulan terakhir
-    for (let i = 5; i >= 0; i--) {
+    // Ambil data untuk 12 bulan terakhir (bukan 6)
+    for (let i = 11; i >= 0; i--) {
       const targetDate = currentDate.clone().subtract(i, "months");
       const targetYear = targetDate.year();
       const targetMonth = targetDate.month() + 1;
@@ -3128,10 +3243,12 @@ const getChartDataGuru = async (tahun, bulan) => {
       });
 
       // Hitung statistik
-      const hadir = absensiData.filter((a) => a.status === "hadir").length;
-      const sakit = absensiData.filter((a) => a.status === "sakit").length;
-      const izin = absensiData.filter((a) => a.status === "izin").length;
-      const alpha = absensiData.filter((a) => a.status === "alpha").length;
+      const hadir = absensiData.filter((a) => a.status === "Hadir").length;
+      const sakit = absensiData.filter((a) => a.status === "Sakit").length;
+      const izin = absensiData.filter((a) => a.status === "Izin").length;
+      const alpha = absensiData.filter(
+        (a) => a.status === "Tidak Hadir"
+      ).length;
       const total = absensiData.length;
 
       const persentaseHadir =

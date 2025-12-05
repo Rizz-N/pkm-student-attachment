@@ -24,4 +24,16 @@ export const getAbsensiTahunan = {
       throw error;
     }
   },
+
+  getAbsensiGuruBulan: async () => {
+    try {
+      const response = await axiosToken.get("/absensi/guru/bulanan");
+      // console.log("Data Absensi guru bulanan:", response.data);
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching absensi guru bulanan", error);
+      throw error;
+    }
+  },
 };

@@ -568,7 +568,7 @@ const StudentAttendance = () => {
               </select>
             </div>
 
-            <div className="w-full md:w-64">
+            {/* <div className="w-full md:w-64">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Semester
               </label>
@@ -581,7 +581,7 @@ const StudentAttendance = () => {
                 <option value="Ganjil">Ganjil</option>
                 <option value="Genap">Genap</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           {selectedKelas && (

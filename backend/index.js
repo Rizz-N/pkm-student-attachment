@@ -1,19 +1,21 @@
-const express = require ('express')
-const response = require ('./config/response')
-const db = require ('./config/database')
-const router = require('./routes/index')
-const bodyParser = require ('body-parser')
-const cookieParser =  require('cookie-parser')
-const dotenv = require ('dotenv')
-const cors = require ('cors')
+const express = require("express");
+const response = require("./config/response");
+const db = require("./config/database");
+const router = require("./routes/index");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const dotenv = require("dotenv");
+const cors = require("cors");
 
-dotenv.config()
+dotenv.config();
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(router);
@@ -21,14 +23,13 @@ app.use(router);
 (async () => {
   try {
     await db.authenticate();
-    console.log('database connected..');
-    // await db.sync({alter: true})
+    console.log("database connected..");
+    // await db.sync({ alter: true });
   } catch (error) {
     console.error(error);
   }
 })();
 
-
-app.listen(5000,()=>{
-  console.log("Server is running on port 5000")
-})
+app.listen(5000, () => {
+  console.log("Server is running on port 5000");
+});

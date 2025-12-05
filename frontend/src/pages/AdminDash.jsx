@@ -50,7 +50,7 @@ const StatCard = ({ title, value, icon: Icon, color, change, subtitle }) => {
           <p className="text-gray-500 text-sm font-medium mb-1">{title}</p>
           <p className="text-3xl font-bold text-gray-800">{value}</p>
           {subtitle && <p className="text-sm text-gray-500 mt-1">{subtitle}</p>}
-          {change && (
+          {/* {change && (
             <div className="flex items-center mt-2">
               <span
                 className={`text-sm font-medium ${
@@ -63,7 +63,7 @@ const StatCard = ({ title, value, icon: Icon, color, change, subtitle }) => {
                 dari bulan lalu
               </span>
             </div>
-          )}
+          )} */}
         </div>
         <div className={`p-3 rounded-full ${colorClasses[color]}`}>
           <Icon className="text-2xl" />
@@ -73,49 +73,21 @@ const StatCard = ({ title, value, icon: Icon, color, change, subtitle }) => {
   );
 };
 
-// Komponen RecentActivity
-const ActivityItem = ({ icon: Icon, title, description, time, color }) => {
-  const colorClasses = {
-    blue: "bg-blue-100 text-blue-600",
-    green: "bg-green-100 text-green-600",
-    purple: "bg-purple-100 text-purple-600",
-    yellow: "bg-yellow-100 text-yellow-600",
-  };
-
-  return (
-    <div className="flex items-start gap-4 p-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 rounded-lg transition-colors">
-      <div className={`p-3 rounded-full ${colorClasses[color]}`}>
-        <Icon className="text-lg" />
-      </div>
-      <div className="flex-1">
-        <p className="font-medium text-gray-800">{title}</p>
-        <p className="text-sm text-gray-600 mt-1">{description}</p>
-        <p className="text-xs text-gray-400 mt-2">{time}</p>
-      </div>
-    </div>
-  );
-};
-
-// Komponen NotificationBadge
-const NotificationBadge = ({ count }) => {
-  if (count === 0) return null;
-
-  return (
-    <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
-      {count > 9 ? "9+" : count}
-    </span>
-  );
-};
-
 const AdminDash = () => {
   const { muridList, loading, error, loadDataMurid } = useDataMurid();
   const { guruList, loadDataGuru } = useDataGuru();
   const { kelasList, loadDataKelas } = useDataKelas();
   const { total, totalMurid, totalGuruHadir, totalMuridHadir } = useGetTotal();
-  const { chartData, loadAbsensiBulananMurid, loadAbsensiTanunanMurid } =
-    useAbsensiTahunan();
+  const {
+    chartData,
+    chartDataGuru,
+    loadAbsensiBulananMurid,
+    loadAbsensiTanunanMurid,
+    loadAbsensiBulananGuru,
+  } = useAbsensiTahunan();
 
   const [filterYear, setFilterYear] = useState("6bulan");
+  const [filterMonth, setFilterMonth] = useState("enambulan");
 
   const [stats, setStats] = useState({
     totalStudents: 0,
@@ -137,6 +109,15 @@ const AdminDash = () => {
     attendanceData = chartData.slice(-6);
   } else if (filterYear === "tahunini") {
     attendanceData = chartData;
+  }
+
+  // Data untuk grafik
+  let attendanceDataGuru = [];
+
+  if (filterMonth === "enambulan") {
+    attendanceDataGuru = chartDataGuru.slice(-6);
+  } else if (filterMonth === "12bulan") {
+    attendanceDataGuru = chartDataGuru;
   }
 
   const classDistributionData = kelasList.map((k) => ({
@@ -286,7 +267,67 @@ const AdminDash = () => {
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Attendance Chart */}
+        {/* Attendance Chart Teacher */}
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-800">
+              Statistik Kehadiran Guru
+            </h3>
+            <select
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white"
+            >
+              <option value="enambulan">6 Bulan Terakhir</option>
+              <option value="12bulan">Tahun Ini</option>
+            </select>
+          </div>
+          <div className="h-[400px] w-full">
+            <ResponsiveContainer
+              width="100%"
+              height="100%"
+              minWidth={0}
+              minHeight={300}
+            >
+              <BarChart data={attendanceDataGuru}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
+                <YAxis
+                  stroke="#6B7280"
+                  fontSize={12}
+                  label={{
+                    value: "Persentase (%)",
+                    angle: -90,
+                    position: "insideLeft",
+                    style: { textAnchor: "middle" },
+                  }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "white",
+                    border: "1px solid #E5E7EB",
+                    borderRadius: "8px",
+                  }}
+                />
+                <Legend />
+                <Bar
+                  dataKey="hadir"
+                  name="Hadir"
+                  fill="#10B981"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="alpha"
+                  name="Tidak Hadir"
+                  fill="#EF4444"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Attendance Chart Student */}
         <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-lg font-bold text-gray-800">
