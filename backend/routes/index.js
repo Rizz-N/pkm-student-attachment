@@ -106,6 +106,7 @@ router.get(
   getAdminUserById
 );
 router.post("/admin/users", verifyToken, createAdminUser);
+router.post("/admin/superadmin", createAdminUser);
 router.put(
   "/admin/users/:user_id",
   verifyToken,

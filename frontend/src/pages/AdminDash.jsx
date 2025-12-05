@@ -282,13 +282,11 @@ const AdminDash = () => {
               <option value="12bulan">Tahun Ini</option>
             </select>
           </div>
-          <div className="h-[400px] w-full">
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-              minWidth={0}
-              minHeight={300}
-            >
+          <div
+            className="h-[400px] w-full"
+            style={{ minWidth: 0, minHeight: 300 }}
+          >
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={attendanceDataGuru}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
@@ -342,13 +340,11 @@ const AdminDash = () => {
               <option value="tahunini">Tahun Ini</option>
             </select>
           </div>
-          <div className="h-[400px] w-full">
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-              minWidth={0}
-              minHeight={300}
-            >
+          <div
+            className="h-[400px] w-full"
+            style={{ minWidth: 0, minHeight: 300 }}
+          >
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={attendanceData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
@@ -392,13 +388,8 @@ const AdminDash = () => {
           <h3 className="text-lg font-bold text-gray-800 mb-6">
             Distribusi Kelas
           </h3>
-          <div className="w-full">
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-              minWidth={0}
-              minHeight={300}
-            >
+          <div className="w-full" style={{ minWidth: 0, minHeight: 300 }}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={classDistributionData}
