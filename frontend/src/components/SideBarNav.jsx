@@ -1,4 +1,12 @@
-import { FaCog, FaUser, FaPlus } from "react-icons/fa";
+import {
+  FaUserCog,
+  FaUser,
+  FaPlus,
+  FaChalkboardTeacher,
+  FaUserGraduate,
+  FaBook,
+} from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 
@@ -15,49 +23,55 @@ const SideBarNav = () => {
   const { user, refreshUser, logout: clearUser } = useUser();
 
   const handleLogout = async () => {
-    console.log("Data sebelum logout", user);
+    // console.log("Data sebelum logout", user);
     await clearUser();
-    console.log("Data sesudah logout");
+    // console.log("Data sesudah logout");
     navigate("login");
   };
 
   return (
     <>
       <div>
-        <div className="fixed z-50 left-0 top-0 h-screen p-6 flex flex-col bg-gradient-to-b from-blue-600 to-purple-600">
-          <div className="flex items-center mb-10 text-white gap-4">
-            <FaCog className="text-3xl" />
+        <div className="fixed z-50 left-0 top-0 h-screen px-8 pt-15 flex flex-col bg-gradient-to-b from-blue-600 to-purple-600">
+          <div className="flex items-center mb-10 text-white gap-2">
+            <FaUserCog className="text-xl" />
             <label className="text-xl">Admin Panel</label>
           </div>
           <div className="flex flex-col gap-8 text-white text-xl">
             <Link
-              className={`p-2 rounded-xl text-center ${active("/admin")}`}
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
+                "/admin"
+              )}`}
               to={"/admin"}
             >
+              <MdDashboard />
               Dashboard
             </Link>
             <Link
-              className={`p-2 rounded-xl text-center ${active(
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
                 "/admin/panelguru"
               )}`}
               to={"/admin/panelguru"}
             >
+              <FaChalkboardTeacher />
               Data Guru
             </Link>
             <Link
-              className={`p-2 rounded-xl text-center ${active(
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
                 "/admin/panelmurid"
               )}`}
               to={"/admin/panelmurid"}
             >
+              <FaUserGraduate />
               Data Murid
             </Link>
             <Link
-              className={`p-2 rounded-xl text-center ${active(
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
                 "/admin/panelkelas"
               )}`}
               to={"/admin/panelkelas"}
             >
+              <FaBook />
               Data Kelas
             </Link>
           </div>
@@ -146,8 +160,8 @@ const SideBarNav = () => {
               >
                 Dashboard
               </Link>
-              <span className="mx-2">/</span>
-              <span className="text-gray-800 font-medium">
+              <span className="mx-2"> - </span>
+              <span className="text-gray-800 font-medium hover:text-blue-600 cursor-pointer">
                 {location.pathname.includes("panelguru") && "Data Guru"}
                 {location.pathname.includes("panelmurid") && "Data Murid"}
                 {location.pathname.includes("panelkelas") && "Data Kelas"}

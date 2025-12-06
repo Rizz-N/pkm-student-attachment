@@ -20,7 +20,7 @@ export const useAbsensiTahunan = () => {
       }));
       setChartData(formatted);
       // console.log("Data absen murid bulanan:", response[0].payload);
-      console.log("data bulanan:", formatted);
+      // console.log("data bulanan:", formatted);
       setError(null);
     } catch (error) {
       setError(error.response.data.message);
@@ -61,7 +61,7 @@ export const useAbsensiTahunan = () => {
         alpha: item.alpha,
       }));
       setChartDataGuru(formatedData);
-      console.log("Data absensi guru bulanan:", formatedData);
+      // console.log("Data absensi guru bulanan:", formatedData);
     } catch (error) {
       console.error("Error get absensi guru bulanan:", error);
       setError(error.response.data.message);

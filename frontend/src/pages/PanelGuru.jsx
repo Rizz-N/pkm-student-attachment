@@ -244,18 +244,18 @@ const PanelGuru = () => {
       <div className="bg-white mt-10 ml-5 p-5 rounded-s-lg shadow-lg">
         <div className=" flex justify-between mb-10">
           <div>
-            <h1 className="text-2xl">Data Guru</h1>
-            <p className="text-xl">Sekolah...</p>
+            <h1 className="text-2xl font-bold text-gray-800">Data Guru</h1>
+            <p className="text-gray-600">Management data lengkap guru</p>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
-              <GoDownload className="text-2xl" />
-              unduh
+            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
+              <GoDownload className="text-lg" />
+              Export Data
             </button>
             <SearchBar
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Cari Nama atau NIP"
+              placeholder="Cari Nama, atau NIP"
             />
           </div>
         </div>
@@ -264,35 +264,64 @@ const PanelGuru = () => {
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm min-w-[120px]"
           >
-            <FaPlus className="text-xl" />
+            <FaPlus className="text-lg" />
             Tambah Guru
           </button>
         </div>
 
         {/* Table data */}
-        <div className="overflow-x-auto">
-          <table className="whitespace-nowrap">
+        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <table className="whitespace-nowrap min-w-full divide-y divide-gray-200">
             <thead className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
               <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                <th className="px-4 py-4 font-semibold">No</th>
-                <th className="px-4 py-4 font-semibold">NIP</th>
-                <th className="px-4 py-4 font-semibold">Nama Lengkap</th>
-                <th className="px-4 py-4 font-semibold">Jenis Kelamin</th>
-                <th className="px-4 py-4 font-semibold">Tanggal Lahir</th>
-                <th className="px-4 py-4 font-semibold">Alamat</th>
-                <th className="px-4 py-4 font-semibold">No Telepon</th>
-                <th className="px-4 py-4 font-semibold">Email</th>
-                <th className="px-4 py-4 font-semibold">Jabatan</th>
-                <th className="px-4 py-4 font-semibold">Mata Pelajaran</th>
-                <th className="px-4 py-4 font-semibold">Wali Kelas</th>
-                <th className="px-4 py-4 font-semibold">Status</th>
-                <th className="px-4 py-4 font-semibold">Aksi</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  No
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  NIP
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Nama Lengkap
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Jenis Kelamin
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Tanggal Lahir
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Alamat
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  No Telepon
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Jabatan
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Mata Pelajaran
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Wali Kelas
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={10} className="text-center py-10">
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
                     Memuat data guru...
                   </td>
                 </tr>
@@ -324,40 +353,40 @@ const PanelGuru = () => {
                     key={guru.guru_id}
                     className="border-b border-gray-300/50 hover:bg-gray-50/80 transition-colors duration-150"
                   >
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                       {guru.nip}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                       {guru.nama_lengkap}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.jenis_kelamin}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.tanggal_lahir}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.alamat}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.no_telepon}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.email}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.jabatan}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.mata_pelajaran}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.kelasDibimbing?.[0]?.nama_kelas}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 font-medium uppercase text-gray-700">
                       <span
                         className={`px-2 py-1 rounded-full text-xs ${
                           guru.status === "aktif"

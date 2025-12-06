@@ -59,8 +59,8 @@ export const useAbsensiGuru = () => {
         absensiGuru.getAbsensiGuruByDate(dateString),
       ]);
 
-      console.log("data guru", guruResponse);
-      console.log("data absensi", absensiResponse);
+      // console.log("data guru", guruResponse);
+      // console.log("data absensi", absensiResponse);
 
       const guruData = Array.isArray(guruResponse) ? guruResponse : [];
       const absensiData = Array.isArray(absensiResponse) ? absensiResponse : [];

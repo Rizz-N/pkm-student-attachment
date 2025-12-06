@@ -94,7 +94,7 @@ const Dashboard = () => {
         <button
           onClick={handleLogout}
           className="hidden sm:flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 
-                        hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 
+                        hover:from-blue-700 hover:to-purple-700 text-white py-3 px-6 cursor-pointer
                         rounded-2xl text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
         >
           <GoSignOut className="text-lg" />

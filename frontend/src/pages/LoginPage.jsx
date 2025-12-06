@@ -1,11 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -101,14 +103,23 @@ const LoginPage = () => {
             <label className="text-sm font-semibold text-gray-700 block">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Masukkan password Anda"
-              className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
-              disabled={isLoading}
-            />
+            <div className="relative group">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Masukkan password Anda"
+                className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-5 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
 
           {/* Login Button */}

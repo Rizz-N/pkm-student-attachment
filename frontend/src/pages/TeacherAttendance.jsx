@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { useAbsensiGuru } from "../hooks/useAbsensiGuru";
 import { GoDownload } from "react-icons/go";
-import { GoCalendar } from "react-icons/go";
-import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
-import { absensiGuru } from "../services/absensiGuru";
-import Dropdown from "../components/Dropdown";
 import StatusBadge from "../components/StatusBadge";
 import Calendar from "../components/Calendar";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const TeacherAttendance = () => {
   const {
@@ -143,6 +141,36 @@ const TeacherAttendance = () => {
     }
   };
 
+  const exportToExcel = () => {
+    const exportData = guruList.map((guru, index) => ({
+      No: index + 1,
+      NIP: guru.nip,
+      Nama: guru.nama_lengkap,
+      "Wali Kelas": guru.kelasDibimbing?.[0]?.nama_kelas || "-",
+      "Jam Masuk": guru.jam_masuk,
+      Status: guru.status_display,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Absensi Guru");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `absensi_guru_${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+
+    saveAs(blob, fileName);
+  };
+
   useEffect(() => {
     if (submitResult) {
       console.log("Submit result updated:", submitResult);
@@ -177,7 +205,13 @@ const TeacherAttendance = () => {
   if (loading && !guruList.length) {
     return (
       <div className="m-10 bg-white rounded-xl p-5">
-        <div className="flex justify-center items-center h-40">
+        <div className="flex flex-col justify-center items-center h-40">
+          {/* loading animate */}
+          <div className="relative flex items-center justify-center h-16 w-16">
+            <div className="absolute h-full w-full rounded-full border-4 border-yellow-500/30"></div>
+            <div className="absolute h-3/4 w-3/4 rounded-full border-4 border-transparent border-t-blue-500 border-r-blue-500 animate-spin"></div>
+            <div className="absolute h-1/2 w-1/2 rounded-full border-4 border-transparent border-t-yellow-500 border-b-yellow-500 animate-spin animation-delay-75"></div>
+          </div>
           <div className="text-lg">Memuat data guru...</div>
         </div>
       </div>
@@ -185,271 +219,6 @@ const TeacherAttendance = () => {
   }
 
   return (
-    // <>
-    //     <div className="m-10 bg-white rounded-xl p-5">
-    //         <div className="flex justify-between">
-    //           <div className="flex-1">
-    //             <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-    //                 Absensi Guru
-    //                 {isViewingHistory &&(
-    //                     <span className="text-lg font-normal - text-gray-600 ml-2">
-    //                   - {selectedDate.toLocaleDateString('id-ID',{
-    //                     weekday: 'long',
-    //                     year: 'numeric',
-    //                     month: 'long',
-    //                     day: 'numeric'
-    //                   })}
-    //                 </span>
-    //                 )}
-    //             </h1>
-    //           </div>
-
-    //           <div className="flex flex-col gap-3">
-
-    //             <div className="flex gap-3 items-center justify-end">
-
-    //                 <Calendar
-    //                     onDateSelect={handleDateChange}
-    //                     selectedDate={selectedDate}
-    //                 />
-
-    //                 {isViewingHistory && (
-    //                 <button
-    //                   onClick={goToToday}
-    //                   className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
-    //                 >
-    //                   <span>Hari ini</span>
-    //                 </button>
-    //               )}
-
-    //               <div>
-    //                 <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-2.5 px-4 rounded-xl font-medium shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer">
-    //                   <GoDownload className="text-white text-lg" />
-    //                   <span>Unduh</span>
-    //                 </button>
-    //               </div>
-
-    //             </div>
-
-    //             <div className="w-90">
-    //               <SearchBar
-    //                 placeholder="Cari Nama Guru atau NIP"
-    //                 value={searchTerm}
-    //                 onChange={(e) => setSearchTerm(e.target.value)}
-    //               />
-    //             </div>
-
-    //           </div>
-    //         </div>
-
-    //         {isViewingHistory && (
-    //           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-    //             <div className="flex items-center">
-    //               <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
-    //               <p className="text-yellow-700 text-sm">
-    //                 <strong>Mode Lihat Riwayat:</strong> Anda sedang melihat data absensi tanggal {
-    //                   selectedDate.toLocaleDateString('id-ID', {
-    //                     day: '2-digit',
-    //                     month: '2-digit',
-    //                     year: 'numeric'
-    //                   })
-    //                 }. Tidak dapat mengubah data absensi masa lalu.
-    //               </p>
-    //             </div>
-    //           </div>
-    //         )}
-
-    //         {/* Filter Section */}
-    //             <div className="mt-10">
-    //                 {error && (
-    //                     <div className="mb-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-    //                         {error}
-    //                     </div>
-    //                 )}
-
-    //                 {/* Success Message */}
-    //                 {submitResult && submitResult[0] && !alertMessage &&(
-    //                     <div className={`mb-3 p-3 rounded ${
-    //                         submitResult[0].message.includes('Berhasil')
-    //                             ? 'bg-green-100 border border-green-400 text-green-700'
-    //                             : 'bg-yellow-100 border border-yellow-400 text-yellow-700'
-    //                         }`}>
-
-    //                         <strong>{submitResult[0].message}</strong>
-
-    //                         {submitResult[0].payload && (
-    //                             <div className="mt-2 text-sm">
-    //                                 {submitResult[0].payload.detail.berhasil && submitResult[0].payload.detail.berhasil.length > 0 && (
-    //                                     <p>Berhasil absen: {submitResult[0].payload.detail.berhasil.length} guru</p>
-    //                                 )}
-
-    //                                 {submitResult[0].payload.detail.sudah_absen && submitResult[0].payload.detail.sudah_absen.length > 0 && (
-
-    //                                     <div className="text-yellow-600">
-    //                                         <p>Sudah absen: {submitResult[0].payload.detail.sudah_absen.length} guru</p>
-    //                                         <ul className="list-disc list-inside">
-    //                                             {submitResult[0].payload.detail.sudah_absen.map((guru, index) => (
-    //                                                 <li key={index}>{guru.nama}</li>
-    //                                             ))}
-    //                                         </ul>
-    //                                     </div>
-    //                                 )}
-    //                             </div>
-    //                         )}
-    //                     </div>
-    //                 )}
-
-    //                 {/* alert message */}
-    //                 {alertMessage && (
-    //                     <div className="border-2 border-red-400 bg-red-200 mb-10 py-4 px-4 rounded-md">
-    //                         <p className="text-xl text-red-800" >{alertMessage}</p>
-    //                     </div>
-    //                 )}
-
-    //                 {/* Action Buttons */}
-    //                 <div className="flex gap-2 mb-4">
-    //                     <button
-    //                         className="bg-gray-600 border-gray-300 text-xl text-white hover:bg-gray-700 py-2 px-4 rounded-xl cursor-pointer"
-    //                         onClick={handleSelectAll}
-    //                     >
-    //                         Select All
-    //                     </button>
-    //                     <button
-    //                         className="bg-green-400 border-gray-300 text-xl text-white hover:bg-green-500 py-2 px-4 rounded-xl cursor-pointer"
-    //                         onClick={markSelectedPresent}
-    //                         disabled={selectedGuru.length === 0}
-    //                     >
-    //                         Present
-    //                     </button>
-    //                     <button
-    //                         className="bg-red-400 border-gray-300 text-xl text-white hover:bg-red-500 py-2 px-4 rounded-xl cursor-pointer"
-    //                         onClick={markSelectedAbsent}
-    //                         disabled={selectedGuru.length === 0}
-    //                     >
-    //                         Absent
-    //                     </button>
-    //                 </div>
-
-    //                 {/* Table */}
-    //                 <table className="table-auto w-full border-collapse text-center">
-    //                     <thead className="bg-gray-200">
-    //                         <tr>
-    //                             {!isViewingHistory && <th className="px-3 py-2"></th>}
-    //                             <th className="px-3 py-2">No</th>
-    //                             <th className="px-3 py-2">NIP</th>
-    //                             <th className="px-3 py-2">Nama</th>
-    //                             <th className="px-3 py-2">Jabatan</th>
-    //                             <th className="px-3 py-2">Jam Masuk</th>
-    //                             <th className="px-3 py-2">Status</th>
-    //                             <th className="px-3 py-2">Surat Keterangan</th>
-    //                             {!isViewingHistory &&<th className="px-3 py-2">Aksi</th>}
-    //                         </tr>
-    //                     </thead>
-
-    //                     <tbody>
-    //                         {filteredGuru.map((guru, index) => (
-    //                             <tr key={guru.guru_id} className="border-b border-gray-300">
-    //                                 {!isViewingHistory && (<td className="px-3 py-2">
-    //                                     <input
-    //                                         type="checkbox"
-    //                                         checked={selectedGuru.includes(guru.guru_id)}
-    //                                         onChange={() => handleSelectGuru(guru.guru_id)}
-    //                                         disabled={guru.sudah_absen}
-    //                                     />
-    //                                 </td>)}
-    //                                 <td className="px-3 py-2">{index + 1}</td>
-    //                                 <td className="px-3 py-2">{guru.nip}</td>
-    //                                 <td className="px-3 py-2">{guru.nama_lengkap}</td>
-    //                                 <td className="px-3 py-2">{guru.jabatan}</td>
-    //                                 <td className="px-3 py-2">{guru.jam_masuk}</td>
-    //                                 <td className="px-3 py-2">
-    //                                     <StatusBadge status={guru.status_display} />
-    //                                 </td>
-    //                                 <td className="px-3 py-2">
-    //                                     <label className="border-2 border-gray-400 py-2 px-3 rounded-xl w-50 cursor-pointer">
-    //                                         {guru.fileName}
-    //                                         <input
-    //                                             type="file"
-    //                                             className="hidden"
-    //                                             onChange={(e) => updateGuruFile(index, e.target.files[0])}
-    //                                             disabled={guru.sudah_absen}
-    //                                         />
-    //                                     </label>
-    //                                 </td>
-    //                                 {!isViewingHistory && (
-    //                                 <td className="px-3 py-2">
-    //                                     <select
-    //                                         value={guru.status}
-    //                                         onChange={(e) => updateGuruStatus(index, e.target.value)}
-    //                                         className="border border-gray-300 rounded px-2 py-1"
-    //                                         disabled={guru.sudah_absen}
-    //                                     >
-    //                                         <option value="">Pilih Status</option>
-    //                                         <option value="Hadir">Hadir</option>
-    //                                         <option value="Tidak Hadir">Tidak Hadir</option>
-    //                                         <option value="Izin">Izin</option>
-    //                                         <option value="Sakit">Sakit</option>
-    //                                     </select>
-    //                                     {guru.sudah_absen && (
-    //                                         <div className="text-xs text-yellow-600 mt-1">
-    //                                             Sudah absen hari ini
-    //                                         </div>
-    //                                     )}
-    //                                 </td>
-    //                                 )}
-    //                             </tr>
-    //                         ))}
-
-    //                         {filteredGuru.length === 0 && (
-    //                             <tr>
-    //                                 <td colSpan="9" className="px-3 py-4 text-center text-gray-500">
-    //                                     Tidak ada data guru
-    //                                 </td>
-    //                             </tr>
-    //                         )}
-    //                     </tbody>
-    //                 </table>
-
-    //                 {/* Info Summary */}
-    //                 <div className="mt-4 p-3 bg-gray-100 rounded-lg">
-    //                     <h4 className="font-semibold mb-2">Summary Absensi Guru Hari Ini:</h4>
-    //                     <div className="flex gap-4 text-sm">
-    //                         <span className="flex items-center">
-    //                             <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-    //                             Hadir: {guruList.filter(g => g.status === 'Hadir').length}
-    //                         </span>
-    //                         <span className="flex items-center">
-    //                             <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-    //                             Tidak Hadir: {guruList.filter(g => g.status === 'Tidak Hadir').length}
-    //                         </span>
-    //                         <span className="flex items-center">
-    //                             <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-    //                             Izin: {guruList.filter(g => g.status === 'Izin').length}
-    //                         </span>
-    //                         <span className="flex items-center">
-    //                             <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-    //                             Sakit: {guruList.filter(g => g.status === 'Sakit').length}
-    //                         </span>
-    //                         <span className="flex items-center">
-    //                             <div className="w-3 h-3 bg-gray-400 rounded-full mr-2"></div>
-    //                             Belum: {guruList.filter(g => !g.status || g.status === 'Belum Presensi').length}
-    //                         </span>
-    //                     </div>
-    //                 </div>
-
-    //                 <div className="flex justify-end p-2">
-    //                     <button
-    //                         type="submit"
-    //                         className="bg-blue-800 border-gray-400 text-xl text-white hover:bg-blue-900 px-4 py-2 rounded-xl cursor-pointer"
-    //                         onClick={handleSubmit}
-    //                         disabled={submitLoading || !guruList.length}
-    //                     >
-    //                         {submitLoading ? 'Menyimpan...' : 'Submit'}
-    //                     </button>
-    //                 </div>
-    //             </div>
-    //     </div>
-    // </>
     <>
       <div className="m-4 md:m-10 bg-white/80 backdrop-blur-xl rounded-2xl p-4 md:p-6 border border-gray-300/30 shadow-lg">
         <div className="flex flex-col md:flex-row justify-between gap-4">
@@ -486,7 +255,10 @@ const TeacherAttendance = () => {
                 </button>
               )}
 
-              <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 px-3 md:py-2.5 md:px-4 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm">
+              <button
+                onClick={exportToExcel}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 px-3 md:py-2.5 md:px-4 rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm"
+              >
                 <GoDownload className="text-white text-base md:text-lg" />
                 <span>Unduh</span>
               </button>
@@ -620,7 +392,7 @@ const TeacherAttendance = () => {
                     <select
                       value={guru.status}
                       onChange={(e) => updateGuruStatus(index, e.target.value)}
-                      className="w-full border border-gray-300/50 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white/80 backdrop-blur-sm transition-all duration-200 text-sm"
+                      className="w-full px-4 py-2 text-gray-800 bg-white border-0 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm bg-gray-400"
                       disabled={guru.sudah_absen}
                     >
                       <option value="">Pilih Status</option>
@@ -653,15 +425,29 @@ const TeacherAttendance = () => {
               <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                 <tr>
                   {!isViewingHistory && (
-                    <th className="px-4 py-4 font-semibold"></th>
+                    <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider"></th>
                   )}
-                  <th className="px-4 py-4 font-semibold">No</th>
-                  <th className="px-4 py-4 font-semibold">NIP</th>
-                  <th className="px-4 py-4 font-semibold">Nama</th>
-                  <th className="px-4 py-4 font-semibold">Wali kelas</th>
-                  <th className="px-4 py-4 font-semibold">Jam Masuk</th>
-                  <th className="px-4 py-4 font-semibold">Status</th>
-                  <th className="px-4 py-4 font-semibold">Surat Keterangan</th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    No
+                  </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    NIP
+                  </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    Nama
+                  </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    Wali kelas
+                  </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    Jam Masuk
+                  </th>
+                  <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    Status
+                  </th>
+                  {/* <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
+                    Surat Keterangan
+                  </th> */}
                   {!isViewingHistory && (
                     <th className="px-4 py-4 font-semibold">Aksi</th>
                   )}
@@ -685,25 +471,25 @@ const TeacherAttendance = () => {
                         />
                       </td>
                     )}
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                       {guru.nip}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-800">
+                    <td className="px-4 py-4 text-sm font-semibold text-gray-800">
                       {guru.nama_lengkap}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-600">
+                    <td className="px-4 py-4 text-sm text-gray-600">
                       {guru.kelasDibimbing?.[0]?.nama_kelas}
                     </td>
-                    <td className="px-4 py-4 font-medium text-gray-700">
+                    <td className="px-4 py-4 text-sm text-gray-700">
                       {guru.jam_masuk}
                     </td>
                     <td className="px-4 py-4">
                       <StatusBadge status={guru.status_display} />
                     </td>
-                    <td className="px-4 py-4">
+                    {/* <td className="px-4 py-4">
                       <label className="inline-block border-2 border-gray-400/50 py-2 px-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors duration-200 font-medium text-gray-700">
                         {guru.fileName || "Upload File"}
                         <input
@@ -715,7 +501,7 @@ const TeacherAttendance = () => {
                           disabled={guru.sudah_absen}
                         />
                       </label>
-                    </td>
+                    </td> */}
                     {!isViewingHistory && (
                       <td className="px-4 py-4">
                         <select
@@ -723,7 +509,7 @@ const TeacherAttendance = () => {
                           onChange={(e) =>
                             updateGuruStatus(index, e.target.value)
                           }
-                          className="border border-gray-300/50 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white/80 backdrop-blur-sm transition-all duration-200"
+                          className="w-full px-4 py-2 text-gray-800 bg-white border-0 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm bg-white/90"
                           disabled={guru.sudah_absen}
                         >
                           <option value="">Pilih Status</option>

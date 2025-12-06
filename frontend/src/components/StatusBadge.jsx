@@ -38,7 +38,7 @@ const StatusBadge = ({ status }) => {
 
   return (
     <span
-      className={`inline-block w-40 py-1 rounded-xl font-bold ${getStatusColor(
+      className={`inline-block w-40 py-1 rounded-xl font-semibold ${getStatusColor(
         status
       )}`}
     >

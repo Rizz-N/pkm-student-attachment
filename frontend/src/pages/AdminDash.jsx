@@ -1,16 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   FaUserGraduate,
   FaChalkboardTeacher,
   FaBook,
   FaClipboardList,
-  FaChartLine,
-  FaCalendarAlt,
-  FaBell,
-  FaExclamationTriangle,
-  FaCheckCircle,
-  FaUsers,
-  FaFileAlt,
 } from "react-icons/fa";
 import {
   BarChart,
@@ -81,9 +74,8 @@ const AdminDash = () => {
   const {
     chartData,
     chartDataGuru,
-    loadAbsensiBulananMurid,
-    loadAbsensiTanunanMurid,
-    loadAbsensiBulananGuru,
+    loading: loadingChart,
+    error: errorChart,
   } = useAbsensiTahunan();
 
   const [filterYear, setFilterYear] = useState("6bulan");
@@ -102,7 +94,7 @@ const AdminDash = () => {
   const todayAttendance =
     allTotal > 0 ? ((totalPresent / allTotal) * 100).toFixed(1) : 0;
 
-  // Data untuk grafik
+  // Data untuk grafik murid
   let attendanceData = [];
 
   if (filterYear === "6bulan") {
@@ -111,7 +103,7 @@ const AdminDash = () => {
     attendanceData = chartData;
   }
 
-  // Data untuk grafik
+  // Data untuk grafik guru
   let attendanceDataGuru = [];
 
   if (filterMonth === "enambulan") {

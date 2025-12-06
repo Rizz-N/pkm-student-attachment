@@ -2,6 +2,7 @@ import { GoSidebarExpand, GoSignOut } from "react-icons/go";
 import { useUser } from "../context/UserContext";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { FaUser } from "react-icons/fa";
 
 const ProfileBar = ({ isOpen, setIsOpen }) => {
   const { user, loading, refreshUser } = useUser();
@@ -53,11 +54,7 @@ const ProfileBar = ({ isOpen, setIsOpen }) => {
 
           <div className="flex items-center gap-4">
             <div className="relative">
-              <img
-                src="https://via.assets.so/img.jpg?w=100&h=100&shape=circle&bg=linear-gradient(135deg,#667eea,#764ba2)&f=png"
-                alt="profile"
-                className="w-16 h-16 rounded-full shadow-2xl border-4 border-white/30 object-cover"
-              />
+              <FaUser className="w-16 p-2 h-16 rounded-full shadow-2xl border-4 border-white/30 object-cover" />
               <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-400 border-2 border-white rounded-full"></div>
             </div>
 

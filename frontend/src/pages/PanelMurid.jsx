@@ -283,8 +283,8 @@ const PanelMurid = () => {
       <div className="bg-white mt-10 ml-5 p-5 rounded-s-lg shadow-lg">
         <div className=" flex justify-between mb-10">
           <div>
-            <h1 className="text-2xl">Data Murid</h1>
-            <p className="text-xl">Sekolah...</p>
+            <h1 className="text-2xl font-bold text-gray-800">Data Murid</h1>
+            <p className="text-gray-600">Management data lengkap siswa</p>
           </div>
           <div className="mt-2">
             <span className=" flex items-center text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
@@ -293,9 +293,9 @@ const PanelMurid = () => {
             </span>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
-              <GoDownload className="text-2xl" />
-              unduh
+            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
+              <GoDownload className="text-lg" />
+              Export Data
             </button>
             <SearchBar
               value={searchTerm}
@@ -309,7 +309,7 @@ const PanelMurid = () => {
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm min-w-[120px]"
           >
-            <FaPlus className="text-xl" />
+            <FaPlus className="text-lg" />
             Tambah Murid
           </button>
 
@@ -335,8 +335,8 @@ const PanelMurid = () => {
         </div>
 
         {/* Table data */}
-        <div className="overflow-x-auto">
-          <table className="whitespace-nowrap">
+        <div className="overflow-x-auto border border-gray-200 rounded-lg">
+          <table className="whitespace-nowrap min-w-full divide-y divide-gray-200">
             <thead className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
               <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                 <th className="px-4 py-4 font-semibold">
@@ -347,28 +347,57 @@ const PanelMurid = () => {
                       muridList.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded"
+                    className="cursor-pointer"
                   />
                 </th>
-                <th className="px-4 py-4 font-semibold">No</th>
-                <th className="px-4 py-4 font-semibold">NIS</th>
-                <th className="px-4 py-4 font-semibold">NISN</th>
-                <th className="px-4 py-4 font-semibold">Nama Lengkap</th>
-                <th className="px-4 py-4 font-semibold">Kelas</th>
-                <th className="px-4 py-4 font-semibold">Jenis Kelamin</th>
-                <th className="px-4 py-4 font-semibold">Tanggal Lahir</th>
-                <th className="px-4 py-4 font-semibold">Alamat</th>
-                <th className="px-4 py-4 font-semibold">Agama</th>
-                <th className="px-4 py-4 font-semibold">Nama orangtua</th>
-                <th className="px-4 py-4 font-semibold">no telepon orangtua</th>
-                <th className="px-4 py-4 font-semibold">status</th>
-                <th className="px-4 py-4 font-semibold">Aksi</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  No
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  NIS
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  NISN
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Nama Lengkap
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Kelas
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Jenis Kelamin
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Tanggal Lahir
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Alamat
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Agama
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Nama orangtua
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  no telepon orangtua
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
+                  Aksi
+                </th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td colSpan={14} className="text-center py-10">
+                    <div className="flex justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
                     Memuat data Murid...
                   </td>
                 </tr>
@@ -409,43 +438,43 @@ const PanelMurid = () => {
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => handleCheckboxChange(murid)}
-                          className="rounded"
+                          className="cursor-pointer"
                         />
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {index + 1}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                         {murid.nis}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                         {murid.nisn}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-700">
                         {murid.nama_lengkap}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.kelas.kode_kelas}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.jenis_kelamin}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.tanggal_lahir}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.alamat}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.agama}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.nama_orangtua}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.no_telepon_orangtua}
                       </td>
-                      <td className="px-4 py-4 font-medium text-gray-700">
+                      <td className="px-4 py-4 font-medium uppercase text-gray-700">
                         <span
                           className={`px-2 py-1 rounded-full text-xs ${
                             murid.status === "aktif"
