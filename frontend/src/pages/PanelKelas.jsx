@@ -7,6 +7,8 @@ import SearchBar from "../components/SearchBar";
 import ModalKelas from "../components/ModalKelas";
 import ModalEditKelas from "../components/ModalEditKelas";
 import { getDataKelas } from "../services/getDataKelas";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Komponen Toast Notification
 const Toast = ({ message, type, onClose }) => {
@@ -75,13 +77,13 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, kelasData }) => {
         <div className="flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+            className="cursor-pointer px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
           >
             <FaTrash /> Hapus Kelas
           </button>
@@ -229,16 +231,43 @@ const PanelKelas = () => {
     loadDataKelas(); // Refresh data
   };
 
+  const exportToExcel = () => {
+    const exportData = kelasList.map((kelas, index) => ({
+      No: index + 1,
+      Kelas: kelas.nama_kelas,
+      "Wali Kelas": kelas.walikelas.nama_lengkap,
+      NIP: kelas.walikelas.nip,
+      "Jumlah Murid": kelas.jumlah_murid,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Kelas");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `Data_Kelas_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    saveAs(blob, fileName);
+  };
+
   const renderActionButtons = (kelas) => (
     <div className="flex gap-2">
       <button
-        className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors flex items-center gap-1 text-sm"
+        className="cursor-pointer px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors flex items-center gap-1 text-sm"
         onClick={() => handleEditClick(kelas)}
       >
         <FaEdit size={14} /> Edit
       </button>
       <button
-        className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors flex items-center gap-1 text-sm"
+        className="cursor-pointer px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors flex items-center gap-1 text-sm"
         onClick={() => handleDeleteClick(kelas)}
         disabled={deleteLoading}
       >
@@ -278,7 +307,10 @@ const PanelKelas = () => {
             <p className="text-gray-600">Manajemen kelas dan wali kelas</p>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]"
+            >
               <GoDownload className="text-lg" />
               Export Data
             </button>

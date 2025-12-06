@@ -117,7 +117,7 @@ const ModalEditMurid = ({ open, onClose, muridData, onSuccess }) => {
             </h2>
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors duration-200"
+              className="cursor-pointer w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors duration-200"
               disabled={loading}
               type="button"
             >
@@ -293,14 +293,14 @@ const ModalEditMurid = ({ open, onClose, muridData, onSuccess }) => {
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
               {loading ? "Menyimpan..." : "Simpan Perubahan"}
             </button>
