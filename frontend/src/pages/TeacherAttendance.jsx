@@ -455,41 +455,74 @@ const TeacherAttendance = () => {
               </thead>
 
               <tbody>
-                {filteredGuru.map((guru, index) => (
-                  <tr
-                    key={guru.guru_id}
-                    className="border-b border-gray-300/50 hover:bg-gray-50/80 transition-colors duration-150"
-                  >
-                    {!isViewingHistory && (
-                      <td className="px-4 py-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedGuru.includes(guru.guru_id)}
-                          onChange={() => handleSelectGuru(guru.guru_id)}
-                          disabled={guru.sudah_absen}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                        />
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-10">
+                      <div className="flex justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                      </div>
+                      Memuat data Guru...
+                    </td>
+                  </tr>
+                ) : filteredGuru.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-6 py-10 text-center">
+                      {searchTerm ? (
+                        <div>
+                          <p className="text-gray-500">
+                            Tidak ditemukan guru dengan kata kunci "{searchTerm}
+                            "
+                          </p>
+                          <button
+                            onClick={() => setSearchTerm("")}
+                            className="mt-2 text-blue-600 hover:text-blue-800"
+                          >
+                            Tampilkan semua guru
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <p className="text-gray-500">Belum ada data Murid</p>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ) : (
+                  filteredGuru.map((guru, index) => (
+                    <tr
+                      key={guru.guru_id}
+                      className="border-b border-gray-300/50 hover:bg-gray-50/80 transition-colors duration-150"
+                    >
+                      {!isViewingHistory && (
+                        <td className="px-4 py-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedGuru.includes(guru.guru_id)}
+                            onChange={() => handleSelectGuru(guru.guru_id)}
+                            disabled={guru.sudah_absen}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                          />
+                        </td>
+                      )}
+                      <td className="px-4 py-4 text-sm text-gray-700">
+                        {index + 1}
                       </td>
-                    )}
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      {index + 1}
-                    </td>
-                    <td className="px-4 py-4 text-sm font-semibold text-gray-700">
-                      {guru.nip}
-                    </td>
-                    <td className="px-4 py-4 text-sm font-semibold text-gray-800">
-                      {guru.nama_lengkap}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-600">
-                      {guru.kelasDibimbing?.[0]?.nama_kelas}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-gray-700">
-                      {guru.jam_masuk}
-                    </td>
-                    <td className="px-4 py-4">
-                      <StatusBadge status={guru.status_display} />
-                    </td>
-                    {/* <td className="px-4 py-4">
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-700">
+                        {guru.nip}
+                      </td>
+                      <td className="px-4 py-4 text-sm font-semibold text-gray-800">
+                        {guru.nama_lengkap}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-600">
+                        {guru.kelasDibimbing?.[0]?.nama_kelas}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-700">
+                        {guru.jam_masuk}
+                      </td>
+                      <td className="px-4 py-4">
+                        <StatusBadge status={guru.status_display} />
+                      </td>
+                      {/* <td className="px-4 py-4">
                       <label className="inline-block border-2 border-gray-400/50 py-2 px-4 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors duration-200 font-medium text-gray-700">
                         {guru.fileName || "Upload File"}
                         <input
@@ -502,41 +535,31 @@ const TeacherAttendance = () => {
                         />
                       </label>
                     </td> */}
-                    {!isViewingHistory && (
-                      <td className="px-4 py-4">
-                        <select
-                          value={guru.status}
-                          onChange={(e) =>
-                            updateGuruStatus(index, e.target.value)
-                          }
-                          className="w-full px-4 py-2 text-gray-800 bg-white border-0 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm bg-white/90"
-                          disabled={guru.sudah_absen}
-                        >
-                          <option value="">Pilih Status</option>
-                          <option value="Hadir">Hadir</option>
-                          <option value="Tidak Hadir">Tidak Hadir</option>
-                          <option value="Izin">Izin</option>
-                          <option value="Sakit">Sakit</option>
-                        </select>
-                        {guru.sudah_absen && (
-                          <div className="text-xs text-yellow-600 mt-1 font-medium">
-                            Sudah absen hari ini
-                          </div>
-                        )}
-                      </td>
-                    )}
-                  </tr>
-                ))}
-
-                {filteredGuru.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan="9"
-                      className="px-4 py-8 text-center text-gray-500 font-medium"
-                    >
-                      Tidak ada data guru
-                    </td>
-                  </tr>
+                      {!isViewingHistory && (
+                        <td className="px-4 py-4">
+                          <select
+                            value={guru.status}
+                            onChange={(e) =>
+                              updateGuruStatus(index, e.target.value)
+                            }
+                            className="w-full px-4 py-2 text-gray-800 bg-white border-0 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm bg-white/90"
+                            disabled={guru.sudah_absen}
+                          >
+                            <option value="">Pilih Status</option>
+                            <option value="Hadir">Hadir</option>
+                            <option value="Tidak Hadir">Tidak Hadir</option>
+                            <option value="Izin">Izin</option>
+                            <option value="Sakit">Sakit</option>
+                          </select>
+                          {guru.sudah_absen && (
+                            <div className="text-xs text-yellow-600 mt-1 font-medium">
+                              Sudah absen hari ini
+                            </div>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
