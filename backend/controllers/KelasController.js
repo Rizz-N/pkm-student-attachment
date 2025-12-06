@@ -2119,42 +2119,36 @@ const createKelas = async (req, res) => {
 
   try {
     // Validasi input
-    if (!kode_kelas || !nama_kelas || !wali_kelas_id) {
+    if (!kode_kelas?.trim() || !nama_kelas?.trim() || !wali_kelas_id) {
       return response(
         400,
         null,
-        "Kode kelas, Nama kelas, dan Wali kelas harus diisi",
+        "Kode kelas, Nama kelas, dan Wali kelas wajib diisi",
         res
       );
     }
 
-    // Cek kode kelas unik
-    const existingKodeKelas = await Kelas.findOne({
-      where: { kode_kelas },
-    });
+    // Validasi nama kelas unik
+    const existsNama = await Kelas.findOne({ where: { nama_kelas } });
+    if (existsNama) {
+      return response(400, null, "Nama kelas sudah digunakan", res);
+    }
 
-    if (existingKodeKelas) {
-      console.log("❌ Kode kelas sudah digunakan");
+    // Validasi kode kelas unik
+    const existsKode = await Kelas.findOne({ where: { kode_kelas } });
+    if (existsKode) {
       return response(400, null, "Kode kelas sudah digunakan", res);
     }
 
-    // Cek apakah guru (wali kelas) ada
-    const guruExist = await Guru.findOne({
-      where: { guru_id: wali_kelas_id },
-    });
-
-    if (!guruExist) {
-      console.log("❌ Wali kelas tidak ditemukan");
+    // Validasi wali kelas ada
+    const wali = await Guru.findByPk(wali_kelas_id);
+    if (!wali) {
       return response(404, null, "Data wali kelas tidak ditemukan", res);
     }
 
-    // Cek apakah guru sudah menjadi wali kelas di kelas lain
-    const guruAlreadyWaliKelas = await Kelas.findOne({
-      where: { wali_kelas_id },
-    });
-
-    if (guruAlreadyWaliKelas) {
-      console.log("❌ Guru sudah menjadi wali kelas di kelas lain");
+    // Validasi wali kelas belum menjadi wali kelas lain
+    const countWali = await Kelas.count({ where: { wali_kelas_id } });
+    if (countWali > 0) {
       return response(
         400,
         null,
@@ -2163,54 +2157,21 @@ const createKelas = async (req, res) => {
       );
     }
 
-    // Buat kelas baru
+    // Buat kelas
     const newKelas = await Kelas.create({
       kode_kelas,
       nama_kelas,
       wali_kelas_id,
     });
 
-    // Ambil data lengkap dengan relasi
-    const kelasDetail = await Kelas.findOne({
-      where: { kelas_id: newKelas.kelas_id },
-      attributes: [
-        "kelas_id",
-        "kode_kelas",
-        "nama_kelas",
-        "wali_kelas_id",
-        "createdAt",
-        "updatedAt",
-      ],
-      include: [
-        {
-          model: Guru,
-          as: "walikelas",
-          attributes: [
-            "guru_id",
-            "nip",
-            "nama_lengkap",
-            "jenis_kelamin",
-            "jabatan",
-            "status",
-          ],
-        },
-      ],
+    // Ambil data detail
+    const kelasDetail = await Kelas.findByPk(newKelas.kelas_id, {
+      include: [{ model: Guru, as: "walikelas" }],
     });
 
-    console.log("✅ Kelas berhasil dibuat:", kelasDetail.nama_kelas);
     return response(201, kelasDetail, "Kelas berhasil dibuat", res);
   } catch (error) {
-    console.error("❌ Error create kelas:", error.message);
-
-    if (error.name === "SequelizeValidationError") {
-      const messages = error.errors.map((err) => err.message);
-      return response(400, null, messages.join(", "), res);
-    }
-
-    if (error.name === "SequelizeUniqueConstraintError") {
-      return response(400, null, "Kode kelas sudah terdaftar", res);
-    }
-
+    console.error("Error create kelas:", error);
     return response(500, null, "Gagal membuat kelas", res);
   }
 };
