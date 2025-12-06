@@ -77,6 +77,9 @@ Guru.afterCreate(async (guru) => {
     const newUser = await Users.create({
       username: guru.nip,
       password: hashPassword,
+      user_nip: guru.nip,
+      user_nama_lengkap: guru.nama_lengkap,
+      user_jenis_kelamin: guru.jenis_kelamin,
       role: "guru",
       user_type: "guru",
     });

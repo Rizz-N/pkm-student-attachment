@@ -31,15 +31,15 @@ const Users = db.define(
     user_nip: {
       type: DataTypes.STRING,
       unique: true,
-      allowNull: true,
+      allowNull: false,
     },
     user_nama_lengkap: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     user_jenis_kelamin: {
       type: DataTypes.ENUM("laki-laki", "perempuan"),
-      allowNull: true,
+      allowNull: false,
     },
     user_tanggal_lahir: {
       type: DataTypes.DATEONLY,
