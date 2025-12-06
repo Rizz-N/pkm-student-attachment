@@ -7,6 +7,8 @@ import SearchBar from "../components/SearchBar";
 import ModalGuru from "../components/ModalGuru";
 import ModalEditGuru from "../components/ModalEditGuru";
 import { getDataGuru } from "../services/getDataGuru";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Komponen Toast Notification
 const Toast = ({ message, type, onClose }) => {
@@ -64,13 +66,13 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, guruData }) => {
         <div className="flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
           >
             Batal
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+            className="cursor-pointer px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
           >
             <FaTrash /> Hapus
           </button>
@@ -195,16 +197,50 @@ const PanelGuru = () => {
     loadDataGuru(); // Refresh data
   };
 
+  const exportToExcel = () => {
+    const exportData = guruList.map((guru, index) => ({
+      No: index + 1,
+      NIP: guru.nip,
+      "Nama Lengkap": guru.nama_lengkap,
+      "Jenis Kelamin": guru.jenis_kelamin,
+      "Tanggal Lahir": guru.tanggal_lahir,
+      ALAMAT: guru.alamat,
+      "No Telepon": guru.no_telepon,
+      Email: guru.email,
+      Jabatan: guru.jabatan,
+      "Mata Pelajaran": guru.mata_pelajaran,
+      "Kelas di bimbing": guru.kelasDibimbing?.[0]?.nama_kelas,
+      Status: guru.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Guru");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `Data_Guru_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    saveAs(blob, fileName);
+  };
+
   const renderActionButtons = (guru) => (
     <div className="flex gap-2">
       <button
-        className="px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors flex items-center gap-1 text-sm"
+        className="cursor-pointer px-3 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors flex items-center gap-1 text-sm"
         onClick={() => handleEditClick(guru)}
       >
         <FaEdit size={14} /> Edit
       </button>
       <button
-        className="px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors flex items-center gap-1 text-sm"
+        className="cursor-pointer px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors flex items-center gap-1 text-sm"
         onClick={() => handleDeleteClick(guru)}
         disabled={deleteLoading}
       >
@@ -248,7 +284,10 @@ const PanelGuru = () => {
             <p className="text-gray-600">Management data lengkap guru</p>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]"
+            >
               <GoDownload className="text-lg" />
               Export Data
             </button>

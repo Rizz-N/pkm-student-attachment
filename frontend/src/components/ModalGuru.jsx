@@ -95,7 +95,7 @@ const ModalGuru = ({ open, onClose, onSubmit }) => {
               </h2>
               <button
                 onClick={handleClose}
-                className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                className="cursor-pointer w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors duration-200 cursor-pointer"
                 disabled={loading}
               >
                 <IoClose className="text-2xl" />
@@ -292,13 +292,13 @@ const ModalGuru = ({ open, onClose, onSubmit }) => {
                 type="button"
                 onClick={handleClose}
                 disabled={loading}
-                className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white border border-gray-300 text-gray-700 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 font-medium hover:shadow-sm cursor-pointer"
+                className="cursor-pointer px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white border border-gray-300 text-gray-700 rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 font-medium hover:shadow-sm cursor-pointer"
               >
                 Batal
               </button>
               <button
                 type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-blue-500/25 cursor-pointer"
+                className="cursor-pointer px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-medium shadow-lg hover:shadow-blue-500/25 cursor-pointer"
                 disabled={loading}
               >
                 {loading ? (

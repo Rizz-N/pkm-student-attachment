@@ -129,7 +129,7 @@ const ModalEditGuru = ({ open, onClose, guruData, onSuccess }) => {
           <h2 className="text-xl font-semibold">Edit Data Guru</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="cursor-pointer p-2 hover:bg-gray-100 rounded-full"
           >
             <IoClose className="text-2xl" />
           </button>
@@ -334,14 +334,14 @@ const ModalEditGuru = ({ open, onClose, guruData, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="cursor-pointer px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               disabled={loading}
             >
               Batal
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
               disabled={loading}
             >
               {loading ? (
