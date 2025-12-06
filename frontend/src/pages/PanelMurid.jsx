@@ -118,7 +118,9 @@ const PanelMurid = () => {
         murid.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         murid.nis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         murid.nisn?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        murid.kelas.kode_kelas?.toLowerCase().includes(searchTerm.toLowerCase())
+        murid.kelas?.kode_kelas
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
     );
     setFilterMurid(filtered);
   }, [muridList, searchTerm]);
@@ -200,7 +202,7 @@ const PanelMurid = () => {
     } catch (error) {
       console.error("Error mass update kelas:", error);
       showToast(
-        error.response?.data?.[0]?.message || "Gagal memperbarui kelas murid",
+        error.response?.data?.message || "Gagal memperbarui kelas murid",
         "error"
       );
       throw error;
@@ -454,7 +456,7 @@ const PanelMurid = () => {
                         {murid.nama_lengkap}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-700">
-                        {murid.kelas.kode_kelas}
+                        {murid.kelas?.kode_kelas || "-"}
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-700">
                         {murid.jenis_kelamin}

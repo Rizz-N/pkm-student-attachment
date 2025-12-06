@@ -1376,8 +1376,26 @@ const updateMuridKelasMassal = async (req, res) => {
       return response(400, null, "Daftar ID murid wajib diisi", res);
     }
 
-    if (!kelas_id) {
-      return response(400, null, "Kelas ID wajib diisi", res);
+    // if (!kelas_id) {
+    //   return response(400, null, "Kelas ID wajib diisi", res);
+    // }
+
+    const isKeluar =
+      kelas_id === null ||
+      kelas_id === undefined ||
+      kelas_id === "0" ||
+      kelas_id === "";
+
+    let kelasExist = null;
+
+    if (!isKeluar && kelas_id) {
+      kelasExist = await Kelas.findOne({
+        where: { kelas_id },
+      });
+      if (!kelasExist) {
+        console.log("Kelas tidak ditemukan dengan ID:", kelas_id);
+        return response(400, null, "Kelas tidak ditemukan", res);
+      }
     }
 
     console.log(
@@ -1385,14 +1403,14 @@ const updateMuridKelasMassal = async (req, res) => {
     );
 
     // Validasi kelas_id
-    const kelasExist = await Kelas.findOne({
-      where: { kelas_id },
-    });
+    // const kelasExist = await Kelas.findOne({
+    //   where: { kelas_id },
+    // });
 
-    if (!kelasExist) {
-      console.log("❌ Kelas tidak ditemukan dengan ID:", kelas_id);
-      return response(400, null, "Kelas tidak ditemukan", res);
-    }
+    // if (!kelasExist) {
+    //   console.log("Kelas tidak ditemukan dengan ID:", kelas_id);
+    //   return response(400, null, "Kelas tidak ditemukan", res);
+    // }
 
     // Hitung murid yang ada
     const existingMurid = await Murid.findAll({
@@ -1403,12 +1421,12 @@ const updateMuridKelasMassal = async (req, res) => {
     });
 
     if (existingMurid.length !== murid_ids.length) {
-      console.log("⚠️ Beberapa murid tidak ditemukan");
+      console.log("Beberapa murid tidak ditemukan");
     }
 
     // Update kelas untuk semua murid
     const [affectedRows] = await Murid.update(
-      { kelas_id },
+      { kelas_id: isKeluar ? null : kelas_id },
       {
         where: {
           murid_id: murid_ids,
@@ -1432,18 +1450,28 @@ const updateMuridKelasMassal = async (req, res) => {
       ],
     });
 
-    console.log(
-      `✅ Berhasil update ${affectedRows} murid ke kelas: ${kelasExist.nama_kelas}`
-    );
+    let msg = "";
+    let kelasInfo = null;
+
+    if (isKeluar) {
+      console.log(`Berhasil mengeluarkan ${affectedRows} murid dari kelas`);
+      msg = `Berhasil mengeluarkan ${affectedRows} murid dari kelas`;
+    } else {
+      console.log(
+        `Berhasil memindahkan ${affectedRows} murid ke ${kelasExist.nama_kelas}`
+      );
+      msg = `Berhasil memindahkan ${affectedRows} murid ke ${kelasExist.nama_kelas}`;
+      kelasInfo = {
+        kelas_id: kelasExist.kelas_id,
+        kode_kelas: kelasExist.kode_kelas,
+        nama_kelas: kelasExist.nama_kelas,
+      };
+    }
 
     const responseData = {
       total_selected: murid_ids.length,
       successfully_updated: affectedRows,
-      kelas: {
-        kelas_id: kelasExist.kelas_id,
-        kode_kelas: kelasExist.kode_kelas,
-        nama_kelas: kelasExist.nama_kelas,
-      },
+      kelas: kelasInfo,
       updated_murid: updatedMurid.map((m) => ({
         murid_id: m.murid_id,
         nis: m.nis,
@@ -1452,14 +1480,10 @@ const updateMuridKelasMassal = async (req, res) => {
       })),
     };
 
-    return response(
-      200,
-      responseData,
-      `Berhasil memindahkan ${affectedRows} murid ke ${kelasExist.nama_kelas}`,
-      res
-    );
+    return response(200, responseData, msg, res);
   } catch (error) {
-    console.error("❌ Error update murid kelas massal:", error.message);
+    console.error("Error update murid kelas massal:", error.message);
+    console.error("Error stack:", error.stack);
     return response(500, null, "Gagal memperbarui kelas murid", res);
   }
 };

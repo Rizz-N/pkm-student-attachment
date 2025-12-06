@@ -35,14 +35,16 @@ const ModalEditKelasMassal = ({ open, onClose, selectedMurid, onSuccess }) => {
     setError("");
 
     try {
-      if (!kelas_id) {
+      if (kelas_id === "") {
         throw new Error("Harap pilih kelas tujuan");
       }
 
       const muridIds = selectedMurid.map((m) => m.murid_id);
 
+      const kelasKeluar = kelas_id === "0" ? null : parseInt(kelas_id);
+
       if (onSuccess) {
-        await onSuccess(muridIds, parseInt(kelas_id));
+        await onSuccess(muridIds, kelasKeluar);
       }
 
       onClose();
@@ -126,10 +128,10 @@ const ModalEditKelasMassal = ({ open, onClose, selectedMurid, onSuccess }) => {
                 value={kelas_id}
                 onChange={(e) => setKelasId(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                required
                 disabled={loading}
               >
                 <option value="">-- Pilih Kelas --</option>
+                <option value="0">Keluar</option>
                 {kelasOption.map((kelas) => (
                   <option key={kelas.value} value={kelas.value}>
                     {kelas.label} ({kelas.jumlah_murid} murid)
