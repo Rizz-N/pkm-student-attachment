@@ -26,6 +26,8 @@ const {
   createGuru,
   getGuru,
   getAbsensiGuru,
+  getAbsensiGuruRange,
+  getAbsensiMuridRange,
   createAbsensiGuru,
   getAbsensiGuruHariIni,
   getAbsenGuruByDate,
@@ -65,6 +67,7 @@ router.get("/kelas/:kelas_id/absensi/hari-ini", verifyToken, getAbsensiMurid);
 router.get("/murid", verifyToken, getAllMurid);
 router.get("/murid/page", verifyToken, getAllMuridPage);
 router.get("/absensi/murid", verifyToken, getAbsensiMuridByDate);
+router.get("/absensi/murid/range", verifyToken, getAbsensiMuridRange);
 router.get("/absensi/murid/hadir", verifyToken, getMuridAllPresence);
 router.get("/absensi/murid/bulanan", verifyToken, getAbsensiMuridBulanan);
 router.get("/absensi/murid/tahunan", verifyToken, getAbsensiMuridTahunan);
@@ -73,6 +76,7 @@ router.post("/absensi/bulk", verifyToken, createAbsensiMurid); // Create absensi
 // route absensi guru
 router.get("/guru", verifyToken, getGuru); // Get semua data guru
 router.get("/absensi/guru", verifyToken, getAbsensiGuru); // Get semua absensi guru
+router.get("/absensi/guru/range", verifyToken, getAbsensiGuruRange); // Get semua absensi guru range
 router.get("/absensi/guru/hari-ini", verifyToken, getAbsensiGuruHariIni); // Get absensi guru hari ini
 router.get("/absensi/guru/tanggal", verifyToken, getAbsenGuruByDate);
 router.get("/absensi/guru/bulanan", verifyToken, getAbsensiGuruBulanan);

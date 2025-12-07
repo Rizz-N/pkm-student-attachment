@@ -20,7 +20,7 @@ export const useDataMuridPage = () => {
       setError(null);
     } catch (error) {
       setError(error.response?.data?.[0]?.message || "Gagal memuat data murid");
-      setMuridList([]);
+      setMuridListPage([]);
     } finally {
       setLoading(false);
     }

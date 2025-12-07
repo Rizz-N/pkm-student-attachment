@@ -1729,6 +1729,129 @@ const getAbsensiGuru = async (req, res) => {
   }
 };
 
+const getAbsensiGuruRange = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    // Jika tidak ada input, default ambil hari ini
+    const today = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+
+    const dateFilter = {};
+
+    if (startDate && endDate) {
+      dateFilter.tanggal = {
+        [Op.between]: [startDate, endDate],
+      };
+    } else if (startDate) {
+      dateFilter.tanggal = startDate;
+    } else {
+      dateFilter.tanggal = today;
+    }
+
+    const absensiGuru = await AbsensiGuru.findAll({
+      where: dateFilter,
+      include: [
+        {
+          model: Guru,
+          as: "guru",
+          attributes: ["guru_id", "nama_lengkap", "nip", "jabatan"],
+        },
+        {
+          model: Guru,
+          as: "guruPiket",
+          attributes: ["guru_id", "nama_lengkap"],
+          foreignKey: "guru_piket_id",
+        },
+      ],
+      order: [
+        ["tanggal", "DESC"],
+        ["createdAt", "DESC"],
+      ],
+    });
+
+    return response(200, absensiGuru, "Memuat data absensi guru", res);
+  } catch (error) {
+    console.error("error get absensi guru", error.message);
+    return response(500, null, "gagal memuat data absensi guru", res);
+  }
+};
+
+const getAbsensiMuridRange = async (req, res) => {
+  try {
+    let { startDate, endDate, page, limit } = req.query;
+
+    // Pagination
+    page = parseInt(page) || 1; // halaman default = 1
+    limit = parseInt(limit) || 50; // batas data = 50 per halaman
+    const offset = (page - 1) * limit;
+
+    // Jika tidak ada input tanggal → default hari ini
+    const today = moment().tz("Asia/Jakarta").format("YYYY-MM-DD");
+
+    const dateFilter = {};
+
+    if (startDate && endDate) {
+      dateFilter.tanggal = {
+        [Op.between]: [startDate, endDate],
+      };
+    } else if (startDate) {
+      dateFilter.tanggal = startDate;
+    } else {
+      dateFilter.tanggal = today;
+    }
+
+    const absensi = await AbsensiMurid.findAndCountAll({
+      where: dateFilter,
+      limit,
+      offset,
+      include: [
+        {
+          model: Murid,
+          as: "murid",
+          attributes: [
+            "murid_id",
+            "nis",
+            "nisn",
+            "nama_lengkap",
+            "jenis_kelamin",
+            "kelas_id",
+          ],
+        },
+        {
+          model: Kelas,
+          as: "kelas",
+          attributes: ["kelas_id", "kode_kelas", "nama_kelas"],
+        },
+        {
+          model: Guru,
+          as: "guru",
+          attributes: ["guru_id", "nama_lengkap", "nip", "jabatan"],
+        },
+      ],
+      order: [
+        ["tanggal", "DESC"],
+        ["createdAt", "DESC"],
+      ],
+    });
+
+    return response(
+      200,
+      {
+        totalData: absensi.count,
+        totalPage: Math.ceil(absensi.count / limit),
+        currentPage: page,
+        limit,
+        records: absensi.rows,
+      },
+      "Memuat data absensi murid",
+      res
+    );
+  } catch (error) {
+    console.error("Error getAbsensiMuridRange:", error.message);
+    return response(500, null, "Gagal memuat data absensi murid", res);
+  }
+};
+
 // buat ambil data absensi guru hari ini
 const getAbsensiGuruHariIni = async (req, res) => {
   try {
@@ -3455,6 +3578,8 @@ module.exports = {
   createGuru,
   getGuru,
   getAbsensiGuru,
+  getAbsensiGuruRange,
+  getAbsensiMuridRange,
   createAbsensiGuru,
   getAbsensiGuruHariIni,
   getAbsenGuruByDate,

@@ -5,6 +5,8 @@ import {
   FaChalkboardTeacher,
   FaUserGraduate,
   FaBook,
+  FaPenAlt,
+  FaPen,
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -73,6 +75,24 @@ const SideBarNav = () => {
             >
               <FaBook />
               Data Kelas
+            </Link>
+            <Link
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
+                "/admin/absensi/guru"
+              )}`}
+              to={"/admin/absensi/guru"}
+            >
+              <FaPenAlt />
+              Absen Guru
+            </Link>
+            <Link
+              className={`p-2 flex items-center gap-2 rounded-xl text-center ${active(
+                "/admin/absensi/murid"
+              )}`}
+              to={"/admin/absensi/murid"}
+            >
+              <FaPen />
+              Absen Murid
             </Link>
           </div>
         </div>
@@ -165,6 +185,8 @@ const SideBarNav = () => {
                 {location.pathname.includes("panelguru") && "Data Guru"}
                 {location.pathname.includes("panelmurid") && "Data Murid"}
                 {location.pathname.includes("panelkelas") && "Data Kelas"}
+                {location.pathname.includes("absensi/guru") && "Absensi Guru"}
+                {location.pathname.includes("absensi/murid") && "Absensi Murid"}
                 {location.pathname === "/admin" && "Overview"}
               </span>
             </div>

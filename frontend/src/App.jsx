@@ -19,6 +19,8 @@ import Overview from "./pages/Overview";
 import StudentAttendance from "./pages/StudentAttendance";
 import TeacherAttendance from "./pages/TeacherAttendance";
 import ChangePassUser from "./components/ChangePassUser";
+import PanelAbsenGuru from "./pages/PanelAbsenGuru";
+import PanelAbsenMurid from "./pages/PanelAbsenMurid";
 
 function App() {
   return (
@@ -70,6 +72,8 @@ function App() {
             <Route path="panelguru" element={<PanelGuru />} />
             <Route path="panelmurid" element={<PanelMurid />} />
             <Route path="panelkelas" element={<PanelKelas />} />
+            <Route path="absensi/guru" element={<PanelAbsenGuru />} />
+            <Route path="absensi/murid" element={<PanelAbsenMurid />} />
           </Route>
           <Route
             path="/admin/daftar"
