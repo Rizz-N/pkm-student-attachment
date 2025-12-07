@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaUser, FaLock } from "react-icons/fa";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -88,14 +88,17 @@ const LoginPage = () => {
             <label className="text-sm font-semibold text-gray-700 block">
               Username
             </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Masukkan username Anda"
-              className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
-              disabled={isLoading}
-            />
+            <div className="relative group">
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Masukkan username Anda"
+                className="pl-10 w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
+                disabled={isLoading}
+              />
+              <FaUser className=" absolute inset-y-4 left-4 items-center text-gray-400 transition-all duration-200 " />
+            </div>
           </div>
 
           {/* Password Input */}
@@ -109,9 +112,10 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan password Anda"
-                className="w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
+                className="pl-10 w-full bg-white/80 backdrop-blur-sm border border-gray-300/50 rounded-xl p-3 text-gray-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 text-base md:text-lg placeholder-gray-400"
                 disabled={isLoading}
               />
+              <FaLock className=" absolute inset-y-4 left-4 items-center text-gray-400 transition-all duration-200 " />
               <button
                 type="button"
                 className="absolute inset-y-0 right-5 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200"
