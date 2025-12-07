@@ -67,7 +67,7 @@ const LoginPage = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            Sekolah Mandiri
+            SMPN 227 Jakarta
           </h1>
           <p className="text-gray-600 text-sm md:text-base font-medium">
             Attendance Management System
