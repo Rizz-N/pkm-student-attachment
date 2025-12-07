@@ -11,6 +11,28 @@ export const getDataMurid = {
       throw error;
     }
   },
+  getMuridPage: async (page = 1, limit = 25) => {
+    try {
+      const response = await axiosToken.get("/murid/page", {
+        params: { page, limit },
+      });
+      // console.log("Total murid", response.data[0]);
+      return response.data[0]?.payload || [];
+    } catch (error) {
+      console.error("Error fetching total murid:", error);
+      throw error;
+    }
+  },
+  createMurid: async (formData) => {
+    try {
+      const response = await axiosToken.post("/murid", formData);
+      // console.log("Data yang di kiim:", response.data[0].message);
+      return response.data[0].message;
+    } catch (error) {
+      console.error(error.response?.data?.[0]?.message);
+      throw error;
+    }
+  },
   createMurid: async (formData) => {
     try {
       const response = await axiosToken.post("/murid", formData);

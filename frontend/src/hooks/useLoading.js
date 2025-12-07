@@ -1,9 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
-export const useLoading = (value, duration = 1000) => {
+export const useLoading = (value, duration = 800) => {
   const [count, setCount] = useState(0);
+  const prevValue = useRef(null);
 
   useEffect(() => {
+    if (value === null || value === undefined) {
+      setCount(0);
+      return;
+    }
+
+    if (prevValue.current === value) {
+      setCount(value);
+      return;
+    }
+    prevValue.current = value;
+
     const end = parseInt(value);
     if (isNaN(end) || end <= 0) {
       setCount(end);
@@ -11,13 +23,19 @@ export const useLoading = (value, duration = 1000) => {
     }
 
     let start = 0;
-    const incrementTime = Math.abs(Math.floor(duration / end));
+    const totalSteps = Math.min(end, 50);
+    const increment = end / totalSteps;
+    const interval = duration / totalSteps;
 
     const timer = setInterval(() => {
-      start += 1;
-      setCount(start);
-      if (start === end) clearInterval(timer);
-    }, incrementTime);
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(Math.floor(start));
+      }
+    }, interval);
     return () => clearInterval(timer);
   }, [value, duration]);
   return count;

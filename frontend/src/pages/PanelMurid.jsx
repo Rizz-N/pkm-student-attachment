@@ -10,11 +10,14 @@ import {
 } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import { useDataMurid } from "../hooks/useDataMurid";
+import { useDataMuridPage } from "../hooks/useDataMuridPage";
 import { useEffect, useState } from "react";
 import ModalMurid from "../components/ModalMurid";
 import ModalEditMurid from "../components/ModalEditMurid";
 import ModalEditKelasMassal from "../components/ModalEditKelasMassal";
 import { getDataMurid } from "../services/getDataMurid";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 // Komponen Toast Notification
 const Toast = ({ message, type, onClose }) => {
@@ -86,7 +89,16 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, muridData }) => {
 };
 
 const PanelMurid = () => {
-  const { muridList, loading, error, loadDataMurid } = useDataMurid();
+  const {
+    muridListPage,
+    loading,
+    error,
+    loadDataMurid,
+    page,
+    totalPages,
+    setPage,
+  } = useDataMuridPage();
+  const { muridList } = useDataMurid();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isMassEditModalOpen, setIsMassEditModalOpen] = useState(false);
@@ -110,10 +122,10 @@ const PanelMurid = () => {
 
   useEffect(() => {
     if (!searchTerm) {
-      setFilterMurid(muridList);
+      setFilterMurid(muridListPage);
       return;
     }
-    const filtered = muridList.filter(
+    const filtered = muridListPage.filter(
       (murid) =>
         murid.nama_lengkap?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         murid.nis?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,7 +135,7 @@ const PanelMurid = () => {
           .includes(searchTerm.toLowerCase())
     );
     setFilterMurid(filtered);
-  }, [muridList, searchTerm]);
+  }, [muridListPage, searchTerm]);
 
   // Handle checkbox selection
   const handleCheckboxChange = (murid) => {
@@ -139,12 +151,12 @@ const PanelMurid = () => {
 
   // Handle select all
   const handleSelectAll = () => {
-    if (selectedMurid.length === muridList.length) {
+    if (selectedMurid.length === muridListPage.length) {
       // Unselect all
       setSelectedMurid([]);
     } else {
       // Select all
-      setSelectedMurid([...muridList]);
+      setSelectedMurid([...muridListPage]);
     }
   };
 
@@ -262,6 +274,40 @@ const PanelMurid = () => {
     }
   };
 
+  const exportToExcel = () => {
+    const exportData = muridList.map((murid, index) => ({
+      No: index + 1,
+      NIS: murid.nis,
+      NISN: murid.nisn,
+      "Nama Lengkap": murid.nama_lengkap,
+      "Jenis Kelamin": murid.jenis_kelamin,
+      "Tanggal Lahir": murid.tanggal_lahir,
+      agama: murid.agama,
+      kelas: murid.kelas?.nama_kelas,
+      Alamat: murid.alamat,
+      "Nama Orang tua": murid.nama_orangtua,
+      "No Telepon orang tua": murid.no_telepon_orangtua,
+      Status: murid.status,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data Murid");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const fileName = `Data_Murid_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+    saveAs(blob, fileName);
+  };
+
   const renderActionButtons = (murid) => (
     <div className="flex gap-2">
       <button
@@ -295,7 +341,10 @@ const PanelMurid = () => {
             </span>
           </div>
           <div className="flex flex-col gap-2">
-            <button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]">
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 md:py-2.5 md:px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer hover:-translate-y-0.5 text-sm w-fit self-end min-w-[120px]"
+            >
               <GoDownload className="text-lg" />
               Export Data
             </button>
@@ -345,8 +394,8 @@ const PanelMurid = () => {
                   <input
                     type="checkbox"
                     checked={
-                      selectedMurid.length === muridList.length &&
-                      muridList.length > 0
+                      selectedMurid.length === muridListPage.length &&
+                      muridListPage.length > 0
                     }
                     onChange={handleSelectAll}
                     className="cursor-pointer"
@@ -497,6 +546,80 @@ const PanelMurid = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {!loading && muridListPage.length > 0 && (
+          <div className="flex items-center justify-between mt-6 px-4">
+            <div className="text-sm text-gray-600">
+              Halaman <span className="font-semibold">{page}</span> dari{" "}
+              <span className="font-semibold">{totalPages}</span> (
+              {muridListPage.length} data)
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1 || loading}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  page === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+              >
+                ← Sebelumnya
+              </button>
+
+              {/* Page Numbers */}
+              <div className="flex gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter((p) => {
+                    // Tampilkan halaman saat ini, ±1 dari halaman saat ini, dan halaman pertama/terakhir
+                    if (p === 1 || p === totalPages) return true;
+                    if (p >= page - 1 && p <= page + 1) return true;
+                    return false;
+                  })
+                  .map((p, idx, arr) => {
+                    // Tambahkan ellipsis jika ada gap
+                    const elements = [];
+                    if (idx > 0 && arr[idx - 1] !== p - 1) {
+                      elements.push(
+                        <span key={`ellipsis-${p}`} className="px-2 py-2">
+                          ...
+                        </span>
+                      );
+                    }
+                    elements.push(
+                      <button
+                        key={p}
+                        onClick={() => setPage(p)}
+                        disabled={loading}
+                        className={`px-3 py-2 rounded-lg font-medium transition-all ${
+                          p === page
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    );
+                    return elements;
+                  })
+                  .flat()}
+              </div>
+
+              <button
+                onClick={() => setPage(Math.min(totalPages, page + 1))}
+                disabled={page === totalPages || loading}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  page === totalPages
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 text-white hover:bg-blue-700"
+                }`}
+              >
+                Selanjutnya →
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Toast Notification */}

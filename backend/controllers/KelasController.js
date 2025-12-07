@@ -862,6 +862,58 @@ const getAllMurid = async (req, res) => {
     return response(500, null, "Gagal memuat semua data murid", res);
   }
 };
+const getAllMuridPage = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 25;
+    const offset = (page - 1) * limit;
+    const { count, rows } = await Murid.findAndCountAll({
+      where: {
+        status: "aktif",
+      },
+      attributes: [
+        "murid_id",
+        "nis",
+        "nisn",
+        "nama_lengkap",
+        "jenis_kelamin",
+        "kelas_id",
+        "tanggal_lahir",
+        "agama",
+        "alamat",
+        "no_telepon",
+        "nama_orangtua",
+        "no_telepon_orangtua",
+        "foto_profile",
+        "tahun_masuk",
+        "status",
+      ],
+      include: [
+        {
+          model: Kelas,
+          as: "kelas",
+          attributes: ["kelas_id", "kode_kelas", "nama_kelas"],
+        },
+      ],
+      order: [
+        ["kelas_id", "ASC"],
+        ["nama_lengkap", "ASC"],
+      ],
+      limit,
+      offset,
+    });
+    const pageData = {
+      total: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      data: rows,
+    };
+    return response(200, pageData, "Semua data murid berhasil dimuat", res);
+  } catch (error) {
+    console.error("Error getAllMurid:", error.message);
+    return response(500, null, "Gagal memuat semua data murid", res);
+  }
+};
 
 // ambil data semua murid yang hadir
 const getMuridAllPresence = async (req, res) => {
@@ -3390,6 +3442,7 @@ module.exports = {
   getUser,
   getMuridByKelas,
   getAllMurid,
+  getAllMuridPage,
   getAbsensiMurid,
   getMuridAllPresence,
   getKelasWithDetails,

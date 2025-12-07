@@ -1,15 +1,6 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
+import LoadingSpiner from "../components/LoadingSpiner";
 import Card from "../components/Card";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import {
   FaChalkboardTeacher,
   FaUserGraduate,
@@ -18,7 +9,9 @@ import {
 import { useGetTotal } from "../hooks/useGetTotal";
 import { useLoading } from "../hooks/useLoading";
 import ModernBanner from "../components/ModernBaner";
-import { useAbsensiTahunan } from "../hooks/useAbsensiTahunan";
+
+const ChartAbsenMurid = lazy(() => import("../components/ChartAbsenMurid"));
+const ChartAbsenGuru = lazy(() => import("../components/ChartAbsensiGuru"));
 
 const Overview = () => {
   const { total, totalMurid, totalGuruHadir, totalMuridHadir, loading, error } =
@@ -28,33 +21,6 @@ const Overview = () => {
   const animatedTotalStudent = useLoading(totalMurid);
   const animatedTotalTeacherPresence = useLoading(totalGuruHadir);
   const animatedTotalStudentPresence = useLoading(totalMuridHadir);
-  const {
-    chartData,
-    chartDataGuru,
-    loading: loadingChart,
-    error: errorChart,
-  } = useAbsensiTahunan();
-
-  const [filterYear, setFilterYear] = useState("6bulan");
-  const [filterMonth, setFilterMonth] = useState("enambulan");
-
-  // Data untuk grafik murid
-  let attendanceData = [];
-
-  if (filterYear === "6bulan") {
-    attendanceData = chartData.slice(-6);
-  } else if (filterYear === "tahunini") {
-    attendanceData = chartData;
-  }
-
-  // Data untuk grafik guru
-  let attendanceDataGuru = [];
-
-  if (filterMonth === "enambulan") {
-    attendanceDataGuru = chartDataGuru.slice(-6);
-  } else if (filterMonth === "12bulan") {
-    attendanceDataGuru = chartDataGuru;
-  }
 
   if (loading) {
     return (
@@ -291,121 +257,14 @@ const Overview = () => {
         </div>
         {/* statsitik kehadiran */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 mx-8">
-          {/* Attendance Chart Teacher */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-800">
-                Statistik Kehadiran Guru
-              </h3>
-              <select
-                value={filterMonth}
-                onChange={(e) => setFilterMonth(e.target.value)}
-                className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white"
-              >
-                <option value="enambulan">6 Bulan Terakhir</option>
-                <option value="12bulan">Tahun Ini</option>
-              </select>
-            </div>
-            <div
-              className="h-[400px] w-full"
-              style={{ minWidth: 0, minHeight: 300 }}
-            >
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={attendanceDataGuru}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
-                  <YAxis
-                    stroke="#6B7280"
-                    fontSize={12}
-                    label={{
-                      value: "Persentase (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                      style: { textAnchor: "middle" },
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #E5E7EB",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="hadir"
-                    name="Hadir"
-                    fill="#10B981"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="alpha"
-                    name="Tidak Hadir"
-                    fill="#EF4444"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Attendance Chart Student */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold text-gray-800">
-                Statistik Kehadiran Murid
-              </h3>
-              <select
-                value={filterYear}
-                onChange={(e) => setFilterYear(e.target.value)}
-                className="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white"
-              >
-                <option value="6bulan">6 Bulan Terakhir</option>
-                <option value="tahunini">Tahun Ini</option>
-              </select>
-            </div>
-            <div
-              className="h-[400px] w-full"
-              style={{ minWidth: 0, minHeight: 300 }}
-            >
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={attendanceData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                  <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
-                  <YAxis
-                    stroke="#6B7280"
-                    fontSize={12}
-                    label={{
-                      value: "Persentase (%)",
-                      angle: -90,
-                      position: "insideLeft",
-                      style: { textAnchor: "middle" },
-                    }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "white",
-                      border: "1px solid #E5E7EB",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="hadir"
-                    name="Hadir"
-                    fill="#10B981"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="alpha"
-                    name="Tidak Hadir"
-                    fill="#EF4444"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+          {/* chart guru */}
+          <Suspense fallback={<LoadingSpiner />}>
+            <ChartAbsenGuru />
+          </Suspense>
+          {/* chart murid */}
+          <Suspense fallback={<LoadingSpiner />}>
+            <ChartAbsenMurid />
+          </Suspense>
         </div>
       </div>
     </>
