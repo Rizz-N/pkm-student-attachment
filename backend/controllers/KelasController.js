@@ -12,7 +12,7 @@ const bcrypt = require("bcrypt");
 // GET ALL ADMIN USERS
 const getAllAdminUsers = async (req, res) => {
   try {
-    console.log("🔍 Mengambil semua data admin users");
+    console.log("  Mengambil semua data admin users");
 
     const adminUsers = await Users.findAll({
       where: {
@@ -388,7 +388,7 @@ const updateAdminPassword = async (req, res) => {
       adminUser.password
     );
     if (!isPasswordValid) {
-      console.log("❌ Password saat ini salah");
+      console.log("  Password saat ini salah");
       return response(400, null, "Password saat ini salah", res);
     }
 
@@ -399,13 +399,10 @@ const updateAdminPassword = async (req, res) => {
     // Update password
     await adminUser.update({ password: hashPassword });
 
-    console.log(
-      "✅ Password berhasil diupdate untuk user:",
-      adminUser.username
-    );
+    console.log("  Password berhasil diupdate untuk user:", adminUser.username);
     return response(200, null, "Password berhasil diperbarui", res);
   } catch (error) {
-    console.error("❌ Error update admin password:", error.message);
+    console.error("  Error update admin password:", error.message);
     return response(500, null, "Gagal memperbarui password", res);
   }
 };
@@ -452,7 +449,7 @@ const resetAdminPassword = async (req, res) => {
     });
 
     if (!adminUser) {
-      console.log("❌ Admin tidak ditemukan");
+      console.log("  Admin tidak ditemukan");
       return response(404, null, "Data admin tidak ditemukan", res);
     }
 
@@ -463,10 +460,10 @@ const resetAdminPassword = async (req, res) => {
     // Update password
     await adminUser.update({ password: hashPassword });
 
-    console.log("✅ Password admin berhasil direset:", adminUser.username);
+    console.log("  Password admin berhasil direset:", adminUser.username);
     return response(200, null, "Password berhasil direset", res);
   } catch (error) {
-    console.error("❌ Error reset admin password:", error.message);
+    console.error("  Error reset admin password:", error.message);
     return response(500, null, "Gagal mereset password", res);
   }
 };
@@ -488,20 +485,20 @@ const deleteAdminUser = async (req, res) => {
     });
 
     if (!adminUser) {
-      console.log("❌ Admin tidak ditemukan");
+      console.log("  Admin tidak ditemukan");
       return response(404, null, "Data admin tidak ditemukan", res);
     }
 
     // Cek apakah ini user yang sedang login (tidak boleh hapus diri sendiri)
     const currentUserId = req.userId; // Asumsi user_id dari middleware auth
     if (parseInt(user_id) === parseInt(currentUserId)) {
-      console.log("❌ Tidak dapat menghapus akun sendiri");
+      console.log("  Tidak dapat menghapus akun sendiri");
       return response(400, null, "Tidak dapat menghapus akun sendiri", res);
     }
 
     // Hapus admin user
     await adminUser.destroy();
-    console.log("✅ Admin berhasil dihapus:", adminUser.username);
+    console.log("  Admin berhasil dihapus:", adminUser.username);
 
     return response(
       200,
@@ -510,7 +507,7 @@ const deleteAdminUser = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error delete admin user:", error.message);
+    console.error("  Error delete admin user:", error.message);
     return response(500, null, "Gagal menghapus admin", res);
   }
 };
@@ -520,7 +517,7 @@ const getAdminProfile = async (req, res) => {
   try {
     const user_id = req.userId;
 
-    console.log("🔍 Mengambil profile admin:", user_id);
+    console.log("  Mengambil profile admin:", user_id);
 
     const adminProfile = await Users.findOne({
       where: {
@@ -538,14 +535,14 @@ const getAdminProfile = async (req, res) => {
     });
 
     if (!adminProfile) {
-      console.log("❌ Admin profile tidak ditemukan");
+      console.log("  Admin profile tidak ditemukan");
       return response(404, null, "Profile admin tidak ditemukan", res);
     }
 
-    console.log("✅ Admin profile berhasil diambil:", adminProfile.username);
+    console.log("  Admin profile berhasil diambil:", adminProfile.username);
     return response(200, adminProfile, "Profile admin berhasil diambil", res);
   } catch (error) {
-    console.error("❌ Error get admin profile:", error.message);
+    console.error("  Error get admin profile:", error.message);
     return response(500, null, "Gagal memuat profile admin", res);
   }
 };
@@ -568,7 +565,7 @@ const updateAdminProfile = async (req, res) => {
     });
 
     if (!adminUser) {
-      console.log("❌ Admin tidak ditemukan");
+      console.log("  Admin tidak ditemukan");
       return response(404, null, "Data admin tidak ditemukan", res);
     }
 
@@ -583,7 +580,7 @@ const updateAdminProfile = async (req, res) => {
       });
 
       if (existingUsername) {
-        console.log("❌ Username sudah digunakan");
+        console.log("  Username sudah digunakan");
         return response(400, null, "Username sudah digunakan", res);
       }
     }
@@ -610,10 +607,10 @@ const updateAdminProfile = async (req, res) => {
       ],
     });
 
-    console.log("✅ Admin profile berhasil diupdate:", updatedProfile.username);
+    console.log("  Admin profile berhasil diupdate:", updatedProfile.username);
     return response(200, updatedProfile, "Profile berhasil diperbarui", res);
   } catch (error) {
-    console.error("❌ Error update admin profile:", error.message);
+    console.error("  Error update admin profile:", error.message);
 
     if (error.name === "SequelizeValidationError") {
       const messages = error.errors.map((err) => err.message);
@@ -1338,7 +1335,7 @@ const updateMurid = async (req, res) => {
   } = req.body;
 
   try {
-    console.log("🔍 Mencari murid dengan ID:", murid_id);
+    console.log("Mencari murid dengan ID:", murid_id);
 
     // Cari murid berdasarkan ID
     const murid = await Murid.findOne({
@@ -1346,7 +1343,7 @@ const updateMurid = async (req, res) => {
     });
 
     if (!murid) {
-      console.log("❌ Murid tidak ditemukan");
+      console.log("Murid tidak ditemukan");
       return response(404, null, "Data murid tidak ditemukan", res);
     }
 
@@ -1357,7 +1354,7 @@ const updateMurid = async (req, res) => {
       });
 
       if (existingNis && existingNis.murid_id !== parseInt(murid_id)) {
-        console.log("❌ NIS sudah digunakan oleh murid lain");
+        console.log("NIS sudah digunakan oleh murid lain");
         return response(400, null, "NIS sudah digunakan oleh murid lain", res);
       }
     }
@@ -1369,7 +1366,7 @@ const updateMurid = async (req, res) => {
       });
 
       if (existingNisn && existingNisn.murid_id !== parseInt(murid_id)) {
-        console.log("❌ NISN sudah digunakan oleh murid lain");
+        console.log("NISN sudah digunakan oleh murid lain");
         return response(400, null, "NISN sudah digunakan oleh murid lain", res);
       }
     }
@@ -1382,7 +1379,7 @@ const updateMurid = async (req, res) => {
         });
 
         if (!kelasExist) {
-          console.log("❌ Kelas tidak ditemukan dengan ID:", kelas_id);
+          console.log("Kelas tidak ditemukan dengan ID:", kelas_id);
           return response(400, null, "Kelas tidak ditemukan", res);
         }
       }
@@ -1406,7 +1403,7 @@ const updateMurid = async (req, res) => {
     if (tahun_masuk !== undefined) updateData.tahun_masuk = tahun_masuk;
     if (status !== undefined) updateData.status = status;
 
-    console.log("📝 Data yang akan diupdate:", updateData);
+    console.log("Data yang akan diupdate:", updateData);
 
     // Lakukan update
     await murid.update(updateData);
@@ -1441,11 +1438,11 @@ const updateMurid = async (req, res) => {
       ],
     });
 
-    console.log("✅ Murid berhasil diupdate:", updatedMurid.nama_lengkap);
+    console.log("Murid berhasil diupdate:", updatedMurid.nama_lengkap);
 
     return response(200, updatedMurid, "Data murid berhasil diperbarui", res);
   } catch (error) {
-    console.error("❌ Error update murid:", error.message);
+    console.error("Error update murid:", error.message);
     console.error("Error details:", error);
 
     if (error.name === "SequelizeValidationError") {
@@ -1501,18 +1498,8 @@ const updateMuridKelasMassal = async (req, res) => {
     }
 
     console.log(
-      `🔍 Akan update ${murid_ids.length} murid ke kelas ID: ${kelas_id}`
+      `  Akan update ${murid_ids.length} murid ke kelas ID: ${kelas_id}`
     );
-
-    // Validasi kelas_id
-    // const kelasExist = await Kelas.findOne({
-    //   where: { kelas_id },
-    // });
-
-    // if (!kelasExist) {
-    //   console.log("Kelas tidak ditemukan dengan ID:", kelas_id);
-    //   return response(400, null, "Kelas tidak ditemukan", res);
-    // }
 
     // Hitung murid yang ada
     const existingMurid = await Murid.findAll({
@@ -1606,13 +1593,13 @@ const deleteMurid = async (req, res) => {
 
     // 2. Jika murid tidak ditemukan
     if (!murid) {
-      console.log("❌ Murid tidak ditemukan");
+      console.log("Murid tidak ditemukan");
       return response(404, null, "Data murid tidak ditemukan", res);
     }
 
     // 3. Hapus data murid
     await murid.destroy();
-    console.log("✅ Murid berhasil dihapus:", murid.nama_lengkap);
+    console.log("Murid berhasil dihapus:", murid.nama_lengkap);
 
     return response(
       200,
@@ -1629,7 +1616,7 @@ const deleteMurid = async (req, res) => {
 // controllers/KelasController.js
 const getKelasForDropdown = async (req, res) => {
   try {
-    console.log("🔍 Mengambil data kelas untuk dropdown");
+    console.log("Mengambil data kelas untuk dropdown");
 
     const kelas = await Kelas.findAll({
       attributes: ["kelas_id", "kode_kelas", "nama_kelas", "wali_kelas_id"],
@@ -1660,11 +1647,11 @@ const getKelasForDropdown = async (req, res) => {
       jumlah_murid: k.muridKelas?.length || 0,
     }));
 
-    console.log("✅ Data kelas untuk dropdown:", formattedKelas.length, "item");
+    console.log("Data kelas untuk dropdown:", formattedKelas.length, "item");
 
     return response(200, formattedKelas, "Data kelas berhasil diambil", res);
   } catch (error) {
-    console.error("❌ Error get kelas dropdown:", error.message);
+    console.error("  Error get kelas dropdown:", error.message);
     return response(500, null, "Gagal memuat data kelas", res);
   }
 };
@@ -1687,10 +1674,10 @@ const createGuru = async (req, res) => {
   } = req.body;
 
   try {
-    console.log("🔍 Checking existing guru dengan NIP:", nip);
+    console.log("Checking existing guru dengan NIP:", nip);
     const existingGuru = await Guru.findOne({ where: { nip } });
     if (existingGuru) {
-      console.log("❌ NIP sudah terdaftar:", nip);
+      console.log("NIP sudah terdaftar:", nip);
       return response(400, null, "nip sudah terdaftar", res);
     }
     const guru = await Guru.create({
@@ -2140,7 +2127,7 @@ const updateGuru = async (req, res) => {
   } = req.body;
 
   try {
-    console.log("🔍 Mencari guru dengan ID:", guru_id);
+    console.log("  Mencari guru dengan ID:", guru_id);
 
     // Cari guru berdasarkan ID
     const guru = await Guru.findOne({
@@ -2222,7 +2209,7 @@ const updateGuru = async (req, res) => {
 
 const getAllKelas = async (req, res) => {
   try {
-    console.log("🔍 Mengambil semua data kelas");
+    console.log("  Mengambil semua data kelas");
 
     const kelas = await Kelas.findAll({
       attributes: [
@@ -2282,13 +2269,13 @@ const getAllKelas = async (req, res) => {
     }));
 
     console.log(
-      "✅ Data kelas berhasil diambil:",
+      "  Data kelas berhasil diambil:",
       formattedKelas.length,
       "kelas"
     );
     return response(200, formattedKelas, "Data kelas berhasil diambil", res);
   } catch (error) {
-    console.error("❌ Error get all kelas:", error.message);
+    console.error("  Error get all kelas:", error.message);
     return response(500, null, "Gagal memuat data kelas", res);
   }
 };
@@ -2298,7 +2285,7 @@ const getKelasById = async (req, res) => {
   try {
     const { kelas_id } = req.params;
 
-    console.log("🔍 Mengambil data kelas dengan ID:", kelas_id);
+    console.log("  Mengambil data kelas dengan ID:", kelas_id);
 
     const kelas = await Kelas.findOne({
       where: { kelas_id },
@@ -2347,14 +2334,14 @@ const getKelasById = async (req, res) => {
     });
 
     if (!kelas) {
-      console.log("❌ Kelas tidak ditemukan");
+      console.log("  Kelas tidak ditemukan");
       return response(404, null, "Data kelas tidak ditemukan", res);
     }
 
-    console.log("✅ Kelas ditemukan:", kelas.nama_kelas);
+    console.log("  Kelas ditemukan:", kelas.nama_kelas);
     return response(200, kelas, "Data kelas berhasil diambil", res);
   } catch (error) {
-    console.error("❌ Error get kelas by ID:", error.message);
+    console.error("  Error get kelas by ID:", error.message);
     return response(500, null, "Gagal memuat data kelas", res);
   }
 };
@@ -2441,7 +2428,7 @@ const updateKelas = async (req, res) => {
     });
 
     if (!kelas) {
-      console.log("❌ Kelas tidak ditemukan");
+      console.log("  Kelas tidak ditemukan");
       return response(404, null, "Data kelas tidak ditemukan", res);
     }
 
@@ -2452,7 +2439,7 @@ const updateKelas = async (req, res) => {
       });
 
       if (existingKodeKelas) {
-        console.log("❌ Kode kelas sudah digunakan");
+        console.log("  Kode kelas sudah digunakan");
         return response(400, null, "Kode kelas sudah digunakan", res);
       }
     }
@@ -2465,7 +2452,7 @@ const updateKelas = async (req, res) => {
       });
 
       if (!guruExist) {
-        console.log("❌ Wali kelas tidak ditemukan");
+        console.log("  Wali kelas tidak ditemukan");
         return response(404, null, "Data wali kelas tidak ditemukan", res);
       }
 
@@ -2478,7 +2465,7 @@ const updateKelas = async (req, res) => {
       });
 
       if (guruAlreadyWaliKelas) {
-        console.log("❌ Guru sudah menjadi wali kelas di kelas lain");
+        console.log("  Guru sudah menjadi wali kelas di kelas lain");
         return response(
           400,
           null,
@@ -2533,10 +2520,10 @@ const updateKelas = async (req, res) => {
       ],
     });
 
-    console.log("✅ Kelas berhasil diupdate:", updatedKelas.nama_kelas);
+    console.log("  Kelas berhasil diupdate:", updatedKelas.nama_kelas);
     return response(200, updatedKelas, "Kelas berhasil diperbarui", res);
   } catch (error) {
-    console.error("❌ Error update kelas:", error.message);
+    console.error("  Error update kelas:", error.message);
 
     if (error.name === "SequelizeValidationError") {
       const messages = error.errors.map((err) => err.message);
@@ -2576,13 +2563,13 @@ const deleteKelas = async (req, res) => {
 
     // 2. Jika kelas tidak ditemukan
     if (!kelas) {
-      console.log("❌ Kelas tidak ditemukan");
+      console.log("  Kelas tidak ditemukan");
       return response(404, null, "Data kelas tidak ditemukan", res);
     }
 
     // 3. Cek apakah kelas masih memiliki murid aktif
     if (kelas.muridKelas && kelas.muridKelas.length > 0) {
-      console.log("❌ Kelas masih memiliki murid aktif");
+      console.log("  Kelas masih memiliki murid aktif");
       return response(
         400,
         {
@@ -2601,7 +2588,7 @@ const deleteKelas = async (req, res) => {
 
     // 4. Hapus data kelas
     await kelas.destroy();
-    console.log("✅ Kelas berhasil dihapus:", kelas.nama_kelas);
+    console.log("  Kelas berhasil dihapus:", kelas.nama_kelas);
 
     return response(
       200,
@@ -2610,7 +2597,7 @@ const deleteKelas = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error delete kelas:", error.message);
+    console.error("  Error delete kelas:", error.message);
     return response(500, null, "Gagal menghapus kelas", res);
   }
 };
@@ -2618,7 +2605,7 @@ const deleteKelas = async (req, res) => {
 // GET GURU UNTUK DROPDOWN WALI KELAS
 const getGuruForWaliKelas = async (req, res) => {
   try {
-    console.log("🔍 Mengambil data guru untuk dropdown wali kelas");
+    console.log("  Mengambil data guru untuk dropdown wali kelas");
 
     // Ambil semua guru yang aktif dan belum menjadi wali kelas
     const guru = await Guru.findAll({
@@ -2665,10 +2652,10 @@ const getGuruForWaliKelas = async (req, res) => {
       semua_guru: allGuru,
     };
 
-    console.log("✅ Data guru untuk wali kelas berhasil diambil");
+    console.log("  Data guru untuk wali kelas berhasil diambil");
     return response(200, responseData, "Data guru berhasil diambil", res);
   } catch (error) {
-    console.error("❌ Error get guru for wali kelas:", error.message);
+    console.error("  Error get guru for wali kelas:", error.message);
     return response(500, null, "Gagal memuat data guru", res);
   }
 };
@@ -2864,7 +2851,7 @@ const getAbsensiMuridBulanan = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error:", error.message);
+    console.error("  Error:", error.message);
     return response(500, null, "Gagal mengambil statistik absensi", res);
   }
 };
@@ -2874,7 +2861,7 @@ const getAbsensiGuruBulanan = async (req, res) => {
   try {
     const { tahun, bulan } = req.query;
 
-    console.log("🔍 Mengambil statistik absensi guru bulanan");
+    console.log("  Mengambil statistik absensi guru bulanan");
     console.log("Tahun:", tahun, "Bulan:", bulan);
 
     // Validasi input
@@ -3046,7 +3033,7 @@ const getAbsensiGuruBulanan = async (req, res) => {
       },
     };
 
-    console.log("✅ Statistik absensi guru bulanan berhasil diambil");
+    console.log("  Statistik absensi guru bulanan berhasil diambil");
     return response(
       200,
       responseData,
@@ -3054,7 +3041,7 @@ const getAbsensiGuruBulanan = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error get absensi guru bulanan:", error.message);
+    console.error("  Error get absensi guru bulanan:", error.message);
     return response(500, null, "Gagal mengambil statistik absensi guru", res);
   }
 };
@@ -3064,7 +3051,7 @@ const getAbsensiMuridTahunan = async (req, res) => {
   try {
     const { tahun, kelas_id } = req.query;
 
-    console.log("🔍 Mengambil statistik absensi murid tahunan");
+    console.log("  Mengambil statistik absensi murid tahunan");
     console.log("Tahun:", tahun, "Kelas ID:", kelas_id);
 
     // Validasi input
@@ -3170,7 +3157,7 @@ const getAbsensiMuridTahunan = async (req, res) => {
       },
     };
 
-    console.log("✅ Statistik absensi murid tahunan berhasil diambil");
+    console.log("  Statistik absensi murid tahunan berhasil diambil");
     return response(
       200,
       responseData,
@@ -3178,7 +3165,7 @@ const getAbsensiMuridTahunan = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error get absensi murid tahunan:", error.message);
+    console.error("  Error get absensi murid tahunan:", error.message);
     return response(
       500,
       null,
@@ -3193,7 +3180,7 @@ const getAbsensiGuruTahunan = async (req, res) => {
   try {
     const { tahun } = req.query;
 
-    console.log("🔍 Mengambil statistik absensi guru tahunan");
+    console.log("  Mengambil statistik absensi guru tahunan");
     console.log("Tahun:", tahun);
 
     // Validasi input
@@ -3321,7 +3308,7 @@ const getAbsensiGuruTahunan = async (req, res) => {
       },
     };
 
-    console.log("✅ Statistik absensi guru tahunan berhasil diambil");
+    console.log("  Statistik absensi guru tahunan berhasil diambil");
     return response(
       200,
       responseData,
@@ -3329,7 +3316,7 @@ const getAbsensiGuruTahunan = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error get absensi guru tahunan:", error.message);
+    console.error("  Error get absensi guru tahunan:", error.message);
     return response(
       500,
       null,
@@ -3486,7 +3473,7 @@ const getChartDataGuru = async (tahun, bulan) => {
 // GET DASHBOARD STATISTIK (ringkasan untuk dashboard)
 const getDashboardStatistik = async (req, res) => {
   try {
-    console.log("🔍 Mengambil statistik dashboard");
+    console.log("  Mengambil statistik dashboard");
 
     const currentDate = moment().tz("Asia/Jakarta");
     const currentYear = currentDate.year();
@@ -3589,7 +3576,7 @@ const getDashboardStatistik = async (req, res) => {
       },
     };
 
-    console.log("✅ Statistik dashboard berhasil diambil");
+    console.log("  Statistik dashboard berhasil diambil");
     return response(
       200,
       statistik,
@@ -3597,7 +3584,7 @@ const getDashboardStatistik = async (req, res) => {
       res
     );
   } catch (error) {
-    console.error("❌ Error get dashboard statistik:", error.message);
+    console.error("  Error get dashboard statistik:", error.message);
     return response(500, null, "Gagal mengambil statistik dashboard", res);
   }
 };
