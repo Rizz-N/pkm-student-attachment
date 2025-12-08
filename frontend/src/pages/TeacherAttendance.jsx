@@ -122,11 +122,11 @@ const TeacherAttendance = () => {
         return;
       }
 
-      console.log("Data yang akan dikirim:", absensiData);
+      // console.log("Data yang akan dikirim:", absensiData);
 
       const result = await submitAbsensi(absensiData);
       showAbsensiResult(result);
-      console.log("Result absensi guru:", result);
+      // console.log("Result absensi guru:", result);
 
       await refetchGuru([]);
       setSelectedGuru([]);
@@ -170,12 +170,6 @@ const TeacherAttendance = () => {
 
     saveAs(blob, fileName);
   };
-
-  useEffect(() => {
-    if (submitResult) {
-      console.log("Submit result updated:", submitResult);
-    }
-  }, [submitResult]);
 
   useEffect(() => {
     if (submitResult) {

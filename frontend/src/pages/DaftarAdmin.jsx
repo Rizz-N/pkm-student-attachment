@@ -134,7 +134,7 @@ const DaftarAdmin = () => {
         foto_profile: formData.foto_profile || null,
       };
 
-      console.log("Data yang akan dikirim:", adminData);
+      // console.log("Data yang akan dikirim:", adminData);
 
       // Gunakan service yang sudah dibuat
       const response = await getDataAdmin.createAdmin(adminData);

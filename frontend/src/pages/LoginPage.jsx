@@ -40,7 +40,7 @@ const LoginPage = () => {
       } else if (currentUser.role === "guru") {
         navigate("/dashboard", { replace: true });
       }
-      console.log("Login success, user role:", currentUser.role);
+      // console.log("Login success, user role:", currentUser.role);
 
       localStorage.setItem(
         "userData",

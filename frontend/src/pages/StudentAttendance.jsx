@@ -129,13 +129,13 @@ const StudentAttendance = () => {
         return;
       }
 
-      console.log("data yang akan di kirim:", absensiData);
+      // console.log("data yang akan di kirim:", absensiData);
 
       const result = await submitAbsensi(absensiData);
 
       showAbsensiResult(result);
 
-      console.log("Result absensi:", result);
+      // console.log("Result absensi:", result);
 
       if (selectedKelas) {
         await refetchMurid();

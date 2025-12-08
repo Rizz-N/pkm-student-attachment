@@ -36,9 +36,9 @@ const Dashboard = () => {
   }, [isOpen]);
 
   const handleLogout = async () => {
-    console.log("Data sebelum logout", user);
+    // console.log("Data sebelum logout", user);
     await clearUser();
-    console.log("Data sesudah logout");
+    // console.log("Data sesudah logout");
     navigate("login");
   };
 

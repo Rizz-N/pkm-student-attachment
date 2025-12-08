@@ -89,7 +89,7 @@ const ModalEditMurid = ({ open, onClose, muridData, onSuccess }) => {
         status: form.status,
       };
 
-      console.log("Updating murid with data:", formattedData);
+      // console.log("Updating murid with data:", formattedData);
 
       if (onSuccess) {
         await onSuccess(muridData.murid_id, formattedData);

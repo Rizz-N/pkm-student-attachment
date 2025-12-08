@@ -26,7 +26,7 @@ export const getTotal = {
   getAbsensiMuridToday: async () => {
     try {
       const response = await axiosToken.get("/absensi/murid/hadir");
-      console.log("Total murid hadir", response.data[0]);
+      // console.log("Total murid hadir", response.data[0]);
       return response.data[0]?.payload || [];
     } catch (error) {
       console.error("Error fetching absensi murid hadir:", error);

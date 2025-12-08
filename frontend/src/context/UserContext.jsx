@@ -81,7 +81,7 @@ export const UserProvider = ({ children }) => {
         withCredentials: true,
       });
     } catch (error) {
-      console.log("Logout error:", error);
+      console.error("Logout error:", error);
     } finally {
       clearAuthToken();
       setUser(null);

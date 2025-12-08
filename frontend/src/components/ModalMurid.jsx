@@ -29,7 +29,7 @@ const ModalMurid = ({ open, onClose, onSubmit }) => {
   const loadKelasData = async () => {
     try {
       const response = await axiosToken.get("/kelas/dropdown");
-      console.log("Data di dropdown", response.data[0].payload);
+      // console.log("Data di dropdown", response.data[0].payload);
       setKelasOption(
         Array.isArray(response.data[0].payload) ? response.data[0].payload : []
       );

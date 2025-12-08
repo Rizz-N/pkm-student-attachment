@@ -5,7 +5,7 @@ export const getDataAdmin = {
   getAdmins: async () => {
     try {
       const response = await axiosToken.get("/admin/users");
-      console.log("Data admin:", response.data[0]);
+      // console.log("Data admin:", response.data[0]);
       return response.data[0]?.payload || [];
     } catch (error) {
       console.error("Error fetching admin data:", error);
@@ -17,7 +17,7 @@ export const getDataAdmin = {
   getAdminById: async (user_id) => {
     try {
       const response = await axiosToken.get(`/admin/users/${user_id}`);
-      console.log("Detail admin:", response.data[0]);
+      // console.log("Detail admin:", response.data[0]);
       return response.data[0]?.payload || null;
     } catch (error) {
       console.error("Error fetching admin detail:", error);
@@ -29,8 +29,8 @@ export const getDataAdmin = {
   createAdmin: async (formData) => {
     try {
       const response = await axiosToken.post("/admin/users", formData);
-      console.log("Admin berhasil dibuat:", response.data[0].message);
-      console.log("Data yang di kirim:", response.data);
+      // console.log("Admin berhasil dibuat:", response.data[0].message);
+      // console.log("Data yang di kirim:", response.data);
 
       return response.data[0];
     } catch (error) {
@@ -45,12 +45,12 @@ export const getDataAdmin = {
   // UPDATE ADMIN USER
   updateAdmin: async (user_id, formData) => {
     try {
-      console.log("Updating admin:", user_id, formData);
+      // console.log("Updating admin:", user_id, formData);
       const response = await axiosToken.put(
         `/admin/users/${user_id}`,
         formData
       );
-      console.log("Update response:", response.data);
+      // console.log("Update response:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error updating admin:", error.response?.data);
@@ -62,7 +62,7 @@ export const getDataAdmin = {
   deleteAdmin: async (user_id) => {
     try {
       const response = await axiosToken.delete(`/admin/users/${user_id}`);
-      console.log("Berhasil hapus admin:", response.data[0].message);
+      // console.log("Berhasil hapus admin:", response.data[0].message);
       return response.data[0].message;
     } catch (error) {
       console.error("Error deleting admin:", error.response?.data);
@@ -77,7 +77,7 @@ export const getDataAdmin = {
         "/admin/profile/change-password",
         formData
       );
-      console.log("Password berhasil diupdate:", response.data[0].message);
+      // console.log("Password berhasil diupdate:", response.data[0].message);
       return response.data[0];
     } catch (error) {
       console.error("Error updating password:", error.response?.data);
@@ -92,7 +92,7 @@ export const getDataAdmin = {
         `/admin/users/${user_id}/reset-password`,
         formData
       );
-      console.log("Password berhasil direset:", response.data[0].message);
+      // console.log("Password berhasil direset:", response.data[0].message);
       return response.data[0];
     } catch (error) {
       console.error("Error resetting password:", error.response?.data);
@@ -104,7 +104,7 @@ export const getDataAdmin = {
   getAdminProfile: async () => {
     try {
       const response = await axiosToken.get("/admin/profile");
-      console.log("Admin profile:", response.data[0]);
+      // console.log("Admin profile:", response.data[0]);
       return response.data[0]?.payload || null;
     } catch (error) {
       console.error("Error fetching admin profile:", error);
@@ -116,7 +116,7 @@ export const getDataAdmin = {
   updateAdminProfile: async (formData) => {
     try {
       const response = await axiosToken.put("/admin/profile", formData);
-      console.log("Profile berhasil diupdate:", response.data[0].message);
+      // console.log("Profile berhasil diupdate:", response.data[0].message);
       return response.data[0];
     } catch (error) {
       console.error("Error updating profile:", error.response?.data);

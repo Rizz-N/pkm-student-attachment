@@ -46,7 +46,7 @@ export const getDataMurid = {
 
   updateMurid: async (murid_id, formData) => {
     try {
-      console.log("Updating murid:", murid_id, formData);
+      // console.log("Updating murid:", murid_id, formData);
       const response = await axiosToken.put(`/murid/${murid_id}`, formData);
       // console.log("Update response:", response.data);
       return response.data;
@@ -58,7 +58,7 @@ export const getDataMurid = {
 
   updateMuridKelasMassal: async (murid_ids, kelas_id) => {
     try {
-      console.log("🔄 Mass update kelas:", { murid_ids, kelas_id });
+      // console.log("Mass update kelas:", { murid_ids, kelas_id });
       const response = await axiosToken.put("/murid/massal/update-kelas", {
         murid_ids,
         kelas_id,

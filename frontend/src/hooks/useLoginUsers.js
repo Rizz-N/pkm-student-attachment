@@ -40,7 +40,7 @@ export const useLoginUsers = () => {
     loadUser();
 
     const handleUserChange = () => {
-      console.log("User changed event detected, refreshing data...");
+      // console.log("User changed event detected, refreshing data...");
       loadUser();
     };
 

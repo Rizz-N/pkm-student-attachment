@@ -30,7 +30,7 @@ export const useAbsensiMuridRange = (
       setRecords(data.records || []);
       setTotalPage(data.totalPage || 0);
       setTotalData(data.totalData || 0);
-      console.log("Absensi murid range", data);
+      // console.log("Absensi murid range", data);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.[0]?.message || "Gagal memuat data");

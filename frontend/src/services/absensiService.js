@@ -34,7 +34,7 @@ export const absensiService = {
       if (endDate) params.endDate = endDate;
 
       const response = await axiosToken.get("/absensi/murid/range", { params });
-      console.log("data absensi", response);
+      // console.log("data absensi", response);
       return (
         response.data?.[0]?.payload || {
           records: [],
@@ -59,7 +59,7 @@ export const absensiService = {
           limit: 999999,
         },
       });
-      console.log("data absensi ", response);
+      // console.log("data absensi ", response);
 
       return response.data[0]?.payload.records || [];
     } catch (error) {
