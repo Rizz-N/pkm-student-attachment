@@ -96,7 +96,7 @@ router.put("/murid/:murid_id", verifyToken, updateMurid);
 router.patch("/murid/:murid_id", verifyToken, updateMurid);
 router.put("/murid/massal/update-kelas", verifyToken, updateMuridKelasMassal);
 // admin router kelas
-router.get("/kelas", verifyToken, getAllKelas);
+// router.get("/kelas", verifyToken, getAllKelas);
 router.get("/kelas/:kelas_id", verifyToken, getKelasById);
 router.post("/kelas", verifyToken, createKelas);
 router.put("/kelas/:kelas_id", verifyToken, updateKelas);
