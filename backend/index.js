@@ -24,12 +24,14 @@ app.use(router);
   try {
     await db.authenticate();
     console.log("database connected..");
-    // await db.sync({ alter: true });
+    await db.sync();
   } catch (error) {
     console.error(error);
   }
 })();
 
-app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

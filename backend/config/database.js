@@ -1,8 +1,24 @@
-const {Sequelize} = require('sequelize')
+const { Sequelize } = require("sequelize");
+const dotenv = require("dotenv");
 
-const db = new Sequelize('attendance_management','root','mysqlpass',{
-    host: "localhost",
-    dialect: "mysql"
-});
+dotenv.config();
+
+const db = new Sequelize(
+  process.env.MYSQL_DATABASE,
+  process.env.MYSQLUSER,
+  process.env.MYSQLPASSWORD,
+  {
+    host: process.env.MYSQLHOST,
+    port: process.env.EXPRESS_DB_PORT,
+    dialect: "mysql",
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    logging: false,
+  }
+);
 
 module.exports = db;
