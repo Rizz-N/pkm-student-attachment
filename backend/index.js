@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://pkm-student-attachment.vercel.app/",
+      "https://pkm-student-attachment.vercel.app",
     ],
     credentials: true,
   })
