@@ -16,7 +16,7 @@ export const clearAuthToken = () => {
 };
 
 const axiosToken = axios.create({
-  baseURL: "http://localhost:5000",
+  baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
 });
 
@@ -25,9 +25,12 @@ axiosToken.interceptors.request.use(
     const currentTime = Date.now() / 1000;
 
     if (exp < currentTime) {
-      const response = await axios.get("http://localhost:5000/token", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/token`,
+        {
+          withCredentials: true,
+        }
+      );
       const newToken = response.data[0].payload.accessToken;
       setAuthToken(newToken);
       config.headers.Authorization = `Bearer ${newToken}`;

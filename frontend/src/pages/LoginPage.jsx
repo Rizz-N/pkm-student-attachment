@@ -23,7 +23,7 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       await axios.post(
-        "http://localhost:5000/login",
+        `${import.meta.env.VITE_API_URL}/login`,
         { username, password },
         { withCredentials: true }
       );
