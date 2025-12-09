@@ -10,7 +10,7 @@ const ProfileBar = ({ isOpen, setIsOpen }) => {
 
   const logout = async () => {
     try {
-      await axios.delete("http://localhost:5000/logout", {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/logout`, {
         withCredentials: true,
       });
       await refreshUser();
