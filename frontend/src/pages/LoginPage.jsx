@@ -27,7 +27,7 @@ const LoginPage = () => {
         { username, password },
         { withCredentials: true }
       );
-      const currentUser = await refreshUser(true);
+      const currentUser = await refreshUser();
 
       if (!currentUser) {
         setMessage("Gagal memuat data user");
@@ -41,15 +41,6 @@ const LoginPage = () => {
         navigate("/dashboard", { replace: true });
       }
       // console.log("Login success, user role:", currentUser.role);
-
-      localStorage.setItem(
-        "userData",
-        JSON.stringify({
-          role: currentUser.role,
-          nama: currentUser.guru?.nama_lengkap || currentUser.nama,
-          timestamp: Date.now(),
-        })
-      );
     } catch (error) {
       console.error("Login error:", error);
       if (error.response) {
