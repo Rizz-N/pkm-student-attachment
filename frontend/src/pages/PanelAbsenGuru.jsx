@@ -21,6 +21,7 @@ const PanelAbsensiGuru = () => {
       NIP: guru.guru.nip,
       Nama: guru.guru.nama_lengkap,
       "Jam Masuk": guru.jam_masuk,
+      tanggal: guru.tanggal,
       "guru piket": guru.guruPiket.nama_lengkap,
       Status: guru.status,
     }));
