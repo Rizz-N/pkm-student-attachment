@@ -3,15 +3,16 @@ import { useAbsensiGuruRange } from "../hooks/useAbsensiGuruRange";
 import { GoDownload } from "react-icons/go";
 import SearchBar from "../components/SearchBar";
 import StatusBadge from "../components/StatusBadge";
-import Calendar from "../components/Calendar";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { data } from "react-router-dom";
 
 const PanelAbsensiGuru = () => {
-  const { isAbsensiGuru, loading, error, loadAbsensi } = useAbsensiGuruRange();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const { isAbsensiGuru, loading, error, loadAbsensi } = useAbsensiGuruRange(
+    startDate,
+    endDate
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredGuru, setFilteredGuru] = useState([]);
   const exportToExcel = () => {
@@ -170,9 +171,9 @@ const PanelAbsensiGuru = () => {
           </div>
         </div>
         {/* Desktop Table View */}
-        <div className="hidden lg:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
-          <table className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
-            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="overflow-x-auto hidden lg:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
+          <table className="table-auto w-full border-collapse bg-white/80 backdrop-blur-sm">
+            <thead className="whitespace-nowrap bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               <tr>
                 <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
                   No
@@ -201,7 +202,7 @@ const PanelAbsensiGuru = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-10">
+                  <td colSpan={7} className="text-center py-10">
                     <div className="flex justify-center">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                     </div>
@@ -210,7 +211,7 @@ const PanelAbsensiGuru = () => {
                 </tr>
               ) : filteredGuru.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-10 text-center">
+                  <td colSpan={7} className="px-6 py-10 text-center">
                     {searchTerm || (startDate && endDate) ? (
                       <div>
                         <p className="text-gray-500">

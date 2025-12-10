@@ -12,42 +12,38 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const { refreshUser } = useUser();
+  const { setUserImmediately } = useUser();
+
   const Login = async (e) => {
     e.preventDefault();
-    if (!username || !password) {
-      setMessage("Username dan Password wajib di isi");
-      return;
-    }
+    if (!username || !password)
+      return setMessage("Username dan Password wajib di isi");
 
     setIsLoading(true);
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/login`,
         { username, password },
         { withCredentials: true }
       );
-      const currentUser = await refreshUser();
 
-      if (!currentUser) {
-        setMessage("Gagal memuat data user");
-        setIsLoading(false);
-        return;
-      }
+      // Ambil user langsung dari response
+      const userData = response.data[0]?.payload?.user;
+      if (!userData) throw new Error("Login gagal");
 
-      if (currentUser.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else if (currentUser.role === "guru") {
+      // set user di context
+      setUserImmediately(userData); // gunakan fungsi ini dari UserContext
+
+      // arahkan halaman
+      if (userData.role === "admin") navigate("/admin", { replace: true });
+      else if (userData.role === "guru")
         navigate("/dashboard", { replace: true });
-      }
-      // console.log("Login success, user role:", currentUser.role);
     } catch (error) {
-      console.error("Login error:", error);
-      if (error.response) {
+      console.error(error);
+      if (error.response)
         setMessage(error.response.data[0]?.message || "Login gagal");
-      } else {
-        setMessage("Terjadi kesalahan, silakan coba lagi");
-      }
+      else setMessage("Terjadi kesalahan, silakan coba lagi");
+    } finally {
       setIsLoading(false);
     }
   };

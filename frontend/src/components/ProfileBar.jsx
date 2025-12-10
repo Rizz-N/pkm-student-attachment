@@ -59,7 +59,7 @@ const ProfileBar = ({ isOpen, setIsOpen }) => {
             </div>
 
             <div className="flex flex-col">
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-bold text-white w-40 md:w-55 truncate">
                 {loading ? "Memuat..." : user?.guru.nama_lengkap || "-"}
               </h2>
               <p className="text-blue-100 text-sm font-medium">

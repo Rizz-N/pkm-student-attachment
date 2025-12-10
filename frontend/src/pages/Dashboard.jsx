@@ -69,10 +69,10 @@ const Dashboard = () => {
             )}
           </div>
           <div className="flex flex-col">
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-md sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Attendance Management
             </h1>
-            <p className="text-sm sm:text-base text-gray-600 font-medium">
+            <p className="text-sm sm:text-base text-gray-600 font-medium w-60 truncate md:w-full">
               Welcome back,{" "}
               <span className="text-blue-600 font-semibold">
                 {user?.guru.nama_lengkap}
@@ -92,7 +92,7 @@ const Dashboard = () => {
       </div>
 
       {/* Navbar Link Halaman */}
-      <div className="mt-28 mx-4 sm:mx-auto bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border border-blue-500/30 shadow-xl flex justify-between p-2 rounded-2xl sm:rounded-full sm:max-w-2xl">
+      <div className="mt-30 md:mt-30 mx-4 sm:mx-auto bg-gradient-to-r from-blue-600 to-purple-600 backdrop-blur-sm border border-blue-500/30 shadow-xl flex justify-between p-2 rounded-2xl sm:rounded-full sm:max-w-2xl">
         <Link
           to="/dashboard"
           className={`text-xs sm:text-lg text-white font-semibold px-4 sm:px-6 py-3 rounded-2xl sm:rounded-full transition-all duration-200 ${active(

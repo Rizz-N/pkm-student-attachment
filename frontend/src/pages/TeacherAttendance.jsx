@@ -361,7 +361,7 @@ const TeacherAttendance = () => {
                 </div>
 
                 {/* File Upload */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <span className="text-gray-500 text-sm block mb-2">
                     Surat Keterangan
                   </span>
@@ -374,7 +374,7 @@ const TeacherAttendance = () => {
                       disabled={guru.sudah_absen}
                     />
                   </label>
-                </div>
+                </div> */}
                 {/* status badge */}
                 <div className="mb-4">
                   <StatusBadge status={guru.status_display} />
@@ -415,7 +415,7 @@ const TeacherAttendance = () => {
 
           {/* Desktop Table View */}
           <div className="hidden lg:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
-            <table className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
+            <table className=" w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
               <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                 <tr>
                   {!isViewingHistory && (

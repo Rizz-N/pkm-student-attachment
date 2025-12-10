@@ -188,8 +188,8 @@ const PanelAbsenMurid = () => {
         </div>
         {/* Desktop Table View */}
         <div className="hidden lg:block rounded-2xl overflow-hidden border border-gray-300/50 shadow-lg">
-          <table className="w-full border-collapse text-center bg-white/80 backdrop-blur-sm">
-            <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+          <table className="table-auto w-full border-collapse bg-white/80 backdrop-blur-sm">
+            <thead className="whitespace-nowrap bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               <tr>
                 <th className="px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider">
                   No

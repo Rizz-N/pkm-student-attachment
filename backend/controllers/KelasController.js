@@ -1777,7 +1777,10 @@ const getAbsensiGuruRange = async (req, res) => {
 
     if (startDate && endDate) {
       dateFilter.tanggal = {
-        [Op.between]: [startDate, endDate],
+        [Op.between]: [
+          startDate,
+          moment(endDate).endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+        ],
       };
     } else if (startDate) {
       dateFilter.tanggal = startDate;

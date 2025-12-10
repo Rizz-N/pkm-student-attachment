@@ -256,7 +256,7 @@ const Overview = () => {
           />
         </div>
         {/* statsitik kehadiran */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-8 mx-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-8 mx-8">
           {/* chart guru */}
           <Suspense fallback={<LoadingSpiner />}>
             <ChartAbsenGuru />

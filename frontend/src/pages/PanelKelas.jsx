@@ -344,8 +344,8 @@ const PanelKelas = () => {
 
         {/* Table data */}
         <div className="overflow-x-auto border border-gray-200 rounded-lg">
-          <table className="whitespace-nowrap min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-blue-600 to-purple-600">
+          <table className="table-auto min-w-full divide-y divide-gray-200">
+            <thead className="whitespace-nowrap bg-gradient-to-r from-blue-600 to-purple-600">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
                   No
@@ -414,18 +414,18 @@ const PanelKelas = () => {
                     key={kelas.kelas_id}
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4  text-sm font-medium text-gray-900">
                       {index + 1}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 ">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                         {kelas.kode_kelas}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-4  text-sm font-semibold text-gray-900">
                       {kelas.nama_kelas}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    <td className="px-6 py-4  text-sm text-gray-700">
                       {kelas.walikelas ? (
                         <div>
                           <p className="font-medium">
@@ -441,13 +441,13 @@ const PanelKelas = () => {
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    <td className="px-6 py-4  text-sm text-gray-700">
                       {kelas.walikelas?.nip || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    <td className="px-6 py-4  text-sm text-gray-700">
                       {formatJumlahMurid(kelas.jumlah_murid || 0)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-4 text-sm font-medium">
                       {renderActionButtons(kelas)}
                     </td>
                   </tr>
