@@ -10,44 +10,39 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const saveUser = (data) => {
+    setUser(data);
+    localStorage.setItem(
+      "userData",
+      JSON.stringify({
+        role: data.role,
+        nama: data.guru?.nama_lengkap || data.nama,
+        timestamp: Date.now(),
+      })
+    );
+  };
+
+  const clearUser = () => {
+    setUser(null);
+    localStorage.removeItem("userData");
+  };
+
   const refreshUser = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const data = await getUsers.getUserLogin();
-      // console.log("data di usecontext:", data);
-
-      if (data && data.role) {
-        setUser(data);
-        localStorage.setItem(
-          "userData",
-          JSON.stringify({
-            role: data.role,
-            nama: data.guru?.nama_lengkap || data.nama,
-            timestamp: Date.now(),
-          })
-        );
-        try {
-          window.dispatchEvent(new Event("userChanged"));
-        } catch (e) {
-          /* ignore in non-browser env */
-        }
-      } else {
-        setUser(null);
-        localStorage.removeItem("userData");
-        try {
-          window.dispatchEvent(new Event("userChanged"));
-        } catch (e) {
-          /* ignore in non-browser env */
-        }
+      if (data?.role) {
+        saveUser(data);
+        return data;
       }
-      return data;
+
+      clearUser();
+      return null;
     } catch (err) {
-      console.error("UserContext.refreshUser error:", err);
+      clearUser();
       setError(err.message);
-      setUser(null);
-      localStorage.removeItem("userData");
       return null;
     } finally {
       setLoading(false);
@@ -55,59 +50,38 @@ export const UserProvider = ({ children }) => {
   };
 
   const setUserImmediately = (userData) => {
-    setUser(userData);
-    if (userData) {
-      localStorage.setItem(
-        "currentUser",
-        JSON.stringify({
-          role: userData.role,
-          id: userData.id,
-          timestamp: Date.now(),
-        })
-      );
-      try {
-        window.dispatchEvent(new Event("userChanged"));
-      } catch (e) {
-        /* ignore in non-browser env */
-      }
-    }
+    saveUser(userData);
+    setLoading(false);
   };
-
-  const startLoading = () => setLoading(true);
 
   const logout = async () => {
     try {
       await axios.delete(`${import.meta.env.VITE_API_URL}/logout`, {
         withCredentials: true,
       });
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch (_) {
+      // ignore
     } finally {
       clearAuthToken();
-      setUser(null);
-      localStorage.removeItem("userData");
-      try {
-        window.dispatchEvent(new Event("userChanged"));
-      } catch (e) {
-        /* ignore in non-browser env */
-      }
+      clearUser();
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    refreshUser();
+    if (!user) refreshUser();
+    else setLoading(false);
   }, []);
 
   return (
     <UserContext.Provider
       value={{
         user,
-        refreshUser,
-        logout,
         loading,
         error,
-        startLoading,
+        refreshUser,
         setUserImmediately,
+        logout,
       }}
     >
       {children}
